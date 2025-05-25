@@ -25,7 +25,8 @@
         "build": "tsc --build --verbose",
         "lint": "biome lint . --fix",
         "format": "biome format . --write",
-        "test": "bun packages/shouw.js/dist/__test__"
+        "test": "bun packages/shouw.js/dist/__test__",
+        "ts-test": "ts-node packages/shouw.js/src/__test__"
     },
     "engines": {
         "node": ">=20.x"

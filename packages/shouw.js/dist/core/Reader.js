@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Command = exports.ShouwParseError = exports.Parser = void 0;
+exports.Command = exports.Parser = void 0;
 const fs = require("node:fs");
 const chalk = require("chalk");
 class Parser {
@@ -13,7 +13,7 @@ class Parser {
             this.fileContent = fs.readFileSync(this.filePath, 'utf8');
         }
         catch (err) {
-            throw new ShouwParseError(err.message);
+            throw new SyntaxError(generateError(err.message));
         }
     }
     static highlightError(code) {
@@ -24,7 +24,10 @@ class Parser {
         const blockCommentStart = code.indexOf('//**');
         const blockCommentEnd = code.indexOf('**//');
         if (blockCommentStart !== -1 && (blockCommentEnd === -1 || blockCommentEnd < blockCommentStart)) {
-            throw new ShouwParseError('Unclosed block comment (//** ... **//)', this.filePath, code.trim().slice(0, 50));
+            throw new SyntaxError(generateError(`Unclosed block comment (//** ... ${chalk.red('> **// <')})`, this.filePath, code.trim().slice(blockCommentStart, blockCommentStart + 50)));
+        }
+        if (blockCommentEnd !== -1 && blockCommentStart === -1) {
+            throw new SyntaxError(generateError(`Unopened block comment (${chalk.red('> //** <')} ... **//)`, this.filePath, code.trim().slice(blockCommentEnd - 25, blockCommentEnd + 25)));
         }
         return code
             .replace(/\/\/\*\*([\s\S]*?)\*\*\/\//g, '')
@@ -37,7 +40,7 @@ class Parser {
         const cleanedContent = this.removeComments(this.fileContent);
         const matches = [...cleanedContent.matchAll(commandRegex)];
         if (!matches.length)
-            throw new ShouwParseError('Missing @Command({ ... }) declaration', this.filePath);
+            throw new SyntaxError(generateError('Missing @Command({ ... }) declaration', this.filePath));
         const commands = [];
         for (let i = 0; i < matches.length; i++) {
             const match = matches[i];
@@ -47,17 +50,17 @@ class Parser {
             const nextCommandStart = i + 1 < matches.length ? matches[i + 1].index : cleanedContent.length;
             const codeBlock = cleanedContent.slice(commandEnd, nextCommandStart).trim();
             if (!codeBlock) {
-                throw new ShouwParseError('Missing code after @Command({ ... }) declaration', this.filePath, match[0]);
+                throw new SyntaxError(generateError('Missing code after @Command({ ... }) declaration', this.filePath, match[0]));
             }
             try {
                 const obj = new Function(`return ${extractedCode ? extractedCode[1] : '{}'}`)();
                 if (!obj.name || !obj.type) {
-                    throw new ShouwParseError(`@Command({ ... }) declaration is missing ${chalk.red(obj.name ? 'type' : 'name')} property`);
+                    throw new SyntaxError(generateError(`@Command({ ... }) declaration is missing ${chalk.red(obj.name ? 'type' : 'name')} property`));
                 }
                 commands.push(new Command({ ...obj, code: codeBlock }));
             }
             catch (err) {
-                throw new ShouwParseError(err.message, this.filePath, match[0]);
+                throw new SyntaxError(generateError(err.message, this.filePath, match[0]));
             }
         }
         return Array.isArray(commands) ? commands : [commands];
@@ -68,14 +71,6 @@ class Parser {
     }
 }
 exports.Parser = Parser;
-class ShouwParseError extends SyntaxError {
-    constructor(message, file, code) {
-        super(`${message}${file ? `in ${chalk.yellow(file)}` : ''}${code ? `\n\n${Parser.highlightError(code)}\n` : ''}`);
-        this.name = 'ShouwParseError';
-        Error.captureStackTrace(this, new Parser('').execute);
-    }
-}
-exports.ShouwParseError = ShouwParseError;
 class Command {
     constructor(options) {
         for (const [key, value] of Object.entries(options)) {
@@ -84,3 +79,6 @@ class Command {
     }
 }
 exports.Command = Command;
+function generateError(message, file, code) {
+    return `${message}${file ? ` in ${chalk.yellow(file)}\n\n` : ''}${code ? `${Parser.highlightError(code)}\n` : ''}`;
+}

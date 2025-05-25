@@ -1,6 +1,6 @@
 @Command({
-    name: 'hello',
-	type: 'messageCreate'
+    name: 'ping',
+    type: 'messageCreate'
 });
 
-hello!
+Pong!

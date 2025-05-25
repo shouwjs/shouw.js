@@ -23,7 +23,7 @@ export class ShouwClient extends BaseClient {
 
     public command(data: CommandData): ShouwClient {
         const command = this.commands[data.type];
-        if (!command) return this;
+        if (typeof command !== 'object' || !command || !command.name || !command.type || !command.code) return this;
         command.set(command.size, data);
         return this;
     }
@@ -37,14 +37,16 @@ export class ShouwClient extends BaseClient {
                     let commands = require(filePath);
                     commands = Array.isArray(commands) ? commands : [commands];
                     for (const command of commands) {
-                        if (typeof command !== 'object' || !command || !command.type || !command.code) continue;
+                        if (typeof command !== 'object' || !command || !command.name || !command.type || !command.code)
+                            continue;
                         this.command(command as CommandData);
                         this.debug(`Loaded command ${command.name} from ${file}`, 'DEBUG');
                     }
                 } else if (file.endsWith('.shouw') || file.endsWith('.shw') || file.endsWith('.sho')) {
                     const commands = new Parser(filePath).execute();
                     for (const command of commands) {
-                        if (typeof command !== 'object' || !command || !command.type || !command.code) continue;
+                        if (typeof command !== 'object' || !command || !command.name || !command.type || !command.code)
+                            continue;
                         this.command(command as CommandData);
                         this.debug(`Loaded command ${command.name} from ${file}`, 'DEBUG');
                     }

@@ -188,8 +188,9 @@ export class Interpreter {
                 return currentCode.trim();
             };
 
+            const result = (await processFunction(this.code)).unescape();
             const end = (performance.now() - this.start).toFixed(2).toString();
-            this.code = (await processFunction(this.code)).unescape().replace(/\$executionTime/gi, end);
+            this.code = result.replace(/\$executionTime/gi, end);
             this.embeds = JSON.parse(JSON.stringify(this.embeds).replace(/\$executionTime/gi, end));
 
             if (
@@ -198,7 +199,8 @@ export class Interpreter {
                 ((this.code && this.code !== '') ||
                     this.components.length > 0 ||
                     this.embeds.length > 0 ||
-                    this.attachments.length > 0)
+                    this.attachments.length > 0 ||
+                    this.stickers.length > 0)
             ) {
                 this.message = (await this.context?.send({
                     content: this.code !== '' ? this.code : void 0,
@@ -211,15 +213,15 @@ export class Interpreter {
 
             return (
                 filterObject({
-                    result: this.code,
-                    id: this.message?.id,
-                    error: this.isError,
+                    result: this.code ?? '',
+                    id: this.message?.id ?? void 0,
+                    error: this.isError ?? false,
                     data: {
                         ...this.Temporarily,
-                        embeds: this.embeds,
-                        components: this.components,
-                        attachments: this.attachments,
-                        flags: this.flags
+                        embeds: this.embeds ?? [],
+                        components: this.components ?? [],
+                        attachments: this.attachments ?? [],
+                        flags: this.flags ?? void 0
                     }
                 }) ?? {}
             );
