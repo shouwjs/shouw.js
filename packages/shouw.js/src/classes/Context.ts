@@ -41,6 +41,7 @@ export class Context {
         this.guild = ctx.guild;
     }
 
+    // CHECK IF INTERACTION
     private get isInteraction(): boolean {
         return (
             !!this.interaction &&
@@ -51,6 +52,7 @@ export class Context {
         );
     }
 
+    // SEND MESSAGE OR REPLY TO INTERACTION
     public async send(data: SendData): Promise<Message<boolean> | undefined> {
         if (this.isInteraction) return await this.reply(data);
 
@@ -59,6 +61,7 @@ export class Context {
         return await this.channel.send(data);
     }
 
+    // REPLY TO MESSAGE OR INTERACTION
     public async reply(
         data: MessageReplyData
     ): Promise<Message<boolean> | OmitPartialGroupDMChannel<Message<boolean>> | undefined>;

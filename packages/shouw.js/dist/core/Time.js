@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Time = void 0;
 // biome-ignore lint: static members
 class Time {
+    // FORMAT TIME TO STRING
     static format(_time) {
         let time = _time;
         const date = (ms) => {
@@ -35,6 +36,7 @@ class Time {
         };
         return data();
     }
+    // PARSE TIME TO OBJECT
     static parse(time) {
         if (!['string', 'number'].includes(typeof time))
             throw TypeError("'time' must be a string or number");
@@ -111,6 +113,7 @@ class Time {
             format
         };
     }
+    // FORMAT TIME TO DIGITAL STRING
     static digital(time) {
         let seconds = Math.trunc(time / 1000);
         const hours = Math.trunc(seconds / 3600);
@@ -119,6 +122,7 @@ class Time {
         seconds %= 60;
         return [hours, minutes, seconds].map((num) => num.toString().padStart(2, '0')).join(':');
     }
+    // PLURALIZE TIME STRING
     static pluralize(num, txt, suffix = 's') {
         return `${num} ${txt}${num !== 1 ? suffix : ''}`;
     }

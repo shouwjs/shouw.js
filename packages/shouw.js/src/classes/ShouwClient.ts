@@ -9,6 +9,7 @@ import { BaseClient } from './BaseClient';
 export class ShouwClient extends BaseClient {
     public functions: FunctionsManager;
     public commands: CommandsManager;
+    public database?: any;
     public readonly prefix: Array<string>;
     public readonly shouwOptions: ShouwClientOptions;
 
@@ -19,8 +20,14 @@ export class ShouwClient extends BaseClient {
         this.functions = new FunctionsManager(this);
         this.commands = new CommandsManager(this, options.events);
         this.functions.load(path.join(__dirname, '../functions'), options.debug ?? false);
+
+        options.extensions = Array.isArray(options.extensions) ? options.extensions : [options.extensions];
+        for (const extension of options.extensions) {
+            extension?.initialize(this);
+        }
     }
 
+    // ADD COMMAND TO CLIENT
     public command(data: CommandData): ShouwClient {
         if (
             typeof data !== 'object' ||
@@ -37,6 +44,7 @@ export class ShouwClient extends BaseClient {
         return this;
     }
 
+    // LOAD COMMANDS FROM DIRECTORY
     public loadCommands(dir: string, _logging = false): ShouwClient {
         const files = fs.readdirSync(dir);
         for (const file of files) {
@@ -68,6 +76,7 @@ export class ShouwClient extends BaseClient {
         return this;
     }
 
+    // DEBUG MESSAGE
     public debug(message, type: 'ERROR' | 'DEBUG' = 'DEBUG', force = false): ShouwClient {
         if (message && (force === true || this.shouwOptions.debug === true)) {
             const color = type === 'ERROR' ? red : blue;

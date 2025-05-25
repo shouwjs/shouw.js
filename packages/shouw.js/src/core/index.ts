@@ -5,6 +5,7 @@ export * from './IF';
 export * from './Time';
 export * from './Reader';
 
+// UNESCAPE AND ESCAPE STRING (DON'T TOUCH)
 String.prototype.unescape = function () {
     return this.replace(/#RIGHT#/g, '[')
         .replace(/#LEFT#/g, ']')
@@ -41,6 +42,7 @@ String.prototype.escape = function () {
         .replace(/\|\|/g, '#OR#');
 };
 
+// MUST ESCAPE STRING (DON'T TOUCH)
 String.prototype.mustEscape = function () {
     return this.replaceAll('\\[', '#RIGHT#')
         .replace(/\\]/g, '#LEFT#')
@@ -57,6 +59,7 @@ String.prototype.mustEscape = function () {
         .replaceAll('\\||', '#OR#');
 };
 
+// TO OBJECT, TO URL, TO BOOLEAN (DON'T TOUCH)
 String.prototype.toObject = function () {
     try {
         return JSON.parse(this as string);

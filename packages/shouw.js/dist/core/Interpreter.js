@@ -53,6 +53,7 @@ class Interpreter {
             returnData: false
         });
     }
+    // INITIALIZE INTERPRETER (DON'T TOUCH)
     async initialize() {
         try {
             if (typeof this.code === 'function') {
@@ -177,6 +178,7 @@ class Interpreter {
             return {};
         }
     }
+    // UNPACKING FUNCTION FROM CODE (DON'T TOUCH)
     unpack(func, code) {
         const funcStart = code.toLowerCase().indexOf(func.toLowerCase());
         if (funcStart === -1)
@@ -207,6 +209,7 @@ class Interpreter {
         const all = code.slice(funcStart, closeBracketIndex + 1);
         return { func, args: args, brackets: true, all };
     }
+    // EXTRACT ARGUMENTS FROM FUNCTION (DON'T TOUCH)
     extractArguments(argsStr) {
         const args = [];
         let depth = 0;
@@ -237,6 +240,7 @@ class Interpreter {
             return void 0;
         });
     }
+    // EXTRACT FUNCTIONS FROM CODE (DON'T TOUCH)
     extractFunctions(code) {
         const functions = [];
         const splited = code.split(/\$/g);
@@ -251,9 +255,11 @@ class Interpreter {
         }
         return (0, utils_1.filterArray)(functions) ?? [];
     }
+    // FUNCTION SUCCESS RESULT
     success(result = void 0, error, ...data) {
         return { ...data, result, error };
     }
+    // FUNCTION ERROR RESULT
     async error(options) {
         try {
             const { message, solution } = typeof options === 'string' ? { message: options } : options;
@@ -266,6 +272,7 @@ class Interpreter {
         }
         return { result: void 0, error: true };
     }
+    // SWITCH ARGUMENT TYPE (DON'T TOUCH)
     switchArg(arg, type) {
         if (!arg || arg === '' || typings_1.ParamType.Void === type)
             return void 0;

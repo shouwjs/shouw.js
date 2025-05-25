@@ -28,21 +28,27 @@ class Functions {
         __classPrivateFieldSet(this, _Functions_type, data.type, "f");
         __classPrivateFieldSet(this, _Functions_params, data.params ?? [], "f");
     }
+    // FUNCTION CODE
     code(_ctx, _args, _data) {
         return { result: void 0 };
     }
+    // FUNCTION NAME
     get name() {
         return __classPrivateFieldGet(this, _Functions_name, "f");
     }
+    // FUNCTION BRACKETS
     get brackets() {
         return __classPrivateFieldGet(this, _Functions_brackets, "f");
     }
+    // FUNCTION DESCRIPTION
     get description() {
         return __classPrivateFieldGet(this, _Functions_description, "f");
     }
+    // FUNCTION TYPE
     get type() {
         return __classPrivateFieldGet(this, _Functions_type, "f");
     }
+    // FUNCTION PARAMETERS
     get params() {
         return __classPrivateFieldGet(this, _Functions_params, "f");
     }
@@ -55,6 +61,7 @@ class Functions {
     getParams(index) {
         return this.params?.[index];
     }
+    // FUNCTION SUCCESS RESULT
     success(result = void 0, error, ...data) {
         return { ...data, result, error };
     }

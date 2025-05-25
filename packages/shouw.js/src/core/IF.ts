@@ -1,5 +1,6 @@
 import { Interpreter } from './Interpreter';
 
+// IF BLOCK PARSING
 export async function IF(
     code: string,
     oldCode: string,
@@ -41,21 +42,11 @@ export async function IF(
                 ?.split(/\$endif/gi)[0] || '';
 
         const condition = extractCondition(statement);
-        const ifResult = await new Interpreter(
-            {
-                code: `$checkCondition[${condition}`,
-                name: 'if',
-                type: 'parsing'
-            },
-            ctx as Interpreter,
-            {
-                sendMessage: false,
-                returnId: false,
-                returnResult: true,
-                returnError: true,
-                returnData: false
-            }
-        ).initialize();
+        const ifResult = await INIT(ctx, {
+            code: `$checkCondition[${condition}`,
+            name: 'if',
+            type: 'parsing'
+        });
 
         if (ctx.isError || ifResult.error) {
             return {
@@ -115,21 +106,11 @@ export async function IF(
         if (elseIfBlocks) {
             for (const [elseifCondition, elseifCode] of Object.entries(elseIfBlocks)) {
                 if (!isConditionPassed) {
-                    const elseifResult = await new Interpreter(
-                        {
-                            code: `$checkCondition[${elseifCondition}`,
-                            name: 'if',
-                            type: 'parsing'
-                        },
-                        ctx as Interpreter,
-                        {
-                            sendMessage: false,
-                            returnId: false,
-                            returnResult: true,
-                            returnError: true,
-                            returnData: false
-                        }
-                    ).initialize();
+                    const elseifResult = await INIT(ctx, {
+                        code: `$checkCondition[${elseifCondition}`,
+                        name: 'if',
+                        type: 'parsing'
+                    });
 
                     if (ctx.isError || elseifResult.error) {
                         return {
@@ -160,6 +141,7 @@ export async function IF(
     return { error: ctx.isError, code: result, oldCode: oldCodeResult };
 }
 
+// EXTRACT CONDITION FROM CODE
 function extractCondition(code: string): string {
     let nestingLevel = 1;
     let position = 0;
@@ -177,6 +159,25 @@ function extractCondition(code: string): string {
     return code.slice(0, position + 1);
 }
 
+// ESCAPE REGEXP
 function escapeRegExp(str: string): string {
     return str.replace(/[.*+?^${}()|[\]\\\n]/g, '\\$&');
+}
+
+// INITIALIZE INTERPRETER
+async function INIT(
+    ctx: Interpreter,
+    data: {
+        code: string;
+        name: string;
+        type: string;
+    }
+) {
+    return await new Interpreter(data, ctx, {
+        sendMessage: false,
+        returnId: false,
+        returnResult: true,
+        returnError: true,
+        returnData: false
+    }).initialize();
 }

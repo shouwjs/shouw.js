@@ -10,6 +10,7 @@ export class Parser {
         this.filePath = filePath;
     }
 
+    // READ FILE CONTENT
     readFile() {
         try {
             this.fileContent = fs.readFileSync(this.filePath, 'utf8');
@@ -18,11 +19,13 @@ export class Parser {
         }
     }
 
+    // HIGHLIGHT ERROR CODE
     static highlightError(code: string) {
         const lines = code ? code.trim().split('\n') : [];
         return chalk.red(lines.map((line) => `> | ${line}`).join('\n'));
     }
 
+    // REMOVE COMMENTS FROM CODE (DON'T TOUCH)
     removeComments(code = '') {
         const blockCommentStart = code.indexOf('//**');
         const blockCommentEnd = code.indexOf('**//');
@@ -53,6 +56,7 @@ export class Parser {
             .trim();
     }
 
+    // PARSE COMMAND DATA FROM CODE (DON'T TOUCH)
     parse() {
         const commandRegex = /@Command\(\s*(\{[\s\S]*?\})?\s*\)(;)?/gi;
         const objectRegex = /@Command\(\s*(\{[\s\S]*?\})\s*\)(;)?/i;
@@ -96,6 +100,7 @@ export class Parser {
         return Array.isArray(commands) ? commands : [commands];
     }
 
+    // EXECUTE PARSER
     execute() {
         this.readFile();
         return this.parse();
@@ -112,6 +117,7 @@ export class Command {
     }
 }
 
+// GENERATE ERROR MESSAGE
 function generateError(message: string, file?: string, code?: string) {
     return `${message}${file ? ` in ${chalk.yellow(file)}\n\n` : ''}${code ? `${Parser.highlightError(code)}\n` : ''}`;
 }

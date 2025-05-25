@@ -15,7 +15,12 @@ class ShouwClient extends BaseClient_1.BaseClient {
         this.functions = new _1.FunctionsManager(this);
         this.commands = new _1.CommandsManager(this, options.events);
         this.functions.load(path.join(__dirname, '../functions'), options.debug ?? false);
+        options.extensions = Array.isArray(options.extensions) ? options.extensions : [options.extensions];
+        for (const extension of options.extensions) {
+            extension?.initialize(this);
+        }
     }
+    // ADD COMMAND TO CLIENT
     command(data) {
         if (typeof data !== 'object' ||
             !data ||
@@ -30,6 +35,7 @@ class ShouwClient extends BaseClient_1.BaseClient {
         command.set(command.size, data);
         return this;
     }
+    // LOAD COMMANDS FROM DIRECTORY
     loadCommands(dir, _logging = false) {
         const files = fs.readdirSync(dir);
         for (const file of files) {
@@ -61,6 +67,7 @@ class ShouwClient extends BaseClient_1.BaseClient {
         }
         return this;
     }
+    // DEBUG MESSAGE
     debug(message, type = 'DEBUG', force = false) {
         if (message && (force === true || this.shouwOptions.debug === true)) {
             const color = type === 'ERROR' ? chalk_1.red : chalk_1.blue;

@@ -4,6 +4,7 @@ import { BaseClient } from './BaseClient';
 export declare class ShouwClient extends BaseClient {
     functions: FunctionsManager;
     commands: CommandsManager;
+    database?: any;
     readonly prefix: Array<string>;
     readonly shouwOptions: ShouwClientOptions;
     constructor(options: ShouwClientOptions);

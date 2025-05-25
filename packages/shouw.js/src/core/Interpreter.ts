@@ -81,6 +81,7 @@ export class Interpreter {
         }) as ExtraOptionsData;
     }
 
+    // INITIALIZE INTERPRETER (DON'T TOUCH)
     public async initialize(): Promise<{
         id?: string;
         result?: undefined | string;
@@ -231,6 +232,7 @@ export class Interpreter {
         }
     }
 
+    // UNPACKING FUNCTION FROM CODE (DON'T TOUCH)
     private unpack(
         func: string,
         code: string
@@ -270,6 +272,7 @@ export class Interpreter {
         return { func, args: args, brackets: true, all };
     }
 
+    // EXTRACT ARGUMENTS FROM FUNCTION (DON'T TOUCH)
     private extractArguments(argsStr: string): Array<string | undefined> {
         const args: string[] = [];
         let depth = 0;
@@ -299,6 +302,7 @@ export class Interpreter {
         });
     }
 
+    // EXTRACT FUNCTIONS FROM CODE (DON'T TOUCH)
     private extractFunctions(code: string): Array<string> {
         const functions: string[] = [];
         const splited = code.split(/\$/g);
@@ -318,10 +322,12 @@ export class Interpreter {
         return filterArray(functions) ?? [];
     }
 
+    // FUNCTION SUCCESS RESULT
     public success(result: any = void 0, error?: boolean, ...data: FunctionResultData[]): FunctionResultData {
         return { ...data, result, error };
     }
 
+    // FUNCTION ERROR RESULT
     public async error(options: string | { message: string; solution?: string }): Promise<FunctionResultData> {
         try {
             const { message, solution } = typeof options === 'string' ? { message: options } : options;
@@ -337,6 +343,7 @@ export class Interpreter {
         return { result: void 0, error: true };
     }
 
+    // SWITCH ARGUMENT TYPE (DON'T TOUCH)
     private switchArg(arg: string, type: ParamType): any {
         if (!arg || arg === '' || ParamType.Void === type) return void 0;
 

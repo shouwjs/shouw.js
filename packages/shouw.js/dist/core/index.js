@@ -20,6 +20,7 @@ __exportStar(require("./Conditions"), exports);
 __exportStar(require("./IF"), exports);
 __exportStar(require("./Time"), exports);
 __exportStar(require("./Reader"), exports);
+// UNESCAPE AND ESCAPE STRING (DON'T TOUCH)
 String.prototype.unescape = function () {
     return this.replace(/#RIGHT#/g, '[')
         .replace(/#LEFT#/g, ']')
@@ -54,6 +55,7 @@ String.prototype.escape = function () {
         .replace(/&&/g, '#AND#')
         .replace(/\|\|/g, '#OR#');
 };
+// MUST ESCAPE STRING (DON'T TOUCH)
 String.prototype.mustEscape = function () {
     return this.replaceAll('\\[', '#RIGHT#')
         .replace(/\\]/g, '#LEFT#')
@@ -69,6 +71,7 @@ String.prototype.mustEscape = function () {
         .replace(/\\&&/g, '#AND#')
         .replaceAll('\\||', '#OR#');
 };
+// TO OBJECT, TO URL, TO BOOLEAN (DON'T TOUCH)
 String.prototype.toObject = function () {
     try {
         return JSON.parse(this);

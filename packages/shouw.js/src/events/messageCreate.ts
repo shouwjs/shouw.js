@@ -8,10 +8,11 @@ export default async function Events(message: Message, client: ShouwClient) {
     const commands = client.commands?.messageCreate?.V;
     if (!commands) return;
 
+    // PREFIXES
     const prefixes: Promise<string | undefined>[] = client.prefix
         .map(async (prefix) => {
             if (!prefix.match(/\$/g) || prefix === '$') return prefix;
-            return await Init(
+            return await INIT(
                 {
                     name: 'prefix',
                     type: 'parsing',
@@ -24,34 +25,35 @@ export default async function Events(message: Message, client: ShouwClient) {
         })
         .filter(Boolean);
 
+    // RUN COMMANDS
     for (const RawPrefix of prefixes) {
         const prefix = await RawPrefix;
         if (!prefix) continue;
         if (!message.content || !message.content.startsWith(prefix)) continue;
-
         const args = message.content?.slice(prefix.length).split(/ +/g) ?? [];
         const commandName = args.shift()?.toLowerCase();
-
         if (!commandName) continue;
         const command = commands.find((cmd) => cmd.name === commandName || cmd.aliases?.includes(commandName));
         if (!command || !command.code) break;
 
-        await Init(command, message, args, client);
+        await INIT(command, message, args, client);
     }
 
-    const alwaysExecute: CommandData[] | undefined = commands.filter(
+    // ALWAYS EXECUTE COMMANDS
+    const alwaysExecute: CommandData[] = commands.filter(
         (v: CommandData) => v.name?.toLowerCase() === '$alwaysexecute'
     );
 
-    if (Array.isArray(alwaysExecute)) {
+    if (Array.isArray(alwaysExecute) && alwaysExecute.length > 0) {
         for (const command of alwaysExecute) {
             if (!command || !command.code) break;
-            await Init(command, message, message.content?.split(/ +/g) ?? [], client);
+            await INIT(command, message, message.content?.split(/ +/g) ?? [], client);
         }
     }
 }
 
-async function Init(
+// INITIALIZE COMMAND
+async function INIT(
     command: CommandData,
     message: Message,
     args: string[],

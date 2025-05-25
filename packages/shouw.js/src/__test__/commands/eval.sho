@@ -1,0 +1,8 @@
+@Command({
+    name: 'eval',
+    type: 'messageCreate'
+});
+
+```js
+$eval[$message;true;true;true;true;true]
+```

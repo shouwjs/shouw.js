@@ -5,12 +5,14 @@ exports.wait = wait;
 exports.filterObject = filterObject;
 exports.filterArray = filterArray;
 const promises_1 = require("node:timers/promises");
+// SLEEP FUNCTION FOR WAITING/DELAY
 async function sleep(ms) {
     await (0, promises_1.setTimeout)(Number(ms));
 }
 async function wait(ms) {
     await (0, promises_1.setTimeout)(Number(ms));
 }
+// FILTERING OBJECT VALUES (DON'T TOUCH)
 function filterObject(object) {
     const result = {};
     const entries = Object.entries(object);
@@ -35,6 +37,7 @@ function filterObject(object) {
     }
     return result;
 }
+// FILTERING ARRAY VALUES (DON'T TOUCH)
 function filterArray(arr) {
     const result = [];
     if (!arr.length)

@@ -10,6 +10,7 @@ class FunctionsManager extends utils_1.Collective {
         super();
         this.client = client;
     }
+    // LOAD FUNCTIONS FROM DIRECTORY
     async load(basePath, debug) {
         const files = fs.readdirSync(basePath);
         for (const file of files) {

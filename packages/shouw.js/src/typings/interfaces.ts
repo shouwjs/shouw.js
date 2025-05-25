@@ -77,6 +77,7 @@ export interface ShouwClientOptions extends DiscordType.ClientOptions {
     events: Array<keyof DiscordType.ClientEvents>;
     prefix: string | string[];
     debug?: boolean;
+    extensions?: any[];
 }
 
 export interface ExtraOptionsData {

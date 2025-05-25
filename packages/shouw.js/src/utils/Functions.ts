@@ -1,5 +1,6 @@
 import { setTimeout } from 'node:timers/promises';
 
+// SLEEP FUNCTION FOR WAITING/DELAY
 export async function sleep(ms: number): Promise<void> {
     await setTimeout(Number(ms));
 }
@@ -8,6 +9,7 @@ export async function wait(ms: number): Promise<void> {
     await setTimeout(Number(ms));
 }
 
+// FILTERING OBJECT VALUES (DON'T TOUCH)
 export function filterObject<T extends object>(object: T): T | undefined {
     const result = {} as T;
     const entries = Object.entries(object);
@@ -32,6 +34,7 @@ export function filterObject<T extends object>(object: T): T | undefined {
     return result;
 }
 
+// FILTERING ARRAY VALUES (DON'T TOUCH)
 export function filterArray<T>(arr: T[]): T[] | undefined {
     const result = [] as T[];
     if (!arr.length) return void 0;

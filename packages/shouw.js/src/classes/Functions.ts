@@ -13,6 +13,7 @@ export class FunctionsManager extends Collective<string, Functions> {
         this.client = client;
     }
 
+    // LOAD FUNCTIONS FROM DIRECTORY
     public async load(basePath: string, debug: boolean) {
         const files = fs.readdirSync(basePath);
         for (const file of files) {

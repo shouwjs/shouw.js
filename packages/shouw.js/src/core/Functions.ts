@@ -22,6 +22,7 @@ export class Functions {
         this.#params = data.params ?? [];
     }
 
+    // FUNCTION CODE
     public code(
         _ctx: Interpreter,
         _args: Array<unknown>,
@@ -30,22 +31,27 @@ export class Functions {
         return { result: void 0 };
     }
 
+    // FUNCTION NAME
     public get name(): string | undefined {
         return this.#name;
     }
 
+    // FUNCTION BRACKETS
     public get brackets(): boolean | undefined {
         return this.#brackets;
     }
 
+    // FUNCTION DESCRIPTION
     public get description(): string | undefined {
         return this.#description;
     }
 
+    // FUNCTION TYPE
     public get type(): string | undefined {
         return this.#type;
     }
 
+    // FUNCTION PARAMETERS
     public get params():
         | {
               name?: string;
@@ -76,6 +82,7 @@ export class Functions {
         return this.params?.[index];
     }
 
+    // FUNCTION SUCCESS RESULT
     public success(result: any = void 0, error?: boolean, ...data: FunctionResultData[]): FunctionResultData {
         return { ...data, result, error };
     }

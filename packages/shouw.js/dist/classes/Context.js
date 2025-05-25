@@ -12,6 +12,7 @@ class Context {
         this.member = ctx.member;
         this.guild = ctx.guild;
     }
+    // CHECK IF INTERACTION
     get isInteraction() {
         return (!!this.interaction &&
             (this.interaction instanceof discord_js_1.ChatInputCommandInteraction ||
@@ -19,6 +20,7 @@ class Context {
                 this.interaction instanceof discord_js_1.ModalSubmitInteraction ||
                 this.interaction instanceof discord_js_1.ContextMenuCommandInteraction));
     }
+    // SEND MESSAGE OR REPLY TO INTERACTION
     async send(data) {
         if (this.isInteraction)
             return await this.reply(data);

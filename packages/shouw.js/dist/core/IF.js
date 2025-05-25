@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.IF = IF;
 const Interpreter_1 = require("./Interpreter");
+// IF BLOCK PARSING
 async function IF(code, oldCode, ctx) {
     if (ctx.isError || !code.match(/\$if/gi))
         return {
@@ -29,17 +30,11 @@ async function IF(code, oldCode, ctx) {
             .pop()
             ?.split(/\$endif/gi)[0] || '';
         const condition = extractCondition(statement);
-        const ifResult = await new Interpreter_1.Interpreter({
+        const ifResult = await INIT(ctx, {
             code: `$checkCondition[${condition}`,
             name: 'if',
             type: 'parsing'
-        }, ctx, {
-            sendMessage: false,
-            returnId: false,
-            returnResult: true,
-            returnError: true,
-            returnData: false
-        }).initialize();
+        });
         if (ctx.isError || ifResult.error) {
             return {
                 error: true,
@@ -86,17 +81,11 @@ async function IF(code, oldCode, ctx) {
         if (elseIfBlocks) {
             for (const [elseifCondition, elseifCode] of Object.entries(elseIfBlocks)) {
                 if (!isConditionPassed) {
-                    const elseifResult = await new Interpreter_1.Interpreter({
+                    const elseifResult = await INIT(ctx, {
                         code: `$checkCondition[${elseifCondition}`,
                         name: 'if',
                         type: 'parsing'
-                    }, ctx, {
-                        sendMessage: false,
-                        returnId: false,
-                        returnResult: true,
-                        returnError: true,
-                        returnData: false
-                    }).initialize();
+                    });
                     if (ctx.isError || elseifResult.error) {
                         return {
                             error: true,
@@ -118,6 +107,7 @@ async function IF(code, oldCode, ctx) {
     }
     return { error: ctx.isError, code: result, oldCode: oldCodeResult };
 }
+// EXTRACT CONDITION FROM CODE
 function extractCondition(code) {
     let nestingLevel = 1;
     let position = 0;
@@ -135,6 +125,17 @@ function extractCondition(code) {
     }
     return code.slice(0, position + 1);
 }
+// ESCAPE REGEXP
 function escapeRegExp(str) {
     return str.replace(/[.*+?^${}()|[\]\\\n]/g, '\\$&');
+}
+// INITIALIZE INTERPRETER
+async function INIT(ctx, data) {
+    return await new Interpreter_1.Interpreter(data, ctx, {
+        sendMessage: false,
+        returnId: false,
+        returnResult: true,
+        returnError: true,
+        returnData: false
+    }).initialize();
 }

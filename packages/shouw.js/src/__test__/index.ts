@@ -13,12 +13,6 @@ const client = new ShouwClient({
 });
 
 client.command({
-    name: 'eval',
-    type: 'messageCreate',
-    code: '```js\n$eval[$message;true;true;true;true;true]```'
-});
-
-client.command({
     name: 'ready',
     type: 'ready',
     code: (ctx: Interpreter) => {

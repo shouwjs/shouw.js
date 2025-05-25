@@ -1,5 +1,6 @@
 // biome-ignore lint: static members
 export class Time {
+    // FORMAT TIME TO STRING
     public static format(_time: number) {
         let time = _time;
         const date = (ms: number): number => {
@@ -35,6 +36,7 @@ export class Time {
         return data();
     }
 
+    // PARSE TIME TO OBJECT
     static parse(time: string | number): {
         ms: number;
         format: string;
@@ -118,6 +120,7 @@ export class Time {
         };
     }
 
+    // FORMAT TIME TO DIGITAL STRING
     public static digital(time: number): string {
         let seconds = Math.trunc(time / 1000);
         const hours = Math.trunc(seconds / 3600);
@@ -128,6 +131,7 @@ export class Time {
         return [hours, minutes, seconds].map((num: number) => num.toString().padStart(2, '0')).join(':');
     }
 
+    // PLURALIZE TIME STRING
     private static pluralize(num: number, txt: string, suffix = 's') {
         return `${num} ${txt}${num !== 1 ? suffix : ''}`;
     }
