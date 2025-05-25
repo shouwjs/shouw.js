@@ -19,6 +19,7 @@ __exportStar(require("./Functions"), exports);
 __exportStar(require("./Conditions"), exports);
 __exportStar(require("./IF"), exports);
 __exportStar(require("./Time"), exports);
+__exportStar(require("./Reader"), exports);
 String.prototype.unescape = function () {
     return this.replace(/#RIGHT#/g, '[')
         .replace(/#LEFT#/g, ']')

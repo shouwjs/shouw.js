@@ -6,7 +6,7 @@ import type { ParamType } from './enums';
 import type { sleep } from '../utils';
 
 interface Objects {
-    [key: string | symbol | number]: unknown;
+    [key: string | symbol | number | `${any}`]: unknown;
 }
 
 export interface InterpreterOptions {

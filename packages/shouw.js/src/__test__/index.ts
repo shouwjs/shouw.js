@@ -24,3 +24,5 @@ client.command({
         ctx.client.debug(`Logged in as ${ctx.client.user?.username}`);
     }
 });
+
+client.loadCommands(`${__dirname}/commands`);

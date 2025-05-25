@@ -1,21 +1,12 @@
-import type {
-    Channel,
-    BitFieldResolvable,
-    MessageFlags,
-    JSONEncodable,
-    APIActionRowComponent,
-    APIMessageActionRowComponent,
-    ActionRowData,
-    MessageActionRowComponentData,
-    MessageActionRowComponentBuilder
-} from 'discord.js';
+import type { Channel, TopLevelComponent } from 'discord.js';
 import type {
     FunctionResultData,
     CommandData,
     HelpersData,
     ExtraOptionsData,
     TemporarilyData,
-    InterpreterOptions
+    InterpreterOptions,
+    Flags
 } from '../typings';
 import type { Functions } from './Functions';
 import type { Context, FunctionsManager, ShouwClient as Client } from '../classes';
@@ -40,22 +31,18 @@ export class Interpreter {
     public user?: Discord.User;
     public context?: Context;
     public args?: string[];
-    public embeds: Discord.EmbedBuilder[];
-    public attachments: Discord.AttachmentBuilder[];
-    public stickers: Discord.Sticker[];
-    public flags: number | string | bigint | undefined;
-    public message: Discord.Message | undefined;
+    public embeds: Discord.EmbedBuilder[] = [];
+    public attachments: Discord.AttachmentBuilder[] = [];
+    public stickers: Discord.Sticker[] = [];
+    public flags: number | string | bigint | undefined = void 0;
+    public message: Discord.Message | undefined = void 0;
     public noop: () => void = () => {};
     public helpers: HelpersData;
     public Temporarily: TemporarilyData;
     public discord: typeof Discord = Discord;
     public readonly extras: ExtraOptionsData;
     public isError = false;
-    public components: (
-        | JSONEncodable<APIActionRowComponent<APIMessageActionRowComponent>>
-        | ActionRowData<MessageActionRowComponentData | MessageActionRowComponentBuilder>
-        | APIActionRowComponent<APIMessageActionRowComponent>
-    )[];
+    public components: TopLevelComponent[] = [];
 
     constructor(cmd: CommandData, options: InterpreterOptions, extras?: ExtraOptionsData) {
         this.client = options.client;
@@ -69,12 +56,6 @@ export class Interpreter {
         this.user = options.user;
         this.context = options.context;
         this.args = options.args;
-        this.embeds = [];
-        this.attachments = [];
-        this.components = [];
-        this.stickers = [];
-        this.flags = void 0;
-        this.message = void 0;
         this.helpers = {
             sleep: sleep,
             time: Time,
@@ -84,24 +65,20 @@ export class Interpreter {
             escape: (str: string) => str.escape(),
             mustEscape: (str: string) => str.mustEscape()
         };
-        this.Temporarily =
-            (options.Temporarily as TemporarilyData) ??
-            ({
-                arrays: {},
-                variables: {},
-                splits: [],
-                randoms: {},
-                timezone: void 0
-            } as TemporarilyData);
-        this.extras =
-            (extras as ExtraOptionsData) ??
-            ({
-                sendMessage: true,
-                returnId: false,
-                returnResult: true,
-                returnError: false,
-                returnData: false
-            } as ExtraOptionsData);
+        this.Temporarily = (options.Temporarily ?? {
+            arrays: {},
+            variables: {},
+            splits: [],
+            randoms: {},
+            timezone: void 0
+        }) as TemporarilyData;
+        this.extras = (extras ?? {
+            sendMessage: true,
+            returnId: false,
+            returnResult: true,
+            returnError: false,
+            returnData: false
+        }) as ExtraOptionsData;
     }
 
     public async initialize(): Promise<{
@@ -228,12 +205,7 @@ export class Interpreter {
                     embeds: this.embeds.filter(Boolean),
                     components: this.components.filter(Boolean),
                     files: this.attachments.filter(Boolean),
-                    flags: (Array.isArray(this.flags) ? this.flags.filter(Boolean) : this.flags) as
-                        | BitFieldResolvable<
-                              'SuppressEmbeds' | 'SuppressNotifications',
-                              MessageFlags.SuppressEmbeds | MessageFlags.SuppressNotifications
-                          >
-                        | undefined
+                    flags: (Array.isArray(this.flags) ? this.flags.filter(Boolean) : this.flags) as Flags
                 })) as Discord.Message;
             }
 

@@ -1,4 +1,4 @@
-import type { MessagePayload, MessageReplyOptions, MessageCreateOptions, InteractionReplyOptions, Message, ChatInputCommandInteraction, MessageComponentInteraction, ModalSubmitInteraction, ContextMenuCommandInteraction, Channel, CategoryChannel, ForumChannel, MediaChannel, PartialGroupDMChannel, PartialDMChannel } from 'discord.js';
+import type { MessagePayload, MessageReplyOptions, MessageCreateOptions, InteractionReplyOptions, Message, ChatInputCommandInteraction, MessageComponentInteraction, ModalSubmitInteraction, ContextMenuCommandInteraction, Channel, CategoryChannel, ForumChannel, MediaChannel, PartialGroupDMChannel, PartialDMChannel, BitFieldResolvable, MessageFlags } from 'discord.js';
 export type Interaction = ChatInputCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction | ContextMenuCommandInteraction;
 export type InteractionWithMessage = Interaction | Message;
 export type SendData = string | MessagePayload | MessageReplyOptions | MessageCreateOptions;
@@ -8,3 +8,4 @@ export type InteractionReplyData = string | (InteractionReplyOptions & {
     withResponse?: boolean;
 });
 export type SendableChannel = Exclude<Channel, CategoryChannel | PartialGroupDMChannel | PartialDMChannel | ForumChannel | MediaChannel> | null;
+export type Flags = BitFieldResolvable<'SuppressEmbeds' | 'SuppressNotifications' | 'IsComponentsV2', MessageFlags.SuppressEmbeds | MessageFlags.SuppressNotifications | MessageFlags.IsComponentsV2> | undefined;

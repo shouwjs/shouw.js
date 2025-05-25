@@ -1,4 +1,6 @@
 import * as path from 'node:path';
+import * as fs from 'node:fs';
+import { Parser } from '../core/Reader';
 import { blue, red } from 'chalk';
 import type { ShouwClientOptions, CommandData } from '../typings';
 import { FunctionsManager, CommandsManager } from './';
@@ -23,6 +25,35 @@ export class ShouwClient extends BaseClient {
         const command = this.commands[data.type];
         if (!command) return this;
         command.set(command.size, data);
+        return this;
+    }
+
+    public loadCommands(dir: string, logging = false): ShouwClient {
+        const files = fs.readdirSync(dir);
+        for (const file of files) {
+            const filePath = path.join(dir, file);
+            if (!fs.statSync(filePath).isDirectory()) {
+                if (file.endsWith('.js')) {
+                    let commands = require(filePath);
+                    commands = Array.isArray(commands) ? commands : [commands];
+                    for (const command of commands) {
+                        if (typeof command !== 'object' || !command || !command.type || !command.code) continue;
+                        this.command(command as CommandData);
+                        this.debug(`Loaded command ${command.name} from ${file}`, 'DEBUG');
+                    }
+                } else if (file.endsWith('.shouw') || file.endsWith('.shw') || file.endsWith('.sho')) {
+                    const commands = new Parser(filePath).execute();
+                    for (const command of commands) {
+                        if (typeof command !== 'object' || !command || !command.type || !command.code) continue;
+                        this.command(command as CommandData);
+                        this.debug(`Loaded command ${command.name} from ${file}`, 'DEBUG');
+                    }
+                } else {
+                    this.debug(`Skipping ${file} because it's not a valid file type`, 'ERROR');
+                }
+            }
+        }
+
         return this;
     }
 

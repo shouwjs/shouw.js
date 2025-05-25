@@ -1,0 +1,6 @@
+@Command({
+    name: 'hello',
+	type: 'messageCreate'
+});
+
+hello!

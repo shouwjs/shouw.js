@@ -5,7 +5,7 @@ import type { CheckCondition, Interpreter, Time } from '../core';
 import type { ParamType } from './enums';
 import type { sleep } from '../utils';
 interface Objects {
-    [key: string | symbol | number]: unknown;
+    [key: string | symbol | number | `${any}`]: unknown;
 }
 export interface InterpreterOptions {
     client: ShouwClient;

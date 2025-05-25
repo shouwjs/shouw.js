@@ -13,7 +13,9 @@ import type {
     ForumChannel,
     MediaChannel,
     PartialGroupDMChannel,
-    PartialDMChannel
+    PartialDMChannel,
+    BitFieldResolvable,
+    MessageFlags
 } from 'discord.js';
 
 export type Interaction =
@@ -39,3 +41,10 @@ export type SendableChannel = Exclude<
     Channel,
     CategoryChannel | PartialGroupDMChannel | PartialDMChannel | ForumChannel | MediaChannel
 > | null;
+
+export type Flags =
+    | BitFieldResolvable<
+          'SuppressEmbeds' | 'SuppressNotifications' | 'IsComponentsV2',
+          MessageFlags.SuppressEmbeds | MessageFlags.SuppressNotifications | MessageFlags.IsComponentsV2
+      >
+    | undefined;

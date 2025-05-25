@@ -3,6 +3,7 @@ export * from './Functions';
 export * from './Conditions';
 export * from './IF';
 export * from './Time';
+export * from './Reader';
 
 String.prototype.unescape = function () {
     return this.replace(/#RIGHT#/g, '[')

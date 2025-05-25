@@ -9,9 +9,15 @@ class Interpreter {
     constructor(cmd, options, extras) {
         this.start = performance.now();
         this.interpreter = Interpreter;
+        this.embeds = [];
+        this.attachments = [];
+        this.stickers = [];
+        this.flags = void 0;
+        this.message = void 0;
         this.noop = () => { };
         this.discord = Discord;
         this.isError = false;
+        this.components = [];
         this.client = options.client;
         this.functions = this.client.functions;
         this.debug = options.debug;
@@ -23,12 +29,6 @@ class Interpreter {
         this.user = options.user;
         this.context = options.context;
         this.args = options.args;
-        this.embeds = [];
-        this.attachments = [];
-        this.components = [];
-        this.stickers = [];
-        this.flags = void 0;
-        this.message = void 0;
         this.helpers = {
             sleep: utils_1.sleep,
             time: _1.Time,
@@ -38,24 +38,20 @@ class Interpreter {
             escape: (str) => str.escape(),
             mustEscape: (str) => str.mustEscape()
         };
-        this.Temporarily =
-            options.Temporarily ??
-                {
-                    arrays: {},
-                    variables: {},
-                    splits: [],
-                    randoms: {},
-                    timezone: void 0
-                };
-        this.extras =
-            extras ??
-                {
-                    sendMessage: true,
-                    returnId: false,
-                    returnResult: true,
-                    returnError: false,
-                    returnData: false
-                };
+        this.Temporarily = (options.Temporarily ?? {
+            arrays: {},
+            variables: {},
+            splits: [],
+            randoms: {},
+            timezone: void 0
+        });
+        this.extras = (extras ?? {
+            sendMessage: true,
+            returnId: false,
+            returnResult: true,
+            returnError: false,
+            returnData: false
+        });
     }
     async initialize() {
         try {

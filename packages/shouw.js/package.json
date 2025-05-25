@@ -18,10 +18,10 @@
     },
     "dependencies": {
         "chalk": "^4.1.2",
-        "discord.js": "^14.18.0"
+        "discord.js": "^14.19.3"
     },
     "devDependencies": {
-        "typescript": "^5.8.2"
+        "typescript": "^5.8.3"
     },
     "repository": {
         "type": "git",

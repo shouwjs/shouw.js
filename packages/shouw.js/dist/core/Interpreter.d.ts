@@ -1,4 +1,4 @@
-import type { Channel, JSONEncodable, APIActionRowComponent, APIMessageActionRowComponent, ActionRowData, MessageActionRowComponentData, MessageActionRowComponentBuilder } from 'discord.js';
+import type { Channel, TopLevelComponent } from 'discord.js';
 import type { FunctionResultData, CommandData, HelpersData, ExtraOptionsData, TemporarilyData, InterpreterOptions } from '../typings';
 import type { Context, FunctionsManager, ShouwClient as Client } from '../classes';
 import * as Discord from 'discord.js';
@@ -27,7 +27,7 @@ export declare class Interpreter {
     discord: typeof Discord;
     readonly extras: ExtraOptionsData;
     isError: boolean;
-    components: (JSONEncodable<APIActionRowComponent<APIMessageActionRowComponent>> | ActionRowData<MessageActionRowComponentData | MessageActionRowComponentBuilder> | APIActionRowComponent<APIMessageActionRowComponent>)[];
+    components: TopLevelComponent[];
     constructor(cmd: CommandData, options: InterpreterOptions, extras?: ExtraOptionsData);
     initialize(): Promise<{
         id?: string;

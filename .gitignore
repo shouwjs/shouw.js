@@ -1,0 +1,9 @@
+packages/shouw.js/node_modules
+packages/database/node_modules
+packages/database/.git
+packages/shouw.js/.git
+replit.nix
+.replit
+packages/shouw.js/tsconfig.tsbuildinfo
+packages/database/tsconfig.tsbuildinfo
+tsconfig.tsbuildinfo

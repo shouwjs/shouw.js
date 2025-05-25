@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ShouwClient = void 0;
 const path = require("node:path");
+const fs = require("node:fs");
+const Reader_1 = require("../core/Reader");
 const chalk_1 = require("chalk");
 const _1 = require("./");
 const BaseClient_1 = require("./BaseClient");
@@ -19,6 +21,37 @@ class ShouwClient extends BaseClient_1.BaseClient {
         if (!command)
             return this;
         command.set(command.size, data);
+        return this;
+    }
+    loadCommands(dir, logging = false) {
+        const files = fs.readdirSync(dir);
+        for (const file of files) {
+            const filePath = path.join(dir, file);
+            if (!fs.statSync(filePath).isDirectory()) {
+                if (file.endsWith('.js')) {
+                    let commands = require(filePath);
+                    commands = Array.isArray(commands) ? commands : [commands];
+                    for (const command of commands) {
+                        if (typeof command !== 'object' || !command || !command.type || !command.code)
+                            continue;
+                        this.command(command);
+                        this.debug(`Loaded command ${command.name} from ${file}`, 'DEBUG');
+                    }
+                }
+                else if (file.endsWith('.shouw') || file.endsWith('.shw') || file.endsWith('.sho')) {
+                    const commands = new Reader_1.Parser(filePath).execute();
+                    for (const command of commands) {
+                        if (typeof command !== 'object' || !command || !command.type || !command.code)
+                            continue;
+                        this.command(command);
+                        this.debug(`Loaded command ${command.name} from ${file}`, 'DEBUG');
+                    }
+                }
+                else {
+                    this.debug(`Skipping ${file} because it's not a valid file type`, 'ERROR');
+                }
+            }
+        }
         return this;
     }
     debug(message, type = 'DEBUG', force = false) {
