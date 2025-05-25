@@ -22,13 +22,22 @@ export class ShouwClient extends BaseClient {
     }
 
     public command(data: CommandData): ShouwClient {
-        const command = this.commands[data.type];
-        if (typeof command !== 'object' || !command || !command.name || !command.type || !command.code) return this;
+        if (
+            typeof data !== 'object' ||
+            !data ||
+            !data.name ||
+            !data.type ||
+            !data.code ||
+            (typeof data.code !== 'string' && typeof data.code !== 'function')
+        )
+            return this;
+        const command = this.commands[data?.type];
+        if (!command) return this;
         command.set(command.size, data);
         return this;
     }
 
-    public loadCommands(dir: string, logging = false): ShouwClient {
+    public loadCommands(dir: string, _logging = false): ShouwClient {
         const files = fs.readdirSync(dir);
         for (const file of files) {
             const filePath = path.join(dir, file);

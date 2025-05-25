@@ -8,6 +8,6 @@ export declare class ShouwClient extends BaseClient {
     readonly shouwOptions: ShouwClientOptions;
     constructor(options: ShouwClientOptions);
     command(data: CommandData): ShouwClient;
-    loadCommands(dir: string, logging?: boolean): ShouwClient;
+    loadCommands(dir: string, _logging?: boolean): ShouwClient;
     debug(message: any, type?: 'ERROR' | 'DEBUG', force?: boolean): ShouwClient;
 }

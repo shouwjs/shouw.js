@@ -1,12 +1,6 @@
 import * as fs from 'node:fs';
 import * as chalk from 'chalk';
-
-interface CommandObject {
-    name?: string;
-    type: string;
-    code: string;
-    [key: string | symbol | number | `${any}`]: any;
-}
+import type { CommandData } from '../typings';
 
 export class Parser {
     filePath: string;
@@ -111,7 +105,7 @@ export class Parser {
 export class Command {
     [key: string | symbol | number | `${any}`]: any;
 
-    constructor(options: CommandObject) {
+    constructor(options: CommandData) {
         for (const [key, value] of Object.entries(options)) {
             this[key] = value;
         }

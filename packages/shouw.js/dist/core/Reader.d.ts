@@ -1,9 +1,4 @@
-interface CommandObject {
-    name?: string;
-    type: string;
-    code: string;
-    [key: string | symbol | number | `${any}`]: any;
-}
+import type { CommandData } from '../typings';
 export declare class Parser {
     filePath: string;
     fileContent: string;
@@ -16,6 +11,5 @@ export declare class Parser {
 }
 export declare class Command {
     [key: string | symbol | number | `${any}`]: any;
-    constructor(options: CommandObject);
+    constructor(options: CommandData);
 }
-export {};

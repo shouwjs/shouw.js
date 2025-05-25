@@ -31,13 +31,13 @@ export interface FunctionData extends Objects {
     }[];
 }
 export interface CommandData extends Objects {
-    name?: string;
+    name: string;
     aliases?: string | string[];
     channel?: string;
     code: string | ((ctx: Interpreter) => any);
     type: string;
     prototype?: string;
-    [key: string | number | symbol]: any;
+    [key: string | number | symbol | `${any}`]: any;
 }
 export interface FunctionResultData extends Omit<InterpreterOptions, 'client'> {
     result: string | unknown;

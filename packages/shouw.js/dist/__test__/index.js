@@ -18,6 +18,7 @@ client.command({
     code: '```js\n$eval[$message;true;true;true;true;true]```'
 });
 client.command({
+    name: 'ready',
     type: 'ready',
     code: (ctx) => {
         ctx.client.debug(`Logged in as ${ctx.client.user?.username}`);

@@ -17,13 +17,20 @@ class ShouwClient extends BaseClient_1.BaseClient {
         this.functions.load(path.join(__dirname, '../functions'), options.debug ?? false);
     }
     command(data) {
-        const command = this.commands[data.type];
-        if (typeof command !== 'object' || !command || !command.name || !command.type || !command.code)
+        if (typeof data !== 'object' ||
+            !data ||
+            !data.name ||
+            !data.type ||
+            !data.code ||
+            (typeof data.code !== 'string' && typeof data.code !== 'function'))
+            return this;
+        const command = this.commands[data?.type];
+        if (!command)
             return this;
         command.set(command.size, data);
         return this;
     }
-    loadCommands(dir, logging = false) {
+    loadCommands(dir, _logging = false) {
         const files = fs.readdirSync(dir);
         for (const file of files) {
             const filePath = path.join(dir, file);

@@ -19,6 +19,7 @@ client.command({
 });
 
 client.command({
+    name: 'ready',
     type: 'ready',
     code: (ctx: Interpreter) => {
         ctx.client.debug(`Logged in as ${ctx.client.user?.username}`);
