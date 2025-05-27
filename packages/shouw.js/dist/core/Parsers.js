@@ -4,9 +4,9 @@ exports.Parser = Parser;
 exports.EmbedParser = EmbedParser;
 exports.ActionRowParser = ActionRowParser;
 const discord_js_1 = require("discord.js");
-// PARSER FUNCTION
+// PARSER FUNCTION (DON'T TOUCH)
 async function Parser(ctx, input) {
-    const StructureRegex = /{(\w+):((?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*)}/gi;
+    const StructureRegex = /{(\w+):((?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*)}/i;
     let match;
     const embeds = [];
     const components = [];
@@ -58,36 +58,36 @@ function EmbedParser(_ctx, content) {
         const value = colonIndex === -1 ? '' : part.substring(colonIndex + 1).trim();
         switch (key) {
             case 'title':
-                embedData.title = value;
+                embedData.title = value.unescape();
                 break;
             case 'url':
-                embedData.url = value;
+                embedData.url = value.unescape();
                 break;
             case 'description':
-                embedData.description = value;
+                embedData.description = value.unescape();
                 break;
             case 'color':
-                embedData.color = (0, discord_js_1.resolveColor)(value);
+                embedData.color = (0, discord_js_1.resolveColor)(value.unescape());
                 break;
             case 'footericon':
                 embedData.footer ?? (embedData.footer = { text: '' });
-                embedData.footer.icon_url = value;
+                embedData.footer.icon_url = value.unescape();
                 break;
             case 'image':
                 embedData.image ?? (embedData.image = { url: '' });
-                embedData.image.url = value;
+                embedData.image.url = value.unescape();
                 break;
             case 'thumbnail':
                 embedData.thumbnail ?? (embedData.thumbnail = { url: '' });
-                embedData.thumbnail.url = value;
+                embedData.thumbnail.url = value.unescape();
                 break;
             case 'authoricon':
                 embedData.author ?? (embedData.author = { name: '' });
-                embedData.author.icon_url = value;
+                embedData.author.icon_url = value.unescape();
                 break;
             case 'authorurl':
                 embedData.author ?? (embedData.author = { name: '' });
-                embedData.author.url = value;
+                embedData.author.url = value.unescape();
                 break;
             case 'footer': {
                 const [text, iconURL] = value.split(':') ?? [];
@@ -116,7 +116,9 @@ function EmbedParser(_ctx, content) {
                 break;
             }
             case 'timestamp':
-                embedData.timestamp = (value || value !== '' ? Number.parseInt(value) : Date.now());
+                embedData.timestamp = (value || value !== ''
+                    ? Number.parseInt(value.unescape())
+                    : Date.now());
                 break;
         }
     }
@@ -151,8 +153,9 @@ async function ActionRowParser(ctx, content) {
             continue;
         const compType = part.substring(0, colonIndex).trim().toLowerCase();
         const rest = part.substring(colonIndex + 1).trim();
+        // BUTTON PARSER
         if (compType === 'button') {
-            const segments = rest.match(/(?:<a?:.*?:\d+>|[^:|^}])+/g)?.map((s) => s.unescape().trim());
+            const segments = rest.match(/(?:<a?:.*?:\d+>|[^:|^}])+/g)?.map((segment) => segment.unescape().trim());
             if (!segments || segments.length < 3)
                 continue;
             const label = segments[0];
@@ -186,8 +189,6 @@ async function ActionRowParser(ctx, content) {
                 case '6':
                     style = discord_js_1.ButtonStyle.Premium;
                     break;
-                default:
-                    style = discord_js_1.ButtonStyle.Primary;
             }
             const button = new discord_js_1.ButtonBuilder().setLabel(label).setStyle(style).setDisabled(disabled);
             if (emoji)
@@ -200,6 +201,7 @@ async function ActionRowParser(ctx, content) {
                 button.setCustomId(custom_id);
             components.push(button);
         }
+        // SELECT MENU PARSER
         else if (compType === 'selectmenu') {
             const segments = rest.split(':');
             if (segments.length < 6)
@@ -285,6 +287,7 @@ async function ActionRowParser(ctx, content) {
                 .setMaxValues(maxValues)
                 .setDisabled(disabled) ?? null);
         }
+        // MODAL TEXT INPUT PARSER
         else if (compType === 'textinput' || compType === 'modal') {
             const segments = rest.split(':');
             if (segments.length < 3)

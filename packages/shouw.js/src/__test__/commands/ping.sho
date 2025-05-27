@@ -3,4 +3,4 @@
     type: 'messageCreate'
 });
 
-Pong!
+Pong! $pingms

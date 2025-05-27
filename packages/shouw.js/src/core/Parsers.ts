@@ -19,9 +19,9 @@ import {
 import type { Interpreter } from './Interpreter';
 import type { SendData, SelectMenuTypes } from '../typings';
 
-// PARSER FUNCTION
+// PARSER FUNCTION (DON'T TOUCH)
 export async function Parser(ctx: Interpreter, input: string): Promise<SendData> {
-    const StructureRegex = /{(\w+):((?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*)}/gi;
+    const StructureRegex = /{(\w+):((?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*)}/i;
     let match: RegExpExecArray | null;
 
     const embeds: Array<EmbedBuilder> = [];
@@ -79,36 +79,36 @@ export function EmbedParser(_ctx: Interpreter, content: string): EmbedBuilder {
 
         switch (key) {
             case 'title':
-                embedData.title = value;
+                embedData.title = value.unescape();
                 break;
             case 'url':
-                embedData.url = value;
+                embedData.url = value.unescape();
                 break;
             case 'description':
-                embedData.description = value;
+                embedData.description = value.unescape();
                 break;
             case 'color':
-                embedData.color = resolveColor(value as ColorResolvable);
+                embedData.color = resolveColor(value.unescape() as ColorResolvable);
                 break;
             case 'footericon':
                 embedData.footer ??= { text: '' };
-                embedData.footer.icon_url = value;
+                embedData.footer.icon_url = value.unescape();
                 break;
             case 'image':
                 embedData.image ??= { url: '' };
-                embedData.image.url = value;
+                embedData.image.url = value.unescape();
                 break;
             case 'thumbnail':
                 embedData.thumbnail ??= { url: '' };
-                embedData.thumbnail.url = value;
+                embedData.thumbnail.url = value.unescape();
                 break;
             case 'authoricon':
                 embedData.author ??= { name: '' };
-                embedData.author.icon_url = value;
+                embedData.author.icon_url = value.unescape();
                 break;
             case 'authorurl':
                 embedData.author ??= { name: '' };
-                embedData.author.url = value;
+                embedData.author.url = value.unescape();
                 break;
             case 'footer': {
                 const [text, iconURL] = value.split(':') ?? [];
@@ -135,7 +135,9 @@ export function EmbedParser(_ctx: Interpreter, content: string): EmbedBuilder {
                 break;
             }
             case 'timestamp':
-                embedData.timestamp = (value || value !== '' ? Number.parseInt(value) : Date.now()) as any as string;
+                embedData.timestamp = (value || value !== ''
+                    ? Number.parseInt(value.unescape())
+                    : Date.now()) as any as string;
                 break;
         }
     }
@@ -173,8 +175,9 @@ export async function ActionRowParser(ctx: Interpreter, content: string): Promis
         const compType = part.substring(0, colonIndex).trim().toLowerCase();
         const rest = part.substring(colonIndex + 1).trim();
 
+        // BUTTON PARSER
         if (compType === 'button') {
-            const segments = rest.match(/(?:<a?:.*?:\d+>|[^:|^}])+/g)?.map((s) => s.unescape().trim());
+            const segments = rest.match(/(?:<a?:.*?:\d+>|[^:|^}])+/g)?.map((segment) => segment.unescape().trim());
             if (!segments || segments.length < 3) continue;
             const label = segments[0];
             const styleStr = segments[1].toLowerCase();
@@ -208,8 +211,6 @@ export async function ActionRowParser(ctx: Interpreter, content: string): Promis
                 case '6':
                     style = ButtonStyle.Premium;
                     break;
-                default:
-                    style = ButtonStyle.Primary;
             }
 
             const button = new ButtonBuilder().setLabel(label).setStyle(style).setDisabled(disabled);
@@ -219,7 +220,10 @@ export async function ActionRowParser(ctx: Interpreter, content: string): Promis
             else if (ButtonStyle.Premium === style) button.setSKUId(custom_id);
             else button.setCustomId(custom_id);
             components.push(button);
-        } else if (compType === 'selectmenu') {
+        }
+
+        // SELECT MENU PARSER
+        else if (compType === 'selectmenu') {
             const segments = rest.split(':');
             if (segments.length < 6) continue;
 
@@ -317,7 +321,10 @@ export async function ActionRowParser(ctx: Interpreter, content: string): Promis
                     .setMaxValues(maxValues)
                     .setDisabled(disabled) ?? null
             );
-        } else if (compType === 'textinput' || compType === 'modal') {
+        }
+
+        // MODAL TEXT INPUT PARSER
+        else if (compType === 'textinput' || compType === 'modal') {
             const segments = rest.split(':');
             if (segments.length < 3) continue;
 
