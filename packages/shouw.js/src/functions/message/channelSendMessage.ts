@@ -1,5 +1,4 @@
 import { Functions, type Interpreter } from '../../core';
-import type { FunctionData, FunctionResultData } from '../../typings';
 import { ParamType, type SendableChannel } from '../../typings';
 
 export default class ChannelSendMessage extends Functions {
@@ -7,7 +6,7 @@ export default class ChannelSendMessage extends Functions {
         super({
             name: '$channelSendMessage',
             description: 'Sending a message into the spesific channel',
-            brackets: false,
+            brackets: true,
             params: [
                 {
                     name: 'channelId',
@@ -28,13 +27,10 @@ export default class ChannelSendMessage extends Functions {
                     type: ParamType.Boolean
                 }
             ]
-        } as FunctionData);
+        });
     }
 
-    async code(
-        ctx: Interpreter,
-        [channelId, content, returnId]: [string, string, boolean?]
-    ): Promise<FunctionResultData> {
+    async code(ctx: Interpreter, [channelId, content, returnId]: [string, string, boolean?]) {
         const parser = await ctx.helpers.parser(ctx, content);
         const channel = (ctx.client.channels.cache.get(channelId) ??
             (await ctx.client.channels.fetch(channelId).catch(() => void 0))) as SendableChannel;

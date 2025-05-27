@@ -1,5 +1,4 @@
 import { Functions, Interpreter } from '../../core';
-import type { InterpreterOptions, FunctionData, FunctionResultData } from '../../typings';
 import { ParamType } from '../../typings';
 import { inspect } from 'node:util';
 
@@ -47,7 +46,7 @@ export default class Eval extends Functions {
                     type: ParamType.Boolean
                 }
             ]
-        } as FunctionData);
+        });
     }
 
     async code(
@@ -60,14 +59,14 @@ export default class Eval extends Functions {
             boolean,
             boolean
         ]
-    ): Promise<FunctionResultData> {
+    ) {
         const interpreterResult = await new Interpreter(
             {
                 name: 'eval',
                 code: code ?? '',
                 type: 'parsing'
             },
-            ctx as InterpreterOptions,
+            ctx,
             {
                 sendMessage,
                 returnId,

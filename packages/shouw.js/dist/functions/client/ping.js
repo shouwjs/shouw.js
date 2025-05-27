@@ -6,7 +6,7 @@ class Ping extends core_1.Functions {
         super({
             name: '$ping',
             description: 'Ping the bot',
-            brackets: true
+            brackets: false
         });
     }
     code(ctx) {

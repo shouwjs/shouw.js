@@ -1,16 +1,15 @@
 import { Functions, type Interpreter } from '../../core';
-import type { FunctionData, FunctionResultData } from '../../typings';
 
 export default class Ping extends Functions {
     constructor() {
         super({
             name: '$ping',
             description: 'Ping the bot',
-            brackets: true
-        } as FunctionData);
+            brackets: false
+        });
     }
 
-    code(ctx: Interpreter): FunctionResultData {
+    code(ctx: Interpreter) {
         return this.success(ctx.client.ws.ping);
     }
 }

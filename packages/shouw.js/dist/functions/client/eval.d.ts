@@ -1,5 +1,4 @@
 import { Functions, Interpreter } from '../../core';
-import type { FunctionResultData } from '../../typings';
 export default class Eval extends Functions {
     constructor();
     code(ctx: Interpreter, [code, sendMessage, returnId, returnResult, returnError, returnData]: [
@@ -9,5 +8,5 @@ export default class Eval extends Functions {
         boolean,
         boolean,
         boolean
-    ]): Promise<FunctionResultData>;
+    ]): Promise<import("../../typings").FunctionResultData>;
 }

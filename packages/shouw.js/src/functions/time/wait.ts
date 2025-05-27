@@ -1,5 +1,4 @@
 import { Functions, type Interpreter } from '../../core';
-import type { FunctionData, FunctionResultData } from '../../typings';
 import { ParamType } from '../../typings';
 
 export default class Wait extends Functions {
@@ -7,7 +6,7 @@ export default class Wait extends Functions {
         super({
             name: '$wait',
             description: 'Waits for a given amount of time.',
-            brackets: false,
+            brackets: true,
             params: [
                 {
                     name: 'time',
@@ -16,10 +15,10 @@ export default class Wait extends Functions {
                     type: ParamType.String
                 }
             ]
-        } as FunctionData);
+        });
     }
 
-    async code(ctx: Interpreter, [time]: [string]): Promise<FunctionResultData> {
+    async code(ctx: Interpreter, [time]: [string]) {
         const timer = Number.isNaN(Number(time)) ? ctx.helpers.time.parse(time).ms || 0 : Number(time);
         await ctx.helpers.sleep(Number(timer));
         return this.success();

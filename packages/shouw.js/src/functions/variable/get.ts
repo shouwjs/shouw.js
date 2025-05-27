@@ -1,5 +1,4 @@
 import { Functions, type Interpreter } from '../../core';
-import type { FunctionData, FunctionResultData, TemporarilyData } from '../../typings';
 import { ParamType } from '../../typings';
 
 export default class Get extends Functions {
@@ -16,10 +15,10 @@ export default class Get extends Functions {
                     type: ParamType.String
                 }
             ]
-        } as FunctionData);
+        });
     }
 
-    async code(ctx: Interpreter, [varname]: [string], data: TemporarilyData): Promise<FunctionResultData> {
+    async code(ctx: Interpreter, [varname]: [string], data: Interpreter['Temporarily']) {
         if (!Object.hasOwn(data.variables, varname))
             return await ctx.error(`$get: Variable with the name "${varname}" does not exist!`);
 

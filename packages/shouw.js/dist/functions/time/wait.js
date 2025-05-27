@@ -7,7 +7,7 @@ class Wait extends core_1.Functions {
         super({
             name: '$wait',
             description: 'Waits for a given amount of time.',
-            brackets: false,
+            brackets: true,
             params: [
                 {
                     name: 'time',

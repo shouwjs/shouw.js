@@ -1,5 +1,4 @@
 import { Functions } from '../../core';
-import type { FunctionData } from '../../typings';
 import { ParamType } from '../../typings';
 
 export default class If extends Functions {
@@ -16,6 +15,6 @@ export default class If extends Functions {
                     type: ParamType.String
                 }
             ]
-        } as FunctionData);
+        });
     }
 }

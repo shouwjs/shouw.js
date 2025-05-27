@@ -1,5 +1,4 @@
 import { Functions, type Interpreter } from '../../core';
-import type { FunctionData, FunctionResultData } from '../../typings';
 import { ParamType } from '../../typings';
 
 export default class Message extends Functions {
@@ -16,10 +15,10 @@ export default class Message extends Functions {
                     type: ParamType.Number
                 }
             ]
-        } as FunctionData);
+        });
     }
 
-    code(ctx: Interpreter, [index = Number.NaN]: [number?]): FunctionResultData {
+    code(ctx: Interpreter, [index = Number.NaN]: [number?]) {
         return this.success(Number.isNaN(index) ? ctx.args?.join(' ') : ctx.args?.[index - 1]);
     }
 }

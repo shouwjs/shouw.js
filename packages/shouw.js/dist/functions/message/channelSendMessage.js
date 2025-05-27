@@ -7,7 +7,7 @@ class ChannelSendMessage extends core_1.Functions {
         super({
             name: '$channelSendMessage',
             description: 'Sending a message into the spesific channel',
-            brackets: false,
+            brackets: true,
             params: [
                 {
                     name: 'channelId',

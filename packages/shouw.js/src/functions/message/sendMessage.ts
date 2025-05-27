@@ -1,5 +1,4 @@
 import { Functions, type Interpreter } from '../../core';
-import type { FunctionData, FunctionResultData } from '../../typings';
 import { ParamType } from '../../typings';
 
 export default class SendMessage extends Functions {
@@ -7,7 +6,7 @@ export default class SendMessage extends Functions {
         super({
             name: '$sendMessage',
             description: 'Sending a message into the current channel',
-            brackets: false,
+            brackets: true,
             params: [
                 {
                     name: 'content',
@@ -22,10 +21,10 @@ export default class SendMessage extends Functions {
                     type: ParamType.Boolean
                 }
             ]
-        } as FunctionData);
+        });
     }
 
-    async code(ctx: Interpreter, [content, returnId]: [string, boolean]): Promise<FunctionResultData> {
+    async code(ctx: Interpreter, [content, returnId]: [string, boolean?]) {
         const parser = await ctx.helpers.parser(ctx, content);
         const msg = await ctx.context?.send(parser);
         return this.success(returnId ? msg?.id : '');

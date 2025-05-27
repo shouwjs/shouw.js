@@ -1,5 +1,4 @@
 import { Functions, type Interpreter } from '../../core';
-import type { FunctionData, FunctionResultData, TemporarilyData } from '../../typings';
 import { ParamType } from '../../typings';
 
 export default class Let extends Functions {
@@ -22,10 +21,10 @@ export default class Let extends Functions {
                     type: ParamType.String
                 }
             ]
-        } as FunctionData);
+        });
     }
 
-    code(_ctx: Interpreter, [varname, value]: [string, string], data: TemporarilyData): FunctionResultData {
+    code(_ctx: Interpreter, [varname, value]: [string, string], data: Interpreter['Temporarily']) {
         data.variables[varname] = value;
         return this.success();
     }

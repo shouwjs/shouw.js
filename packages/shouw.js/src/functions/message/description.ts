@@ -1,5 +1,4 @@
 import { Functions, type Interpreter } from '../../core';
-import type { FunctionData, FunctionResultData } from '../../typings';
 import { ParamType } from '../../typings';
 
 export default class Description extends Functions {
@@ -22,10 +21,10 @@ export default class Description extends Functions {
                     type: ParamType.Number
                 }
             ]
-        } as FunctionData);
+        });
     }
 
-    code(ctx: Interpreter, [text, index]: [string, number?]): FunctionResultData {
+    code(ctx: Interpreter, [text, index]: [string, number?]) {
         index = !index ? 0 : index - 1;
         if (!ctx.embeds) ctx.embeds = [];
         if (!ctx.embeds[index]) ctx.embeds[index] = new ctx.discord.EmbedBuilder();

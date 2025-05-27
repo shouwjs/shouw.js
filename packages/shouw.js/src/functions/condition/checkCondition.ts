@@ -1,5 +1,4 @@
 import { Functions, type Interpreter } from '../../core';
-import type { FunctionData, FunctionResultData } from '../../typings';
 import { ParamType } from '../../typings';
 
 export default class CheckCondition extends Functions {
@@ -16,10 +15,10 @@ export default class CheckCondition extends Functions {
                     type: ParamType.String
                 }
             ]
-        } as FunctionData);
+        });
     }
 
-    code(ctx: Interpreter, [condition]: [string]): FunctionResultData {
+    code(ctx: Interpreter, [condition]: [string]) {
         return this.success(condition ? ctx.helpers.condition.solve(condition) : false);
     }
 }

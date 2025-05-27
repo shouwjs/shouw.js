@@ -7,7 +7,7 @@ class SendMessage extends core_1.Functions {
         super({
             name: '$sendMessage',
             description: 'Sending a message into the current channel',
-            brackets: false,
+            brackets: true,
             params: [
                 {
                     name: 'content',

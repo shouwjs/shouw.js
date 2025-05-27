@@ -1,5 +1,4 @@
 import { Functions } from '../../core';
-import type { FunctionData } from '../../typings';
 
 export default class Endif extends Functions {
     constructor() {
@@ -7,6 +6,6 @@ export default class Endif extends Functions {
             name: '$endif',
             description: 'Ends of the if statement',
             brackets: false
-        } as FunctionData);
+        });
     }
 }
