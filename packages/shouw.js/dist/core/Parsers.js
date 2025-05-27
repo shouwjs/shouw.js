@@ -10,8 +10,8 @@ async function Parser(ctx, input) {
     let match;
     const embeds = [];
     const components = [];
-    let content = input;
-    while ((match = StructureRegex.exec(input)) !== null) {
+    let content = input.mustEscape();
+    while ((match = StructureRegex.exec(content)) !== null) {
         const key = match[1]?.toLowerCase();
         const value = match[2];
         content = content.replace(match[0], '');
@@ -90,23 +90,21 @@ function EmbedParser(_ctx, content) {
                 embedData.author.url = value;
                 break;
             case 'footer': {
-                const [text, iconURL] = value.mustEscape().split(':') ?? [];
+                const [text, iconURL] = value.split(':') ?? [];
                 embedData.footer = { text: text?.unescape().trim() };
                 if (iconURL)
                     embedData.footer.icon_url = iconURL.unescape().trim();
                 break;
             }
             case 'author': {
-                const [name, iconURL] = value.mustEscape().split(':');
+                const [name, iconURL] = value.split(':');
                 embedData.author = { name: name?.unescape().trim() };
                 if (iconURL)
                     embedData.author.icon_url = iconURL.unescape().trim();
                 break;
             }
             case 'field': {
-                const [fieldTitle = '\u200B', fieldValue = '\u200B', inlineRaw = 'false'] = value
-                    .mustEscape()
-                    .split(':');
+                const [fieldTitle = '\u200B', fieldValue = '\u200B', inlineRaw = 'false'] = value.split(':');
                 embedData.fields ?? (embedData.fields = []);
                 if (embedData.fields.length < 25) {
                     embedData.fields.push({
@@ -154,17 +152,14 @@ async function ActionRowParser(ctx, content) {
         const compType = part.substring(0, colonIndex).trim().toLowerCase();
         const rest = part.substring(colonIndex + 1).trim();
         if (compType === 'button') {
-            const segments = rest
-                .mustEscape()
-                .match(/(?:<a?:.*?:\d+>|[^:|^}])+/g)
-                ?.map((s) => s.unescape().trim());
+            const segments = rest.match(/(?:<a?:.*?:\d+>|[^:|^}])+/g)?.map((s) => s.unescape().trim());
             if (!segments || segments.length < 3)
                 continue;
             const label = segments[0];
             const styleStr = segments[1].toLowerCase();
             const custom_id = segments[2];
             const disabled = segments[3] === 'true';
-            const emoji = (await ctx.util.getEmoji(ctx, segments[4])) ?? segments[4];
+            const emoji = (await ctx.util.getEmoji(ctx, segments[4], true)) ?? segments[4];
             let style = discord_js_1.ButtonStyle.Primary;
             switch (styleStr) {
                 case 'primary':
@@ -206,7 +201,7 @@ async function ActionRowParser(ctx, content) {
             components.push(button);
         }
         else if (compType === 'selectmenu') {
-            const segments = rest.mustEscape().split(':');
+            const segments = rest.split(':');
             if (segments.length < 6)
                 continue;
             let SelectMenu;
@@ -291,7 +286,7 @@ async function ActionRowParser(ctx, content) {
                 .setDisabled(disabled) ?? null);
         }
         else if (compType === 'textinput' || compType === 'modal') {
-            const segments = rest.mustEscape().split(':');
+            const segments = rest.split(':');
             if (segments.length < 3)
                 continue;
             const label = segments[0].unescape().trim();

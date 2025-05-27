@@ -11,7 +11,7 @@ export class Util {
 
     // GET EMOJI FROM STRING
     static async getEmoji(ctx: Interpreter, _emojiInput: string, onlyId = false) {
-        let emojiInput = _emojiInput.unescape().trim();
+        let emojiInput = _emojiInput?.unescape().trim();
         if (!emojiInput) return;
         if (Util.isUnicodeEmoji(emojiInput)) {
             return onlyId
