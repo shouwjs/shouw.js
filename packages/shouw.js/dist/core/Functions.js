@@ -61,9 +61,12 @@ class Functions {
     getParams(index) {
         return this.params?.[index];
     }
-    // FUNCTION SUCCESS RESULT
+    // FUNCTION SUCCESS AND ERROR RESULT
     success(result = void 0, error, ...data) {
         return { ...data, result, error };
+    }
+    error(...data) {
+        return { result: void 0, ...data, error: true };
     }
 }
 exports.Functions = Functions;

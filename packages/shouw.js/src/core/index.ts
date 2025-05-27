@@ -4,6 +4,7 @@ export * from './Conditions';
 export * from './IF';
 export * from './Time';
 export * from './Reader';
+export * from './Parsers';
 
 // UNESCAPE AND ESCAPE STRING (DON'T TOUCH)
 String.prototype.unescape = function () {
@@ -44,7 +45,7 @@ String.prototype.escape = function () {
 
 // MUST ESCAPE STRING (DON'T TOUCH)
 String.prototype.mustEscape = function () {
-    return this.replaceAll('\\[', '#RIGHT#')
+    return this.replace(/\\\[/g, '#RIGHT#')
         .replace(/\\]/g, '#LEFT#')
         .replace(/\\;/g, '#SEMI#')
         .replace(/\\:/g, '#COLON#')
@@ -56,7 +57,7 @@ String.prototype.mustEscape = function () {
         .replace(/\\}/g, '#LEFT_BRACKET#')
         .replace(/\\,/g, '#COMMA#')
         .replace(/\\&&/g, '#AND#')
-        .replaceAll('\\||', '#OR#');
+        .replace(/\\\|\|/g, '#OR#');
 };
 
 // TO OBJECT, TO URL, TO BOOLEAN (DON'T TOUCH)

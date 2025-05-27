@@ -19,4 +19,4 @@ client.command({
         ctx.client.debug(`Logged in as ${ctx.client.user?.username}`);
     }
 });
-client.loadCommands(`${__dirname}/commands`);
+client.loadCommands('packages/shouw.js/src/__test__/commands');

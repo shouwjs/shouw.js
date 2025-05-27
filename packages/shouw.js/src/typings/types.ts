@@ -15,7 +15,12 @@ import type {
     PartialGroupDMChannel,
     PartialDMChannel,
     BitFieldResolvable,
-    MessageFlags
+    MessageFlags,
+    StringSelectMenuBuilder,
+    RoleSelectMenuBuilder,
+    ChannelSelectMenuBuilder,
+    MentionableSelectMenuBuilder,
+    UserSelectMenuBuilder
 } from 'discord.js';
 
 export type Interaction =
@@ -48,3 +53,10 @@ export type Flags =
           MessageFlags.SuppressEmbeds | MessageFlags.SuppressNotifications | MessageFlags.IsComponentsV2
       >
     | undefined;
+
+export type SelectMenuTypes =
+    | StringSelectMenuBuilder
+    | RoleSelectMenuBuilder
+    | ChannelSelectMenuBuilder
+    | MentionableSelectMenuBuilder
+    | UserSelectMenuBuilder;

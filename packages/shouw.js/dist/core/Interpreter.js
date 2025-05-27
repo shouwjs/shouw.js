@@ -16,6 +16,7 @@ class Interpreter {
         this.message = void 0;
         this.noop = () => { };
         this.discord = Discord;
+        this.util = utils_1.Util;
         this.isError = false;
         this.components = [];
         this.client = options.client;
@@ -30,6 +31,7 @@ class Interpreter {
         this.context = options.context;
         this.args = options.args;
         this.helpers = {
+            parser: _1.Parser,
             sleep: utils_1.sleep,
             time: _1.Time,
             condition: _1.CheckCondition,
@@ -125,8 +127,17 @@ class Interpreter {
                     unpacked.args = processedArgs;
                     if (this.isError)
                         break;
-                    const DATA = (0, utils_1.filterObject)(await functionData.code(this, processedArgs, this.Temporarily)) ??
-                        {};
+                    let DATA = { result: void 0 };
+                    try {
+                        DATA =
+                            (0, utils_1.filterObject)(await functionData.code(this, processedArgs, this.Temporarily)) ??
+                                {};
+                    }
+                    catch (err) {
+                        await this.error(err, func);
+                        this.client.debug(`${err?.stack ?? err}`, 'ERROR', true);
+                        DATA = { result: void 0, error: true };
+                    }
                     currentCode = currentCode.replace(unpacked.all, () => DATA.result?.toString() ?? '');
                     oldCode = oldCode.replace(unpacked.all, '');
                     if (this.isError || DATA.error === true) {
@@ -260,11 +271,11 @@ class Interpreter {
         return { ...data, result, error };
     }
     // FUNCTION ERROR RESULT
-    async error(options) {
+    async error(options, functionName) {
         try {
             const { message, solution } = typeof options === 'string' ? { message: options } : options;
             this.isError = true;
-            this.message = await this.context?.send(`\`\`\`\n🚫 ${message}${solution ? `\n\nSo, what is the solution?\n${solution}` : ''}\`\`\``);
+            this.message = await this.context?.send(`\`\`\`\n${functionName ? `${functionName}: ` : ''} 🚫 ${message}${solution ? `\n\nSo, what is the solution?\n${solution}` : ''}\`\`\``);
         }
         catch {
             this.isError = true;

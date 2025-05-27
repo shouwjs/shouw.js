@@ -82,8 +82,12 @@ export class Functions {
         return this.params?.[index];
     }
 
-    // FUNCTION SUCCESS RESULT
+    // FUNCTION SUCCESS AND ERROR RESULT
     public success(result: any = void 0, error?: boolean, ...data: FunctionResultData[]): FunctionResultData {
         return { ...data, result, error };
+    }
+
+    public error(...data: FunctionResultData[]): FunctionResultData {
+        return { result: void 0, ...data, error: true };
     }
 }

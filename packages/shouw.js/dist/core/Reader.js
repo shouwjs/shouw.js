@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Command = exports.Parser = void 0;
+exports.Command = exports.Reader = void 0;
 const fs = require("node:fs");
 const chalk = require("chalk");
-class Parser {
+class Reader {
     constructor(filePath) {
         this.fileContent = '';
         this.filePath = filePath;
@@ -75,7 +75,7 @@ class Parser {
         return this.parse();
     }
 }
-exports.Parser = Parser;
+exports.Reader = Reader;
 class Command {
     constructor(options) {
         for (const [key, value] of Object.entries(options)) {
@@ -86,5 +86,5 @@ class Command {
 exports.Command = Command;
 // GENERATE ERROR MESSAGE
 function generateError(message, file, code) {
-    return `${message}${file ? ` in ${chalk.yellow(file)}\n\n` : ''}${code ? `${Parser.highlightError(code)}\n` : ''}`;
+    return `${message}${file ? ` in ${chalk.yellow(file)}\n\n` : ''}${code ? `${Reader.highlightError(code)}\n` : ''}`;
 }

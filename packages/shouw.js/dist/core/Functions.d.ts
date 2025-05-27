@@ -23,4 +23,5 @@ export declare class Functions {
         type?: ParamType;
     } | undefined;
     success(result?: any, error?: boolean, ...data: FunctionResultData[]): FunctionResultData;
+    error(...data: FunctionResultData[]): FunctionResultData;
 }

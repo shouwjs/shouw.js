@@ -1,6 +1,0 @@
-@Command({
-	name: 'ping',
-	type: 'messageCreate'
-});
-
-Pong!

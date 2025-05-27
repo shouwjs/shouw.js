@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ShouwClient = void 0;
 const path = require("node:path");
 const fs = require("node:fs");
-const Reader_1 = require("../core/Reader");
+const core_1 = require("../core");
 const chalk_1 = require("chalk");
 const _1 = require("./");
 const BaseClient_1 = require("./BaseClient");
@@ -52,7 +52,7 @@ class ShouwClient extends BaseClient_1.BaseClient {
                     }
                 }
                 else if (file.endsWith('.shouw') || file.endsWith('.shw') || file.endsWith('.sho')) {
-                    const commands = new Reader_1.Parser(filePath).execute();
+                    const commands = new core_1.Reader(filePath).execute();
                     for (const command of commands) {
                         if (typeof command !== 'object' || !command || !command.name || !command.type || !command.code)
                             continue;

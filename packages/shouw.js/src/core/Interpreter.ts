@@ -11,9 +11,9 @@ import type {
 import type { Functions } from './Functions';
 import type { Context, FunctionsManager, ShouwClient as Client } from '../classes';
 
-import { CheckCondition, IF, Time } from './';
+import { Parser, CheckCondition, IF, Time } from './';
 import { ParamType } from '../typings';
-import { filterObject, filterArray, sleep } from '../utils';
+import { Util, filterObject, filterArray, sleep } from '../utils';
 import * as Discord from 'discord.js';
 
 export class Interpreter {
@@ -39,7 +39,8 @@ export class Interpreter {
     public noop: () => void = () => {};
     public helpers: HelpersData;
     public Temporarily: TemporarilyData;
-    public discord: typeof Discord = Discord;
+    public readonly discord: typeof Discord = Discord;
+    public readonly util: typeof Util = Util;
     public readonly extras: ExtraOptionsData;
     public isError = false;
     public components: TopLevelComponent[] = [];
@@ -57,6 +58,7 @@ export class Interpreter {
         this.context = options.context;
         this.args = options.args;
         this.helpers = {
+            parser: Parser,
             sleep: sleep,
             time: Time,
             condition: CheckCondition,
@@ -169,9 +171,17 @@ export class Interpreter {
 
                     unpacked.args = processedArgs;
                     if (this.isError) break;
-                    const DATA =
-                        filterObject(await functionData.code(this, processedArgs, this.Temporarily)) ??
-                        ({} as FunctionResultData);
+                    let DATA: FunctionResultData = { result: void 0 };
+                    try {
+                        DATA =
+                            filterObject(await functionData.code(this, processedArgs, this.Temporarily)) ??
+                            ({} as FunctionResultData);
+                    } catch (err: any) {
+                        await this.error(err, func);
+                        this.client.debug(`${err?.stack ?? err}`, 'ERROR', true);
+                        DATA = { result: void 0, error: true };
+                    }
+
                     currentCode = currentCode.replace(unpacked.all, () => DATA.result?.toString() ?? '');
                     oldCode = oldCode.replace(unpacked.all, '');
 
@@ -328,12 +338,15 @@ export class Interpreter {
     }
 
     // FUNCTION ERROR RESULT
-    public async error(options: string | { message: string; solution?: string }): Promise<FunctionResultData> {
+    public async error(
+        options: string | { message: string; solution?: string },
+        functionName?: string
+    ): Promise<FunctionResultData> {
         try {
             const { message, solution } = typeof options === 'string' ? { message: options } : options;
             this.isError = true;
             this.message = await this.context?.send(
-                `\`\`\`\n🚫 ${message}${solution ? `\n\nSo, what is the solution?\n${solution}` : ''}\`\`\``
+                `\`\`\`\n${functionName ? `${functionName}: ` : ''} 🚫 ${message}${solution ? `\n\nSo, what is the solution?\n${solution}` : ''}\`\`\``
             );
         } catch {
             this.isError = true;

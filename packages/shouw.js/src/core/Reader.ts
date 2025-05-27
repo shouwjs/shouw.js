@@ -2,7 +2,7 @@ import * as fs from 'node:fs';
 import * as chalk from 'chalk';
 import type { CommandData } from '../typings';
 
-export class Parser {
+export class Reader {
     filePath: string;
     fileContent = '';
 
@@ -119,5 +119,5 @@ export class Command {
 
 // GENERATE ERROR MESSAGE
 function generateError(message: string, file?: string, code?: string) {
-    return `${message}${file ? ` in ${chalk.yellow(file)}\n\n` : ''}${code ? `${Parser.highlightError(code)}\n` : ''}`;
+    return `${message}${file ? ` in ${chalk.yellow(file)}\n\n` : ''}${code ? `${Reader.highlightError(code)}\n` : ''}`;
 }

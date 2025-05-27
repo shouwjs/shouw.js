@@ -1,6 +1,7 @@
 import type { Channel, TopLevelComponent } from 'discord.js';
 import type { FunctionResultData, CommandData, HelpersData, ExtraOptionsData, TemporarilyData, InterpreterOptions } from '../typings';
 import type { Context, FunctionsManager, ShouwClient as Client } from '../classes';
+import { Util } from '../utils';
 import * as Discord from 'discord.js';
 export declare class Interpreter {
     readonly client: Client;
@@ -24,7 +25,8 @@ export declare class Interpreter {
     noop: () => void;
     helpers: HelpersData;
     Temporarily: TemporarilyData;
-    discord: typeof Discord;
+    readonly discord: typeof Discord;
+    readonly util: typeof Util;
     readonly extras: ExtraOptionsData;
     isError: boolean;
     components: TopLevelComponent[];
@@ -42,6 +44,6 @@ export declare class Interpreter {
     error(options: string | {
         message: string;
         solution?: string;
-    }): Promise<FunctionResultData>;
+    }, functionName?: string): Promise<FunctionResultData>;
     private switchArg;
 }

@@ -1,5 +1,5 @@
 import type { CommandData } from '../typings';
-export declare class Parser {
+export declare class Reader {
     filePath: string;
     fileContent: string;
     constructor(filePath: string);

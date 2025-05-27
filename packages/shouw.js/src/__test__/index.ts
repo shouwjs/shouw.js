@@ -20,4 +20,4 @@ client.command({
     }
 });
 
-client.loadCommands(`${__dirname}/commands`);
+client.loadCommands('packages/shouw.js/src/__test__/commands');

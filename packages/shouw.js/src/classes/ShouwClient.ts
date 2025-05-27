@@ -1,6 +1,6 @@
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import { Parser } from '../core/Reader';
+import { Reader } from '../core';
 import { blue, red } from 'chalk';
 import type { ShouwClientOptions, CommandData } from '../typings';
 import { FunctionsManager, CommandsManager } from './';
@@ -60,7 +60,7 @@ export class ShouwClient extends BaseClient {
                         this.debug(`Loaded command ${command.name} from ${file}`, 'DEBUG');
                     }
                 } else if (file.endsWith('.shouw') || file.endsWith('.shw') || file.endsWith('.sho')) {
-                    const commands = new Parser(filePath).execute();
+                    const commands = new Reader(filePath).execute();
                     for (const command of commands) {
                         if (typeof command !== 'object' || !command || !command.name || !command.type || !command.code)
                             continue;

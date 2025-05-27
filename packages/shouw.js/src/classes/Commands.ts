@@ -34,7 +34,13 @@ export class CommandsManager {
                     this[event] = new Collective();
                 }
 
-                this.client.on(event, (...args) => require(`../events/${event}`).default(...args, this.client));
+                this.client.on(event, (...args) => {
+                    try {
+                        require(`../events/${event}`).default(...args, this.client);
+                    } catch (err: any) {
+                        this.client.debug(`Error in event ${event}: ${err.message}`, 'ERROR');
+                    }
+                });
                 this.client.debug(`Event loaded: ${cyan(event)}`);
             }
         }
