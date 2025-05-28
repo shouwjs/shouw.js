@@ -398,5 +398,6 @@ export function AttachmentParser(
 
     const [name = 'file.txt', content]: string[] = rawContent.split(/:(?![/][/])/);
     if (!content) return null;
-    return new AttachmentBuilder(Buffer.from(content.unescape()), { name: name.unescape() });
+    const buffer = Buffer.from(content.unescape());
+    return new AttachmentBuilder(buffer, { name: name.unescape() });
 }

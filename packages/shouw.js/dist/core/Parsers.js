@@ -355,5 +355,6 @@ function AttachmentParser(_ctx, rawContent, type = 'attachment') {
     const [name = 'file.txt', content] = rawContent.split(/:(?![/][/])/);
     if (!content)
         return null;
-    return new discord_js_1.AttachmentBuilder(Buffer.from(content.unescape()), { name: name.unescape() });
+    const buffer = Buffer.from(content.unescape())
+    return new discord_js_1.AttachmentBuilder(buffer, { name: name.unescape() });
 }
