@@ -1,7 +1,7 @@
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { Reader } from '../core';
-import { blue, red } from 'chalk';
+import { cyan, blue, yellow, red } from 'chalk';
 import type { ShouwClientOptions, CommandData } from '../typings';
 import { FunctionsManager, CommandsManager } from './';
 import { BaseClient } from './BaseClient';
@@ -52,12 +52,13 @@ export class ShouwClient extends BaseClient {
             if (!fs.statSync(filePath).isDirectory()) {
                 if (file.endsWith('.js')) {
                     let commands = require(filePath);
+                    commands = commands ? (commands?.default ?? commands) : [];
                     commands = Array.isArray(commands) ? commands : [commands];
                     for (const command of commands) {
                         if (typeof command !== 'object' || !command || !command.name || !command.type || !command.code)
                             continue;
                         this.command(command as CommandData);
-                        this.debug(`Loaded command ${command.name} from ${file}`, 'DEBUG');
+                        this.debug(`Loaded command ${cyan(command.name)} from ${cyan(file)}`, 'DEBUG');
                     }
                 } else if (file.endsWith('.shouw') || file.endsWith('.shw') || file.endsWith('.sho')) {
                     const commands = new Reader(filePath).execute();
@@ -65,10 +66,10 @@ export class ShouwClient extends BaseClient {
                         if (typeof command !== 'object' || !command || !command.name || !command.type || !command.code)
                             continue;
                         this.command(command as CommandData);
-                        this.debug(`Loaded command ${command.name} from ${file}`, 'DEBUG');
+                        this.debug(`Loaded command ${cyan(command.name)} from ${cyan(file)}`, 'DEBUG');
                     }
                 } else {
-                    this.debug(`Skipping ${file} because it's not a valid file type`, 'ERROR');
+                    this.debug(`Skipping ${red(file)} because it's not a valid file type`, 'ERROR');
                 }
             }
         }
@@ -77,9 +78,9 @@ export class ShouwClient extends BaseClient {
     }
 
     // DEBUG MESSAGE
-    public debug(message, type: 'ERROR' | 'DEBUG' = 'DEBUG', force = false): ShouwClient {
+    public debug(message: string, type: 'ERROR' | 'DEBUG' | 'WARN' = 'DEBUG', force = false): ShouwClient {
         if (message && (force === true || this.shouwOptions.debug === true)) {
-            const color = type === 'ERROR' ? red : blue;
+            const color = type === 'ERROR' ? red : type === 'WARN' ? yellow : blue;
             console.log(`[${color(type)}] :: ${message}`);
         }
 

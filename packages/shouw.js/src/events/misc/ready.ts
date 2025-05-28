@@ -1,6 +1,4 @@
-import type { ShouwClient } from '../classes';
-import { Interpreter } from '../core';
-import type { InterpreterOptions } from '../typings';
+import { type ShouwClient, Interpreter, type InterpreterOptions } from '../..';
 
 export default async function Events(client: ShouwClient) {
     const commands = client.commands?.ready?.V;

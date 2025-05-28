@@ -1,8 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Events;
-const classes_1 = require("../classes");
-const core_1 = require("../core");
+const __1 = require("../..");
 async function Events(message, client) {
     if (message.author.bot)
         return;
@@ -49,8 +48,8 @@ async function Events(message, client) {
 }
 // INITIALIZE COMMAND
 async function INIT(command, message, args, client) {
-    return ((await new core_1.Interpreter(command, {
-        context: new classes_1.Context(message, args),
+    return ((await new __1.Interpreter(command, {
+        context: new __1.Context(message, args),
         client: client,
         channel: message.channel,
         args: args,

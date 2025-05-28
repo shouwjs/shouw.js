@@ -21,12 +21,22 @@ export class FunctionsManager extends Collective<string, Functions> {
             const stat = fs.lstatSync(filePath);
             if (stat.isDirectory()) {
                 this.load(filePath, debug);
-            } else {
-                if (!file.endsWith('.js')) continue;
-                const RawFunction = require(filePath).default;
-                const func = new RawFunction();
-                this.create(func.name, func);
-                this.client.debug(`Function loaded: ${cyan(func.name)}`);
+            } else if (file.endsWith('.js')) {
+                try {
+                    let RawFunction = require(filePath);
+                    RawFunction = RawFunction ? (RawFunction?.default ?? RawFunction) : void 0;
+
+                    if (!RawFunction) {
+                        this.client.debug(`Function ${cyan(file)} has no default export`, 'WARN');
+                        continue;
+                    }
+
+                    const func = new RawFunction();
+                    this.create(func.name, func);
+                    this.client.debug(`Function loaded: ${cyan(func.name)}`);
+                } catch (err: any) {
+                    this.client.debug(`Error in function ${cyan(file)}:\n${err.stack}`, 'ERROR');
+                }
             }
         }
     }

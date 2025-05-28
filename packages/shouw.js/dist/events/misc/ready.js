@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Events;
-const core_1 = require("../core");
+const __1 = require("../..");
 async function Events(client) {
     const commands = client.commands?.ready?.V;
     if (!commands)
@@ -9,7 +9,7 @@ async function Events(client) {
     for (const command of commands) {
         if (!command || !command.code)
             break;
-        await new core_1.Interpreter(command, {
+        await new __1.Interpreter(command, {
             client: client
         }, {
             sendMessage: true,

@@ -43,12 +43,13 @@ class ShouwClient extends BaseClient_1.BaseClient {
             if (!fs.statSync(filePath).isDirectory()) {
                 if (file.endsWith('.js')) {
                     let commands = require(filePath);
+                    commands = commands ? (commands?.default ?? commands) : [];
                     commands = Array.isArray(commands) ? commands : [commands];
                     for (const command of commands) {
                         if (typeof command !== 'object' || !command || !command.name || !command.type || !command.code)
                             continue;
                         this.command(command);
-                        this.debug(`Loaded command ${command.name} from ${file}`, 'DEBUG');
+                        this.debug(`Loaded command ${(0, chalk_1.cyan)(command.name)} from ${(0, chalk_1.cyan)(file)}`, 'DEBUG');
                     }
                 }
                 else if (file.endsWith('.shouw') || file.endsWith('.shw') || file.endsWith('.sho')) {
@@ -57,11 +58,11 @@ class ShouwClient extends BaseClient_1.BaseClient {
                         if (typeof command !== 'object' || !command || !command.name || !command.type || !command.code)
                             continue;
                         this.command(command);
-                        this.debug(`Loaded command ${command.name} from ${file}`, 'DEBUG');
+                        this.debug(`Loaded command ${(0, chalk_1.cyan)(command.name)} from ${(0, chalk_1.cyan)(file)}`, 'DEBUG');
                     }
                 }
                 else {
-                    this.debug(`Skipping ${file} because it's not a valid file type`, 'ERROR');
+                    this.debug(`Skipping ${(0, chalk_1.red)(file)} because it's not a valid file type`, 'ERROR');
                 }
             }
         }
@@ -70,7 +71,7 @@ class ShouwClient extends BaseClient_1.BaseClient {
     // DEBUG MESSAGE
     debug(message, type = 'DEBUG', force = false) {
         if (message && (force === true || this.shouwOptions.debug === true)) {
-            const color = type === 'ERROR' ? chalk_1.red : chalk_1.blue;
+            const color = type === 'ERROR' ? chalk_1.red : type === 'WARN' ? chalk_1.yellow : chalk_1.blue;
             console.log(`[${color(type)}] :: ${message}`);
         }
         return this;

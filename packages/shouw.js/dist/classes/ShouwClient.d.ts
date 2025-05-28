@@ -10,5 +10,5 @@ export declare class ShouwClient extends BaseClient {
     constructor(options: ShouwClientOptions);
     command(data: CommandData): ShouwClient;
     loadCommands(dir: string, _logging?: boolean): ShouwClient;
-    debug(message: any, type?: 'ERROR' | 'DEBUG', force?: boolean): ShouwClient;
+    debug(message: string, type?: 'ERROR' | 'DEBUG' | 'WARN', force?: boolean): ShouwClient;
 }

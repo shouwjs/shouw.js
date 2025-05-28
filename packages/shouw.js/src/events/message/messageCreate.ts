@@ -1,7 +1,5 @@
 import type { Message } from 'discord.js';
-import { type ShouwClient, Context } from '../classes';
-import { Interpreter } from '../core';
-import type { InterpreterOptions, CommandData } from '../typings';
+import { type ShouwClient, Context, Interpreter, type InterpreterOptions, type CommandData } from '../..';
 
 export default async function Events(message: Message, client: ShouwClient) {
     if (message.author.bot) return;
