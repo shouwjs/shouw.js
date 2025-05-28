@@ -10,3 +10,4 @@ export type InteractionReplyData = string | (InteractionReplyOptions & {
 export type SendableChannel = Exclude<Channel, CategoryChannel | PartialGroupDMChannel | PartialDMChannel | ForumChannel | MediaChannel> | null;
 export type Flags = BitFieldResolvable<'SuppressEmbeds' | 'SuppressNotifications' | 'IsComponentsV2', MessageFlags.SuppressEmbeds | MessageFlags.SuppressNotifications | MessageFlags.IsComponentsV2> | undefined;
 export type SelectMenuTypes = StringSelectMenuBuilder | RoleSelectMenuBuilder | ChannelSelectMenuBuilder | MentionableSelectMenuBuilder | UserSelectMenuBuilder;
+export type Operator = '&&' | '||' | '==' | '!=' | '>=' | '<=' | '>' | '<';

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ParamType = void 0;
+exports.Precedence = exports.ParamType = void 0;
 var ParamType;
 (function (ParamType) {
     ParamType[ParamType["URL"] = 0] = "URL";
@@ -12,3 +12,14 @@ var ParamType;
     ParamType[ParamType["Array"] = 6] = "Array";
     ParamType[ParamType["Boolean"] = 8] = "Boolean";
 })(ParamType || (exports.ParamType = ParamType = {}));
+var Precedence;
+(function (Precedence) {
+    Precedence[Precedence["&&"] = 1] = "&&";
+    Precedence[Precedence["||"] = 1] = "||";
+    Precedence[Precedence["=="] = 2] = "==";
+    Precedence[Precedence["!="] = 2] = "!=";
+    Precedence[Precedence[">="] = 3] = ">=";
+    Precedence[Precedence["<="] = 3] = "<=";
+    Precedence[Precedence[">"] = 3] = ">";
+    Precedence[Precedence["<"] = 3] = "<";
+})(Precedence || (exports.Precedence = Precedence = {}));

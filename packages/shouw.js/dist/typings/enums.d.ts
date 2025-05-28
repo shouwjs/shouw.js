@@ -8,3 +8,13 @@ export declare enum ParamType {
     Array = 6,
     Boolean = 8
 }
+export declare enum Precedence {
+    '&&' = 1,
+    '||' = 1,
+    '==' = 2,
+    '!=' = 2,
+    '>=' = 3,
+    '<=' = 3,
+    '>' = 3,
+    '<' = 3
+}

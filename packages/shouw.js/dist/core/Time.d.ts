@@ -1,5 +1,6 @@
 export declare class Time {
-    static format(_time: number): string;
+    private static units;
+    static format(_time: number, useLongName?: boolean): string;
     static parse(time: string | number): {
         ms: number;
         format: string;

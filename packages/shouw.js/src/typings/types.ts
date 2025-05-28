@@ -60,3 +60,5 @@ export type SelectMenuTypes =
     | ChannelSelectMenuBuilder
     | MentionableSelectMenuBuilder
     | UserSelectMenuBuilder;
+
+export type Operator = '&&' | '||' | '==' | '!=' | '>=' | '<=' | '>' | '<';

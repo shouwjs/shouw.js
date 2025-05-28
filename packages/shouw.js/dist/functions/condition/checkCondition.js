@@ -19,7 +19,7 @@ class CheckCondition extends core_1.Functions {
         });
     }
     code(ctx, [condition]) {
-        return this.success(condition ? ctx.helpers.condition.solve(condition) : false);
+        return this.success(condition && condition !== '' ? ctx.helpers.condition(condition) : false);
     }
 }
 exports.default = CheckCondition;

@@ -66,7 +66,7 @@ export interface HelpersData {
     parser: (ctx: Interpreter, input: string) => Promise<SendData>;
     sleep: (ms: number) => Promise<void>;
     time: typeof Time;
-    condition: typeof CheckCondition;
+    condition: (input: string) => boolean;
     interpreter: typeof Interpreter;
     unescape: (str: string) => string;
     escape: (str: string) => string;

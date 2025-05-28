@@ -1,149 +1,101 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CheckCondition = void 0;
-// biome-ignore lint: class static methods.
-class CheckCondition {
-    static hasAnd(msg) {
-        return msg.includes('&&');
+exports.CheckCondition = CheckCondition;
+const typings_1 = require("../typings");
+// TOKENIZE CONDITION
+function tokenize(input) {
+    const tokens = [];
+    const regex = /\s*(\d+|\w+|&&|\|\||==|!=|>=|<=|>|<|\(|\))\s*/g;
+    let match;
+    let lastIndex = 0;
+    while ((match = regex.exec(input)) !== null) {
+        if (match.index !== lastIndex)
+            throw new SyntaxError(`Invalid token at position ${lastIndex}`);
+        tokens.push(match[1]);
+        lastIndex = regex.lastIndex;
     }
-    static hasOr(msg) {
-        return msg.includes('||');
-    }
-    static hasEqual(msg) {
-        return msg.includes('==');
-    }
-    static hasNotEqual(msg) {
-        return msg.includes('!=');
-    }
-    static hasGreater(msg) {
-        return msg.includes('>');
-    }
-    static hasLesser(msg) {
-        return msg.includes('<');
-    }
-    static hasGE(msg) {
-        return msg.includes('>=');
-    }
-    static hasLE(msg) {
-        return msg.includes('<=');
-    }
-    static solveEqual(msg) {
-        let pass = false;
-        const parts = msg.split('==').map((part) => part.trim());
-        if (parts[0].unescape() === parts[1].unescape())
-            pass = true;
-        return pass;
-    }
-    static solveNotEqual(msg) {
-        let pass = false;
-        const parts = msg.split('!=');
-        if (parts[0].unescape() !== parts[1].unescape())
-            pass = true;
-        return pass;
-    }
-    static solveGreater(msg) {
-        let pass = true;
-        let parts = msg.split('>');
-        parts = parts.every((x) => Number.isNaN(Number(x))) ? parts : parts.map((x) => Number(x));
-        if (parts[0] <= parts[1])
-            pass = false;
-        return pass;
-    }
-    static solveLesser(msg) {
-        let pass = true;
-        let parts = msg.split('<');
-        parts = parts.every((x) => Number.isNaN(Number(x))) ? parts : parts.map((x) => Number(x));
-        if (parts[0] >= parts[1])
-            pass = false;
-        return pass;
-    }
-    static solveLE(msg) {
-        let pass = true;
-        let parts = msg.split('<=');
-        parts = parts.every((x) => Number.isNaN(Number(x))) ? parts : parts.map((x) => Number(x));
-        if (parts[0] > parts[1])
-            pass = false;
-        return pass;
-    }
-    static solveGE(msg) {
-        let pass = true;
-        let parts = msg.split('>=');
-        parts = parts.every((x) => Number.isNaN(Number(x))) ? parts : parts.map((x) => Number(x));
-        if (parts[0] < parts[1])
-            pass = false;
-        return pass;
-    }
-    static solveAnd(msg) {
-        const parts = msg.split('&&');
-        const final = [];
-        for (let part of parts) {
-            const has = part.includes(')') ? ')' : '';
-            part = part.split(')')[0];
-            if (CheckCondition.hasOr(part))
-                final.push(CheckCondition.solveOr(part) + has);
-            else if (CheckCondition.hasEqual(part))
-                final.push(CheckCondition.solveEqual(part) + has);
-            else if (CheckCondition.hasNotEqual(part))
-                final.push(CheckCondition.solveNotEqual(part) + has);
-            else if (CheckCondition.hasGE(part))
-                final.push(CheckCondition.solveGE(part) + has);
-            else if (CheckCondition.hasLE(part))
-                final.push(CheckCondition.solveLE(part) + has);
-            else if (CheckCondition.hasGreater(part))
-                final.push(CheckCondition.solveGreater(part) + has);
-            else if (CheckCondition.hasLesser(part))
-                final.push(CheckCondition.solveLesser(part) + has);
-            else if (part.trim() === '')
-                final.push(part);
+    if (lastIndex !== input.length)
+        throw new SyntaxError(`Invalid condition token at position ${lastIndex}`);
+    return tokens;
+}
+// EVALUATE CONDITION
+function evaluate(tokens) {
+    const values = [];
+    const ops = [];
+    const apply = () => {
+        const op = ops.pop();
+        const b = values.pop();
+        const a = values.pop();
+        if (a === undefined || b === undefined)
+            throw new SyntaxError(`Missing value for condition operator '${op}'`);
+        let result;
+        switch (op) {
+            case '==':
+                result = a === b;
+                break;
+            case '!=':
+                result = a !== b;
+                break;
+            case '>':
+                result = Number(a) > Number(b);
+                break;
+            case '<':
+                result = Number(a) < Number(b);
+                break;
+            case '>=':
+                result = Number(a) >= Number(b);
+                break;
+            case '<=':
+                result = Number(a) <= Number(b);
+                break;
+            case '&&':
+                result = Boolean(a) && Boolean(b);
+                break;
+            case '||':
+                result = Boolean(a) || Boolean(b);
+                break;
+            default:
+                throw new SyntaxError(`Invalid condition operator: ${op}`);
         }
-        return final.join('&&');
+        values.push(result);
+    };
+    for (const token of tokens) {
+        if (!Number.isNaN(Number(token))) {
+            values.push(Number(token));
+        }
+        else if (/^\w+$/.test(token)) {
+            values.push(token);
+        }
+        else if (token === '(') {
+            ops.push(token);
+        }
+        else if (token === ')') {
+            while (ops[ops.length - 1] !== '(')
+                apply();
+            ops.pop();
+        }
+        else if (token in typings_1.Precedence) {
+            while (ops.length &&
+                ops[ops.length - 1] !== '(' &&
+                typings_1.Precedence[ops[ops.length - 1]] >= typings_1.Precedence[token])
+                apply();
+            ops.push(token);
+        }
+        else {
+            throw new SyntaxError(`Unexpected condition token: ${token}`);
+        }
     }
-    static solveOr(msg) {
-        const parts = msg.split('||');
-        const final = [];
-        for (let part of parts) {
-            const has = part.includes(')') ? ')' : '';
-            part = part.split(')')[0];
-            if (CheckCondition.hasEqual(part))
-                final.push(CheckCondition.solveEqual(part) + has);
-            else if (CheckCondition.hasNotEqual(part))
-                final.push(CheckCondition.solveNotEqual(part) + has);
-            else if (CheckCondition.hasGE(part))
-                final.push(CheckCondition.solveGE(part) + has);
-            else if (CheckCondition.hasLE(part))
-                final.push(CheckCondition.solveLE(part) + has);
-            else if (CheckCondition.hasGreater(part))
-                final.push(CheckCondition.solveGreater(part) + has);
-            else if (CheckCondition.hasLesser(part))
-                final.push(CheckCondition.solveLesser(part) + has);
-            else if (part.trim() === '')
-                final.push(part);
-        }
-        return final.join('||');
+    while (ops.length)
+        apply();
+    return Boolean(values[0]);
+}
+// CHECK CONDITION
+function CheckCondition(input) {
+    try {
+        const tokens = tokenize(input);
+        return evaluate(tokens);
     }
-    static solve(msg) {
-        if (!msg)
-            return false;
-        const parts = msg.split('(');
-        const final = [];
-        for (const part of parts) {
-            if (part.trim() === '') {
-                final.push('');
-                continue;
-            }
-            const solve = CheckCondition.solveAnd(part);
-            final.push(solve);
-        }
-        let result = final.join('(');
-        if (result.split('(').length !== result.split(')').length)
-            result = result + ')'.repeat(result.split('(').length - result.split(')').length);
-        try {
-            // biome-ignore lint: danger evaluation.
-            return eval(result);
-        }
-        catch {
-            return false;
-        }
+    catch {
+        return false;
     }
 }
-exports.CheckCondition = CheckCondition;

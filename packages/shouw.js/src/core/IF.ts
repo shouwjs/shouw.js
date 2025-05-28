@@ -5,174 +5,141 @@ export async function IF(
     code: string,
     oldCode: string,
     ctx: Interpreter
-): Promise<{
-    error: boolean;
-    code: string;
-    oldCode: string;
-}> {
-    if (ctx.isError || !code.match(/\$if/gi))
-        return {
-            error: false,
-            code: code,
-            oldCode: oldCode
-        };
-
-    if (!code.match(/\$endif/gi)) {
+): Promise<{ error: boolean; code: string; oldCode: string }> {
+    if (ctx.isError || !code.includes('$if[')) return { error: false, code, oldCode };
+    if (!code.includes('$endif')) {
         await ctx.error({
             message: 'Invalid $if usage: Missing $endif',
             solution: 'Make sure to always use $endif at the end of the $if block'
         });
-
-        return {
-            error: true,
-            code: code,
-            oldCode: oldCode
-        };
+        return { error: true, code, oldCode };
     }
 
     let result = code;
-    let oldCodeResult = oldCode;
-    const ifStatements = code.split(/\$if\[/gi).slice(1);
+    let oldResult = oldCode;
+    const regex = /\$if\[/gi;
+    let match: RegExpExecArray | null;
 
-    for (let statement of ifStatements) {
-        const conditionBlock =
-            code
-                .split(/\$if\[/gi)
-                .pop()
-                ?.split(/\$endif/gi)[0] || '';
+    while ((match = regex.exec(result)) !== null) {
+        const startIndex = match.index;
+        const blockContent = extractBlock(result.slice(startIndex), '$if[', '$endif');
 
-        const condition = extractCondition(statement);
+        if (!blockContent) {
+            await ctx.error({
+                message: 'Invalid $if block: Missing $endif',
+                solution: 'Ensure each $if block is properly closed with $endif'
+            });
+            return { error: true, code: result, oldCode: oldResult };
+        }
+
+        const fullBlock = blockContent.full;
+        const body = blockContent.body;
+        const conditionEndIndex = body.indexOf(']');
+        const condition = body.slice(0, conditionEndIndex);
+        const content = body.slice(conditionEndIndex + 1);
+
+        let ifBlock = '';
+        const elseIfBlocks: { condition: string; content: string }[] = [];
+        let elseBlock = '';
+        let remaining = content;
+
+        const elseifRegex = /\$elseif\[/gi;
+        let elseifMatch: RegExpExecArray | null;
+        while ((elseifMatch = elseifRegex.exec(remaining)) !== null) {
+            const elseifStart = elseifMatch.index;
+            const elseifContent = extractBlock(remaining.slice(elseifStart), '$elseif[', '$endelseif');
+            if (!elseifContent) {
+                await ctx.error({
+                    message: 'Invalid $elseif usage: Missing $endelseif',
+                    solution: 'Make sure to always use $endelseif at the end of the $elseif block'
+                });
+                return { error: true, code: result, oldCode: oldResult };
+            }
+
+            const elseifConditionEnd = elseifContent.body.indexOf(']');
+            const elseifCondition = elseifContent.body.slice(0, elseifConditionEnd);
+            const elseifBody = elseifContent.body.slice(elseifConditionEnd + 1);
+            elseIfBlocks.push({ condition: elseifCondition, content: elseifBody });
+            remaining = remaining.replace(elseifContent.full, '');
+        }
+
+        const elseIndex = remaining.indexOf('$else');
+        if (elseIndex !== -1) {
+            ifBlock = remaining.slice(0, elseIndex);
+            elseBlock = remaining.slice(elseIndex + 5);
+        } else {
+            ifBlock = remaining;
+        }
+
         const ifResult = await INIT(ctx, {
-            code: `$checkCondition[${condition}`,
+            code: `$checkCondition[${condition}]`,
             name: 'if',
             type: 'parsing'
         });
 
-        if (ctx.isError || ifResult.error) {
-            return {
-                error: true,
-                code: result,
-                oldCode: oldCodeResult
-            };
-        }
-
-        const elseIfBlocks: Record<string, string> = {};
-        const elseIfMatches = statement.match(/\$elseif/gi);
-
-        if (elseIfMatches) {
-            for (const elseIf of statement.split(/\$elseif\[/gi).slice(1)) {
-                if (!elseIf.match(/\$endelseif/gi)) {
-                    await ctx.error({
-                        message: 'Invalid $elseif usage: Missing $endelseif',
-                        solution: 'Make sure to always use $endelseif at the end of the $elseif block'
-                    });
-
-                    return {
-                        error: true,
-                        code: result,
-                        oldCode: oldCodeResult
-                    };
-                }
-
-                const elseifContent = elseIf.split(/\$endelseif/gi)[0];
-                const elseifCondition = extractCondition(elseifContent);
-                elseIfBlocks[elseifCondition] = elseifContent.slice(elseifCondition.length + 1);
-
-                statement = statement.replace(
-                    new RegExp(`\\$elseif\\[${escapeRegExp(elseifContent)}\\$endelseif`, 'mi'),
-                    ''
-                );
-            }
-        }
-
-        const elseBlockMatch = statement.match(/\$else/i);
-        const ifCodeBlock = elseBlockMatch
-            ? statement
-                  .split(`${condition}`)
-                  .slice(1)
-                  .join('\n')
-                  .split(/\$else/gi)[0]
-            : statement
-                  .split(`${condition}`)
-                  .slice(1)
-                  .join('\n')
-                  .split(/\$endif/gi)[0];
-
-        const elseCodeBlock = elseBlockMatch ? statement.split(/\$else/gi)[1].split(/\$endif/gi)[0] : '';
-
+        if (ctx.isError || ifResult.error) return { error: true, code: result, oldCode: oldResult };
         let finalCode = '';
-        let isConditionPassed = false;
 
-        if (elseIfBlocks) {
-            for (const [elseifCondition, elseifCode] of Object.entries(elseIfBlocks)) {
-                if (!isConditionPassed) {
-                    const elseifResult = await INIT(ctx, {
-                        code: `$checkCondition[${elseifCondition}`,
-                        name: 'if',
-                        type: 'parsing'
-                    });
+        if (ifResult.result === 'true') {
+            finalCode = ifBlock;
+        } else {
+            let passed = false;
+            for (const elseif of elseIfBlocks) {
+                const elseifResult = await INIT(ctx, {
+                    code: `$checkCondition[${elseif.condition}]`,
+                    name: 'if',
+                    type: 'parsing'
+                });
 
-                    if (ctx.isError || elseifResult.error) {
-                        return {
-                            error: true,
-                            code: result,
-                            oldCode: oldCodeResult
-                        };
-                    }
-
-                    if (elseifResult.result === 'true') {
-                        isConditionPassed = true;
-                        finalCode = elseifCode;
-                    }
+                if (ctx.isError || elseifResult.error) return { error: true, code: result, oldCode: oldResult };
+                if (elseifResult.result === 'true') {
+                    finalCode = elseif.content;
+                    passed = true;
+                    break;
                 }
+            }
+
+            if (!passed) {
+                finalCode = elseBlock;
             }
         }
 
-        result = code
-            .replace(/\$if/gi, '$if')
-            .replace(
-                `$if[${conditionBlock}`,
-                ifResult.result === 'true' ? ifCodeBlock : isConditionPassed ? finalCode : elseCodeBlock
-            );
-
-        oldCodeResult = oldCode.replace(/\$if/gi, '$if').replace(`$if[${conditionBlock}`, '');
+        result = result.slice(0, startIndex) + finalCode + result.slice(startIndex + fullBlock.length);
+        oldResult = oldResult.replace(fullBlock, '');
+        regex.lastIndex = startIndex + finalCode.length;
     }
 
-    return { error: ctx.isError, code: result, oldCode: oldCodeResult };
+    return { error: ctx.isError, code: result, oldCode: oldResult };
 }
 
-// EXTRACT CONDITION FROM CODE
-function extractCondition(code: string): string {
-    let nestingLevel = 1;
-    let position = 0;
-    while (nestingLevel > 0 && position < code.length) {
-        if (code[position] === '[') nestingLevel++;
-        if (code[position] === ']') {
-            nestingLevel--;
-            if (nestingLevel === 0) break;
+// EXTRACT BLOCK
+function extractBlock(str: string, open: string, close: string) {
+    let depth = 0;
+    let i = 0;
+
+    while (i < str.length) {
+        if (str.startsWith(open, i)) {
+            depth++;
+            i += open.length;
+        } else if (str.startsWith(close, i)) {
+            depth--;
+            i += close.length;
+            if (depth === 0) break;
+        } else {
+            i++;
         }
-
-        position++;
-        if (position > code.length) break;
     }
 
-    return code.slice(0, position + 1);
-}
+    if (depth !== 0) return null;
 
-// ESCAPE REGEXP
-function escapeRegExp(str: string): string {
-    return str.replace(/[.*+?^${}()|[\]\\\n]/g, '\\$&');
+    return {
+        full: str.slice(0, i),
+        body: str.slice(open.length, i - close.length)
+    };
 }
 
 // INITIALIZE INTERPRETER
-async function INIT(
-    ctx: Interpreter,
-    data: {
-        code: string;
-        name: string;
-        type: string;
-    }
-) {
+async function INIT(ctx: Interpreter, data: { code: string; name: string; type: string }) {
     return await new Interpreter(data, ctx, {
         sendMessage: false,
         returnId: false,
