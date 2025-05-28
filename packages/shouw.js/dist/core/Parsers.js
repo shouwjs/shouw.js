@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Parser = Parser;
 exports.EmbedParser = EmbedParser;
 exports.ActionRowParser = ActionRowParser;
+exports.AttachmentParser = AttachmentParser;
 const discord_js_1 = require("discord.js");
 // PARSER FUNCTION (DON'T TOUCH)
 async function Parser(ctx, input) {
@@ -10,22 +11,29 @@ async function Parser(ctx, input) {
     let match;
     const embeds = [];
     const components = [];
+    const attachments = [];
     let content = input.mustEscape();
     while ((match = StructureRegex.exec(content)) !== null) {
         const key = match[1]?.toLowerCase();
         const value = match[2];
-        content = content.replace(match[0], '');
         if (key === 'newembed') {
             embeds.push(EmbedParser(ctx, value));
+            content = content.replace(match[0], '');
         }
         else if (key === 'actionrow') {
             components.push(await ActionRowParser(ctx, value));
+            content = content.replace(match[0], '');
+        }
+        else if (key === 'attachment' || key === 'file') {
+            attachments.push(AttachmentParser(ctx, value, key));
+            content = content.replace(match[0], '');
         }
     }
     return {
         embeds: embeds.filter(Boolean),
         components: components.filter(Boolean),
-        content: content?.trim() === '' ? void 0 : content?.trim()
+        content: content?.trim() === '' ? void 0 : content?.trim(),
+        files: attachments.filter(Boolean)
     };
 }
 /**
@@ -90,21 +98,21 @@ function EmbedParser(_ctx, content) {
                 embedData.author.url = value.unescape();
                 break;
             case 'footer': {
-                const [text, iconURL] = value.split(':') ?? [];
+                const [text, iconURL] = value.split(/:(?![/][/])/) ?? [];
                 embedData.footer = { text: text?.unescape().trim() };
                 if (iconURL)
                     embedData.footer.icon_url = iconURL.unescape().trim();
                 break;
             }
             case 'author': {
-                const [name, iconURL] = value.split(':');
+                const [name, iconURL] = value.split(/:(?![/][/])/);
                 embedData.author = { name: name?.unescape().trim() };
                 if (iconURL)
                     embedData.author.icon_url = iconURL.unescape().trim();
                 break;
             }
             case 'field': {
-                const [fieldTitle = '\u200B', fieldValue = '\u200B', inlineRaw = 'false'] = value.split(':');
+                const [fieldTitle = '\u200B', fieldValue = '\u200B', inlineRaw = 'false'] = value.split(/:(?![/][/])/);
                 embedData.fields ?? (embedData.fields = []);
                 if (embedData.fields.length < 25) {
                     embedData.fields.push({
@@ -203,7 +211,7 @@ async function ActionRowParser(ctx, content) {
         }
         // SELECT MENU PARSER
         else if (compType === 'selectmenu') {
-            const segments = rest.split(':');
+            const segments = rest.split(/:(?![/][/])/g);
             if (segments.length < 6)
                 continue;
             let SelectMenu;
@@ -260,7 +268,10 @@ async function ActionRowParser(ctx, content) {
                     SelectMenu = new discord_js_1.MentionableSelectMenuBuilder();
                     break;
                 case selectContent.startsWith('channelinput'): {
-                    let type = selectContent.split(':')[1]?.toLowerCase().trim();
+                    let type = selectContent
+                        .split(/:(?![/][/])/)[1]
+                        ?.toLowerCase()
+                        .trim();
                     switch (type) {
                         case 'text':
                         case '1':
@@ -289,7 +300,7 @@ async function ActionRowParser(ctx, content) {
         }
         // MODAL TEXT INPUT PARSER
         else if (compType === 'textinput' || compType === 'modal') {
-            const segments = rest.split(':');
+            const segments = rest.split(/:(?![/][/])/g);
             if (segments.length < 3)
                 continue;
             const label = segments[0].unescape().trim();
@@ -326,4 +337,23 @@ async function ActionRowParser(ctx, content) {
     if (components.length === 0)
         return null;
     return new discord_js_1.ActionRowBuilder().addComponents(components);
+}
+/**
+ * ATTACHMENT PARSER (DON'T TOUCH)
+ *
+ * {attachment:name:url}
+ * {attachment:name:location}
+ * {file:name:content}
+ */
+function AttachmentParser(_ctx, rawContent, type = 'attachment') {
+    if (type === 'attachment') {
+        const [name = 'attachment.png', url] = rawContent.split(/:(?![/][/])/);
+        if (!url)
+            return null;
+        return new discord_js_1.AttachmentBuilder(url.unescape(), { name: name.unescape() });
+    }
+    const [name = 'file.txt', content] = rawContent.split(/:(?![/][/])/);
+    if (!content)
+        return null;
+    return new discord_js_1.AttachmentBuilder(Buffer.from(content.unescape()), { name: name.unescape() });
 }

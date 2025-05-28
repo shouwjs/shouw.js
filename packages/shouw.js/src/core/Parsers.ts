@@ -12,6 +12,7 @@ import {
     TextInputBuilder,
     resolveColor,
     TextInputStyle,
+    AttachmentBuilder,
     type TopLevelComponent,
     type ColorResolvable,
     type APIEmbed
@@ -26,24 +27,30 @@ export async function Parser(ctx: Interpreter, input: string): Promise<SendData>
 
     const embeds: Array<EmbedBuilder> = [];
     const components: Array<ActionRowBuilder | null> = [];
+    const attachments: Array<AttachmentBuilder | null> = [];
     let content: string | undefined = input.mustEscape();
 
     while ((match = StructureRegex.exec(content)) !== null) {
         const key = match[1]?.toLowerCase();
         const value = match[2];
-        content = content.replace(match[0], '');
 
         if (key === 'newembed') {
             embeds.push(EmbedParser(ctx, value));
+            content = content.replace(match[0], '');
         } else if (key === 'actionrow') {
             components.push(await ActionRowParser(ctx, value));
+            content = content.replace(match[0], '');
+        } else if (key === 'attachment' || key === 'file') {
+            attachments.push(AttachmentParser(ctx, value, key));
+            content = content.replace(match[0], '');
         }
     }
 
     return {
         embeds: embeds.filter(Boolean),
         components: components.filter(Boolean) as any as TopLevelComponent[],
-        content: content?.trim() === '' ? void 0 : content?.trim()
+        content: content?.trim() === '' ? void 0 : content?.trim(),
+        files: attachments.filter(Boolean) as AttachmentBuilder[]
     };
 }
 
@@ -111,19 +118,19 @@ export function EmbedParser(_ctx: Interpreter, content: string): EmbedBuilder {
                 embedData.author.url = value.unescape();
                 break;
             case 'footer': {
-                const [text, iconURL] = value.split(':') ?? [];
+                const [text, iconURL] = value.split(/:(?![/][/])/) ?? [];
                 embedData.footer = { text: text?.unescape().trim() };
                 if (iconURL) embedData.footer.icon_url = iconURL.unescape().trim();
                 break;
             }
             case 'author': {
-                const [name, iconURL] = value.split(':');
+                const [name, iconURL] = value.split(/:(?![/][/])/);
                 embedData.author = { name: name?.unescape().trim() };
                 if (iconURL) embedData.author.icon_url = iconURL.unescape().trim();
                 break;
             }
             case 'field': {
-                const [fieldTitle = '\u200B', fieldValue = '\u200B', inlineRaw = 'false'] = value.split(':');
+                const [fieldTitle = '\u200B', fieldValue = '\u200B', inlineRaw = 'false'] = value.split(/:(?![/][/])/);
                 embedData.fields ??= [];
                 if (embedData.fields.length < 25) {
                     embedData.fields.push({
@@ -224,7 +231,7 @@ export async function ActionRowParser(ctx: Interpreter, content: string): Promis
 
         // SELECT MENU PARSER
         else if (compType === 'selectmenu') {
-            const segments = rest.split(':');
+            const segments = rest.split(/:(?![/][/])/g);
             if (segments.length < 6) continue;
 
             let SelectMenu: SelectMenuTypes;
@@ -291,7 +298,10 @@ export async function ActionRowParser(ctx: Interpreter, content: string): Promis
                     SelectMenu = new MentionableSelectMenuBuilder();
                     break;
                 case selectContent.startsWith('channelinput'): {
-                    let type: string | Array<number> | undefined = selectContent.split(':')[1]?.toLowerCase().trim();
+                    let type: string | Array<number> | undefined = selectContent
+                        .split(/:(?![/][/])/)[1]
+                        ?.toLowerCase()
+                        .trim();
                     switch (type) {
                         case 'text':
                         case '1':
@@ -325,7 +335,7 @@ export async function ActionRowParser(ctx: Interpreter, content: string): Promis
 
         // MODAL TEXT INPUT PARSER
         else if (compType === 'textinput' || compType === 'modal') {
-            const segments = rest.split(':');
+            const segments = rest.split(/:(?![/][/])/g);
             if (segments.length < 3) continue;
 
             const label = segments[0].unescape().trim();
@@ -366,4 +376,27 @@ export async function ActionRowParser(ctx: Interpreter, content: string): Promis
 
     if (components.length === 0) return null;
     return new ActionRowBuilder().addComponents(components);
+}
+
+/**
+ * ATTACHMENT PARSER (DON'T TOUCH)
+ *
+ * {attachment:name:url}
+ * {attachment:name:location}
+ * {file:name:content}
+ */
+export function AttachmentParser(
+    _ctx: Interpreter,
+    rawContent: string,
+    type: 'attachment' | 'file' = 'attachment'
+): AttachmentBuilder | null {
+    if (type === 'attachment') {
+        const [name = 'attachment.png', url]: string[] = rawContent.split(/:(?![/][/])/);
+        if (!url) return null;
+        return new AttachmentBuilder(url.unescape(), { name: name.unescape() });
+    }
+
+    const [name = 'file.txt', content]: string[] = rawContent.split(/:(?![/][/])/);
+    if (!content) return null;
+    return new AttachmentBuilder(Buffer.from(content.unescape()), { name: name.unescape() });
 }

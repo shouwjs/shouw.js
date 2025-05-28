@@ -1,4 +1,4 @@
-import { EmbedBuilder, ActionRowBuilder } from 'discord.js';
+import { EmbedBuilder, ActionRowBuilder, AttachmentBuilder } from 'discord.js';
 import type { Interpreter } from './Interpreter';
 import type { SendData } from '../typings';
 export declare function Parser(ctx: Interpreter, input: string): Promise<SendData>;
@@ -41,3 +41,11 @@ export declare function EmbedParser(_ctx: Interpreter, content: string): EmbedBu
  * }
  */
 export declare function ActionRowParser(ctx: Interpreter, content: string): Promise<ActionRowBuilder | null>;
+/**
+ * ATTACHMENT PARSER (DON'T TOUCH)
+ *
+ * {attachment:name:url}
+ * {attachment:name:location}
+ * {file:name:content}
+ */
+export declare function AttachmentParser(_ctx: Interpreter, rawContent: string, type?: 'attachment' | 'file'): AttachmentBuilder | null;
