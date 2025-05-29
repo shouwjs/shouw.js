@@ -7,11 +7,13 @@ exports.AttachmentParser = AttachmentParser;
 const discord_js_1 = require("discord.js");
 // PARSER FUNCTION (DON'T TOUCH)
 async function Parser(ctx, input) {
-    const StructureRegex = /{(\w+):((?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*)}/i;
+    const StructureRegex = /{(\w+):((?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*)}/im;
     let match;
     const embeds = [];
     const components = [];
     const attachments = [];
+    const flags = [];
+    let poll = null;
     let content = input.mustEscape();
     while ((match = StructureRegex.exec(content)) !== null) {
         const key = match[1]?.toLowerCase();
@@ -28,12 +30,22 @@ async function Parser(ctx, input) {
             attachments.push(AttachmentParser(ctx, value, key));
             content = content.replace(match[0], '');
         }
+        else if (key === 'flags' || key === 'flag') {
+            flags.push(...FlagsParser(ctx, value, key));
+            content = content.replace(match[0], '');
+        }
+        else if (key === 'poll') {
+            poll = await PollParser(ctx, value);
+            content = content.replace(match[0], '');
+        }
     }
     return {
         embeds: embeds.filter(Boolean),
         components: components.filter(Boolean),
         content: content?.trim() === '' ? void 0 : content?.trim(),
-        files: attachments.filter(Boolean)
+        files: attachments.filter(Boolean),
+        flags: flags.filter(Boolean),
+        poll: poll ?? void 0
     };
 }
 /**
@@ -56,7 +68,7 @@ async function Parser(ctx, input) {
  * }
  */
 function EmbedParser(_ctx, content) {
-    const partsRaw = content.split(/}\s*{/);
+    const partsRaw = content.split(/}\s*{/im);
     partsRaw[0] = partsRaw[0].replace(/^{/, '');
     partsRaw[partsRaw.length - 1] = partsRaw[partsRaw.length - 1].replace(/}$/, '');
     const embedData = {};
@@ -98,21 +110,21 @@ function EmbedParser(_ctx, content) {
                 embedData.author.url = value.unescape();
                 break;
             case 'footer': {
-                const [text, iconURL] = value.split(/:(?![/][/])/) ?? [];
+                const [text, iconURL] = value.split(/:(?![/][/])/im) ?? [];
                 embedData.footer = { text: text?.unescape().trim() };
                 if (iconURL)
                     embedData.footer.icon_url = iconURL.unescape().trim();
                 break;
             }
             case 'author': {
-                const [name, iconURL] = value.split(/:(?![/][/])/);
+                const [name, iconURL] = value.split(/:(?![/][/])/im);
                 embedData.author = { name: name?.unescape().trim() };
                 if (iconURL)
                     embedData.author.icon_url = iconURL.unescape().trim();
                 break;
             }
             case 'field': {
-                const [fieldTitle = '\u200B', fieldValue = '\u200B', inlineRaw = 'false'] = value.split(/:(?![/][/])/);
+                const [fieldTitle = '\u200B', fieldValue = '\u200B', inlineRaw = 'false'] = value.split(/:(?![/][/])/im);
                 embedData.fields ?? (embedData.fields = []);
                 if (embedData.fields.length < 25) {
                     embedData.fields.push({
@@ -151,7 +163,7 @@ function EmbedParser(_ctx, content) {
  * }
  */
 async function ActionRowParser(ctx, content) {
-    const partsRaw = content.split(/}\s*{/);
+    const partsRaw = content.split(/}\s*{/im);
     partsRaw[0] = partsRaw[0].replace(/^{/, '');
     partsRaw[partsRaw.length - 1] = partsRaw[partsRaw.length - 1].replace(/}$/, '');
     const components = [];
@@ -163,7 +175,7 @@ async function ActionRowParser(ctx, content) {
         const rest = part.substring(colonIndex + 1).trim();
         // BUTTON PARSER
         if (compType === 'button') {
-            const segments = rest.match(/(?:<a?:.*?:\d+>|[^:|^}])+/g)?.map((segment) => segment.unescape().trim());
+            const segments = rest.match(/(?:<a?:.*?:\d+>|[^:|^}])+/gim)?.map((segment) => segment.unescape().trim());
             if (!segments || segments.length < 3)
                 continue;
             const label = segments[0];
@@ -211,7 +223,7 @@ async function ActionRowParser(ctx, content) {
         }
         // SELECT MENU PARSER
         else if (compType === 'selectmenu') {
-            const segments = rest.split(/:(?![/][/])/g);
+            const segments = rest.split(/:(?![/][/])/gim);
             if (segments.length < 6)
                 continue;
             let SelectMenu;
@@ -220,24 +232,24 @@ async function ActionRowParser(ctx, content) {
             const minValues = Number.parseInt(segments[2].unescape().trim());
             const maxValues = Number.parseInt(segments[3].unescape().trim());
             const disabled = segments[4].unescape().trim() === 'true';
-            const selectContentMatch = part.match(/\{(stringInput(?::[^}]+)|roleInput|channelInput(?::[^}]+)?|mentionableInput|userInput)\}?/i);
+            const selectContentMatch = part.match(/\{(stringInput(?::[^}]+)|roleInput|channelInput(?::[^}]+)?|mentionableInput|userInput)\}?/im);
             if (!selectContentMatch)
                 continue;
             const selectContent = selectContentMatch[1].toLowerCase().trim();
             switch (true) {
                 case selectContent.startsWith('stringinput:'): {
                     SelectMenu = new discord_js_1.StringSelectMenuBuilder();
-                    const optionsRaw = content.split(/selectmenu/gi).flatMap((opt) => {
+                    const optionsRaw = content.split(/\selectmenu/gi).flatMap((opt) => {
                         if (!opt.includes(rest))
                             return [];
                         return opt
-                            .replace(/}\s*{/g, '')
+                            .replace(/}\s*{/gim, '')
                             .split(/stringinput:/gi)
                             .slice(1);
                     });
                     const result = (await Promise.all(optionsRaw.map(async (opt) => {
                         const optParts = opt
-                            .match(/(?:<a?:.*?:\d+>|[^:|^}])+/g)
+                            .match(/(?:<a?:.*?:\d+>|[^:|^}])+/gim)
                             ?.map((s) => s.unescape().trim());
                         if (!optParts || optParts.length < 2)
                             return null;
@@ -269,7 +281,7 @@ async function ActionRowParser(ctx, content) {
                     break;
                 case selectContent.startsWith('channelinput'): {
                     let type = selectContent
-                        .split(/:(?![/][/])/)[1]
+                        .split(/:(?![/][/])/im)[1]
                         ?.toLowerCase()
                         .trim();
                     switch (type) {
@@ -300,7 +312,7 @@ async function ActionRowParser(ctx, content) {
         }
         // MODAL TEXT INPUT PARSER
         else if (compType === 'textinput' || compType === 'modal') {
-            const segments = rest.split(/:(?![/][/])/g);
+            const segments = rest.split(/:(?![/][/])/gim);
             if (segments.length < 3)
                 continue;
             const label = segments[0].unescape().trim();
@@ -347,14 +359,70 @@ async function ActionRowParser(ctx, content) {
  */
 function AttachmentParser(_ctx, rawContent, type = 'attachment') {
     if (type === 'attachment') {
-        const [name = 'attachment.png', url] = rawContent.split(/:(?![/][/])/);
-        if (!url)
+        const [name = 'attachment.png', url = ''] = rawContent.split(/:(?![/][/])/im);
+        if (url === '')
             return null;
         return new discord_js_1.AttachmentBuilder(url.unescape(), { name: name.unescape() });
     }
-    const [name = 'file.txt', content] = rawContent.split(/:(?![/][/])/);
-    if (!content)
+    const [name = 'file.txt', content = ''] = rawContent.split(/:(?![/][/])/im);
+    if (content === '')
         return null;
-    const buffer = Buffer.from(content.unescape())
+    const buffer = Buffer.from(content.unescape());
     return new discord_js_1.AttachmentBuilder(buffer, { name: name.unescape() });
+}
+/**
+ * FLAGS PARSER (DON'T TOUCH)
+ *
+ * {flags:flag1,flag2,flag3}
+ * {flag:flag1}
+ */
+function FlagsParser(ctx, rawContent, type = 'flags') {
+    if (type === 'flag') {
+        const rawFlag = rawContent.unescape().trim().toLowerCase();
+        const flag = Number.isNaN(rawFlag) ? ctx.util.Flags[rawFlag] : Number.parseInt(rawFlag);
+        return [flag ?? null].filter(Boolean);
+    }
+    const rawFlags = rawContent.split(/:(?![/][/])/gim).map((flag) => flag.unescape().trim().toLowerCase());
+    return rawFlags
+        .map((flag) => {
+        return (Number.isNaN(flag) ? ctx.util.Flags[flag] : Number.parseInt(flag)) ?? null;
+    })
+        .filter(Boolean);
+}
+/**
+ * POLL PARSER (DON'T TOUCH)
+ *
+ * {poll:question:duration:multiSelect:options}
+ *
+ *     *options:
+ *         {answer:text:emoji?}
+ */
+async function PollParser(ctx, rawContent) {
+    let content = rawContent;
+    const answerRegex = /{answer:(.*?[^:]:.*?[^}])}/im;
+    const [question = '', durationRaw = '', multiSelect = 'false'] = content
+        .split(/:(?![/][/])/gim)
+        .map((s) => s.unescape().trim());
+    if (question === '' || durationRaw === '')
+        return null;
+    const duration = ctx.helpers.time.parse(durationRaw)?.ms ?? 86400000;
+    const answers = [];
+    let match = null;
+    while ((match = answerRegex.exec(content)) !== null) {
+        const [text, emoji] = match[1]?.match(/(?:<a?:.*?:\d+>|[^:|^}])+/gim)?.map((a) => a.unescape().trim()) ?? [];
+        content = content.replace(match[0], '');
+        if (text === '')
+            continue;
+        const emojiResolved = emoji ? ((await ctx.util.getEmoji(ctx, emoji, true)) ?? emoji) : void 0;
+        answers.push({ text, emoji: emojiResolved });
+    }
+    if (answers.filter(Boolean).length === 0)
+        return null;
+    return {
+        question: { text: question.unescape().trim() },
+        duration: Number.parseInt((duration / (1000 * 60 * 60)).toFixed()),
+        allowMultiselect: multiSelect.unescape().trim().toLowerCase() === 'true',
+        layoutType: 1,
+        answers
+    };
 }

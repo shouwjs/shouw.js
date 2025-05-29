@@ -13,21 +13,25 @@ import {
     resolveColor,
     TextInputStyle,
     AttachmentBuilder,
+    type MessageFlags,
+    type PollData,
     type TopLevelComponent,
     type ColorResolvable,
     type APIEmbed
 } from 'discord.js';
 import type { Interpreter } from './Interpreter';
-import type { SendData, SelectMenuTypes } from '../typings';
+import type { Flags, SendData, SelectMenuTypes } from '../typings';
 
 // PARSER FUNCTION (DON'T TOUCH)
 export async function Parser(ctx: Interpreter, input: string): Promise<SendData> {
-    const StructureRegex = /{(\w+):((?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*)}/i;
+    const StructureRegex = /{(\w+):((?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*)}/im;
     let match: RegExpExecArray | null;
 
     const embeds: Array<EmbedBuilder> = [];
     const components: Array<ActionRowBuilder | null> = [];
     const attachments: Array<AttachmentBuilder | null> = [];
+    const flags: Array<MessageFlags | null> = [];
+    let poll: PollData | null = null;
     let content: string | undefined = input.mustEscape();
 
     while ((match = StructureRegex.exec(content)) !== null) {
@@ -43,6 +47,12 @@ export async function Parser(ctx: Interpreter, input: string): Promise<SendData>
         } else if (key === 'attachment' || key === 'file') {
             attachments.push(AttachmentParser(ctx, value, key));
             content = content.replace(match[0], '');
+        } else if (key === 'flags' || key === 'flag') {
+            flags.push(...FlagsParser(ctx, value, key));
+            content = content.replace(match[0], '');
+        } else if (key === 'poll') {
+            poll = await PollParser(ctx, value);
+            content = content.replace(match[0], '');
         }
     }
 
@@ -50,8 +60,10 @@ export async function Parser(ctx: Interpreter, input: string): Promise<SendData>
         embeds: embeds.filter(Boolean),
         components: components.filter(Boolean) as any as TopLevelComponent[],
         content: content?.trim() === '' ? void 0 : content?.trim(),
-        files: attachments.filter(Boolean) as AttachmentBuilder[]
-    };
+        files: attachments.filter(Boolean) as AttachmentBuilder[],
+        flags: flags.filter(Boolean) as Flags,
+        poll: poll ?? void 0
+    } as any as SendData;
 }
 
 /**
@@ -74,7 +86,7 @@ export async function Parser(ctx: Interpreter, input: string): Promise<SendData>
  * }
  */
 export function EmbedParser(_ctx: Interpreter, content: string): EmbedBuilder {
-    const partsRaw = content.split(/}\s*{/);
+    const partsRaw = content.split(/}\s*{/im);
     partsRaw[0] = partsRaw[0].replace(/^{/, '');
     partsRaw[partsRaw.length - 1] = partsRaw[partsRaw.length - 1].replace(/}$/, '');
     const embedData: APIEmbed = {};
@@ -118,19 +130,20 @@ export function EmbedParser(_ctx: Interpreter, content: string): EmbedBuilder {
                 embedData.author.url = value.unescape();
                 break;
             case 'footer': {
-                const [text, iconURL] = value.split(/:(?![/][/])/) ?? [];
+                const [text, iconURL] = value.split(/:(?![/][/])/im) ?? [];
                 embedData.footer = { text: text?.unescape().trim() };
                 if (iconURL) embedData.footer.icon_url = iconURL.unescape().trim();
                 break;
             }
             case 'author': {
-                const [name, iconURL] = value.split(/:(?![/][/])/);
+                const [name, iconURL] = value.split(/:(?![/][/])/im);
                 embedData.author = { name: name?.unescape().trim() };
                 if (iconURL) embedData.author.icon_url = iconURL.unescape().trim();
                 break;
             }
             case 'field': {
-                const [fieldTitle = '\u200B', fieldValue = '\u200B', inlineRaw = 'false'] = value.split(/:(?![/][/])/);
+                const [fieldTitle = '\u200B', fieldValue = '\u200B', inlineRaw = 'false'] =
+                    value.split(/:(?![/][/])/im);
                 embedData.fields ??= [];
                 if (embedData.fields.length < 25) {
                     embedData.fields.push({
@@ -171,7 +184,7 @@ export function EmbedParser(_ctx: Interpreter, content: string): EmbedBuilder {
  * }
  */
 export async function ActionRowParser(ctx: Interpreter, content: string): Promise<ActionRowBuilder | null> {
-    const partsRaw = content.split(/}\s*{/);
+    const partsRaw = content.split(/}\s*{/im);
     partsRaw[0] = partsRaw[0].replace(/^{/, '');
     partsRaw[partsRaw.length - 1] = partsRaw[partsRaw.length - 1].replace(/}$/, '');
     const components: Array<SelectMenuTypes | ButtonBuilder | TextInputBuilder> = [];
@@ -184,7 +197,7 @@ export async function ActionRowParser(ctx: Interpreter, content: string): Promis
 
         // BUTTON PARSER
         if (compType === 'button') {
-            const segments = rest.match(/(?:<a?:.*?:\d+>|[^:|^}])+/g)?.map((segment) => segment.unescape().trim());
+            const segments = rest.match(/(?:<a?:.*?:\d+>|[^:|^}])+/gim)?.map((segment) => segment.unescape().trim());
             if (!segments || segments.length < 3) continue;
             const label = segments[0];
             const styleStr = segments[1].toLowerCase();
@@ -231,7 +244,7 @@ export async function ActionRowParser(ctx: Interpreter, content: string): Promis
 
         // SELECT MENU PARSER
         else if (compType === 'selectmenu') {
-            const segments = rest.split(/:(?![/][/])/g);
+            const segments = rest.split(/:(?![/][/])/gim);
             if (segments.length < 6) continue;
 
             let SelectMenu: SelectMenuTypes;
@@ -242,7 +255,7 @@ export async function ActionRowParser(ctx: Interpreter, content: string): Promis
             const disabled = segments[4].unescape().trim() === 'true';
 
             const selectContentMatch = part.match(
-                /\{(stringInput(?::[^}]+)|roleInput|channelInput(?::[^}]+)?|mentionableInput|userInput)\}?/i
+                /\{(stringInput(?::[^}]+)|roleInput|channelInput(?::[^}]+)?|mentionableInput|userInput)\}?/im
             );
             if (!selectContentMatch) continue;
             const selectContent = selectContentMatch[1].toLowerCase().trim();
@@ -251,10 +264,10 @@ export async function ActionRowParser(ctx: Interpreter, content: string): Promis
                 case selectContent.startsWith('stringinput:'): {
                     SelectMenu = new StringSelectMenuBuilder();
 
-                    const optionsRaw = content.split(/selectmenu/gi).flatMap((opt: string) => {
+                    const optionsRaw = content.split(/\selectmenu/gi).flatMap((opt: string) => {
                         if (!opt.includes(rest)) return [];
                         return opt
-                            .replace(/}\s*{/g, '')
+                            .replace(/}\s*{/gim, '')
                             .split(/stringinput:/gi)
                             .slice(1);
                     });
@@ -263,7 +276,7 @@ export async function ActionRowParser(ctx: Interpreter, content: string): Promis
                         await Promise.all(
                             optionsRaw.map(async (opt: string) => {
                                 const optParts = opt
-                                    .match(/(?:<a?:.*?:\d+>|[^:|^}])+/g)
+                                    .match(/(?:<a?:.*?:\d+>|[^:|^}])+/gim)
                                     ?.map((s) => s.unescape().trim());
 
                                 if (!optParts || optParts.length < 2) return null;
@@ -299,7 +312,7 @@ export async function ActionRowParser(ctx: Interpreter, content: string): Promis
                     break;
                 case selectContent.startsWith('channelinput'): {
                     let type: string | Array<number> | undefined = selectContent
-                        .split(/:(?![/][/])/)[1]
+                        .split(/:(?![/][/])/im)[1]
                         ?.toLowerCase()
                         .trim();
                     switch (type) {
@@ -335,7 +348,7 @@ export async function ActionRowParser(ctx: Interpreter, content: string): Promis
 
         // MODAL TEXT INPUT PARSER
         else if (compType === 'textinput' || compType === 'modal') {
-            const segments = rest.split(/:(?![/][/])/g);
+            const segments = rest.split(/:(?![/][/])/gim);
             if (segments.length < 3) continue;
 
             const label = segments[0].unescape().trim();
@@ -391,13 +404,76 @@ export function AttachmentParser(
     type: 'attachment' | 'file' = 'attachment'
 ): AttachmentBuilder | null {
     if (type === 'attachment') {
-        const [name = 'attachment.png', url]: string[] = rawContent.split(/:(?![/][/])/);
-        if (!url) return null;
+        const [name = 'attachment.png', url = '']: string[] = rawContent.split(/:(?![/][/])/im);
+        if (url === '') return null;
         return new AttachmentBuilder(url.unescape(), { name: name.unescape() });
     }
 
-    const [name = 'file.txt', content]: string[] = rawContent.split(/:(?![/][/])/);
-    if (!content) return null;
+    const [name = 'file.txt', content = '']: string[] = rawContent.split(/:(?![/][/])/im);
+    if (content === '') return null;
     const buffer = Buffer.from(content.unescape());
     return new AttachmentBuilder(buffer, { name: name.unescape() });
+}
+
+/**
+ * FLAGS PARSER (DON'T TOUCH)
+ *
+ * {flags:flag1,flag2,flag3}
+ * {flag:flag1}
+ */
+function FlagsParser(
+    ctx: Interpreter,
+    rawContent: string,
+    type: 'flags' | 'flag' = 'flags'
+): Array<MessageFlags | null> {
+    if (type === 'flag') {
+        const rawFlag = rawContent.unescape().trim().toLowerCase();
+        const flag = Number.isNaN(rawFlag) ? ctx.util.Flags[rawFlag] : Number.parseInt(rawFlag);
+        return [flag ?? null].filter(Boolean) as Array<MessageFlags | null>;
+    }
+
+    const rawFlags = rawContent.split(/:(?![/][/])/gim).map((flag) => flag.unescape().trim().toLowerCase());
+    return rawFlags
+        .map((flag) => {
+            return (Number.isNaN(flag) ? ctx.util.Flags[flag] : Number.parseInt(flag)) ?? null;
+        })
+        .filter(Boolean) as Array<MessageFlags | null>;
+}
+
+/**
+ * POLL PARSER (DON'T TOUCH)
+ *
+ * {poll:question:duration:multiSelect:options}
+ *
+ *     *options:
+ *         {answer:text:emoji?}
+ */
+async function PollParser(ctx: Interpreter, rawContent: string): Promise<PollData | null> {
+    let content = rawContent;
+    const answerRegex = /{answer:(.*?[^:]:.*?[^}])}/im;
+    const [question = '', durationRaw = '', multiSelect = 'false'] = content
+        .split(/:(?![/][/])/gim)
+        .map((s) => s.unescape().trim());
+    if (question === '' || durationRaw === '') return null;
+    const duration = ctx.helpers.time.parse(durationRaw)?.ms ?? 86400000;
+
+    const answers: Array<{ text: string; emoji?: string }> = [];
+    let match: RegExpExecArray | null = null;
+    while ((match = answerRegex.exec(content)) !== null) {
+        const [text, emoji] = match[1]?.match(/(?:<a?:.*?:\d+>|[^:|^}])+/gim)?.map((a) => a.unescape().trim()) ?? [];
+        content = content.replace(match[0], '');
+        if (text === '') continue;
+        const emojiResolved = emoji ? ((await ctx.util.getEmoji(ctx, emoji, true)) ?? emoji) : void 0;
+        answers.push({ text, emoji: emojiResolved });
+    }
+
+    if (answers.filter(Boolean).length === 0) return null;
+
+    return {
+        question: { text: question.unescape().trim() },
+        duration: Number.parseInt((duration / (1000 * 60 * 60)).toFixed()),
+        allowMultiselect: multiSelect.unescape().trim().toLowerCase() === 'true',
+        layoutType: 1,
+        answers
+    };
 }
