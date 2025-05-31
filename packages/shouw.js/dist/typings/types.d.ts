@@ -1,4 +1,4 @@
-import type { MessagePayload, MessageReplyOptions, MessageCreateOptions, InteractionReplyOptions, Message, ChatInputCommandInteraction, MessageComponentInteraction, ModalSubmitInteraction, ContextMenuCommandInteraction, Channel, CategoryChannel, ForumChannel, MediaChannel, PartialGroupDMChannel, PartialDMChannel, BitFieldResolvable, MessageFlags, StringSelectMenuBuilder, RoleSelectMenuBuilder, ChannelSelectMenuBuilder, MentionableSelectMenuBuilder, UserSelectMenuBuilder } from 'discord.js';
+import type { MessagePayload, MessageReplyOptions, MessageCreateOptions, InteractionReplyOptions, Message, ChatInputCommandInteraction, MessageComponentInteraction, ModalSubmitInteraction, ContextMenuCommandInteraction, Channel, CategoryChannel, ForumChannel, MediaChannel, PartialGroupDMChannel, PartialDMChannel, BitFieldResolvable, MessageFlags, StringSelectMenuBuilder, RoleSelectMenuBuilder, ChannelSelectMenuBuilder, MentionableSelectMenuBuilder, UserSelectMenuBuilder, ActionRowBuilder, ContainerBuilder, TextDisplayBuilder, SectionBuilder, MediaGalleryBuilder, SeparatorBuilder } from 'discord.js';
 export type Interaction = ChatInputCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction | ContextMenuCommandInteraction;
 export type InteractionWithMessage = Interaction | Message;
 export type SendData = string | MessagePayload | MessageReplyOptions | MessageCreateOptions;
@@ -11,3 +11,4 @@ export type SendableChannel = Exclude<Channel, CategoryChannel | PartialGroupDMC
 export type Flags = BitFieldResolvable<'SuppressEmbeds' | 'SuppressNotifications' | 'IsComponentsV2', MessageFlags.SuppressEmbeds | MessageFlags.SuppressNotifications | MessageFlags.IsComponentsV2> | undefined;
 export type SelectMenuTypes = StringSelectMenuBuilder | RoleSelectMenuBuilder | ChannelSelectMenuBuilder | MentionableSelectMenuBuilder | UserSelectMenuBuilder;
 export type Operator = '&&' | '||' | '==' | '!=' | '>=' | '<=' | '>' | '<';
+export type ComponentTypes = ActionRowBuilder | ContainerBuilder | TextDisplayBuilder | SectionBuilder | MediaGalleryBuilder | SeparatorBuilder | undefined;

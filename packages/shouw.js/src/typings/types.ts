@@ -20,7 +20,13 @@ import type {
     RoleSelectMenuBuilder,
     ChannelSelectMenuBuilder,
     MentionableSelectMenuBuilder,
-    UserSelectMenuBuilder
+    UserSelectMenuBuilder,
+    ActionRowBuilder,
+    ContainerBuilder,
+    TextDisplayBuilder,
+    SectionBuilder,
+    MediaGalleryBuilder,
+    SeparatorBuilder
 } from 'discord.js';
 
 export type Interaction =
@@ -62,3 +68,12 @@ export type SelectMenuTypes =
     | UserSelectMenuBuilder;
 
 export type Operator = '&&' | '||' | '==' | '!=' | '>=' | '<=' | '>' | '<';
+
+export type ComponentTypes =
+    | ActionRowBuilder
+    | ContainerBuilder
+    | TextDisplayBuilder
+    | SectionBuilder
+    | MediaGalleryBuilder
+    | SeparatorBuilder
+    | undefined;
