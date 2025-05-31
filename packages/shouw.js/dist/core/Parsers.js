@@ -344,7 +344,7 @@ function FlagsParser(ctx, rawContent, type = 'flags') {
  */
 async function PollParser(ctx, rawContent) {
     const content = rawContent;
-    const answerRegex = /{answer:(.*?[^:]:.*?[^}])}/gim;
+    const answerRegex = /{answer:(.*?[^}])}/gim;
     const [question, durationRaw, multiSelect = 'false'] = splitEscaped(content);
     if (!question || !durationRaw)
         return null;

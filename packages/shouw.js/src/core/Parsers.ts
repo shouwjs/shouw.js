@@ -397,7 +397,7 @@ function FlagsParser(
  */
 async function PollParser(ctx: Interpreter, rawContent: string): Promise<PollData | null> {
     const content = rawContent;
-    const answerRegex = /{answer:(.*?[^:]:.*?[^}])}/gim;
+    const answerRegex = /{answer:(.*?[^}])}/gim;
     const [question, durationRaw, multiSelect = 'false'] = splitEscaped(content);
     if (!question || !durationRaw) return null;
     const duration = ctx.helpers.time.parse(durationRaw)?.ms ?? 86400000;
