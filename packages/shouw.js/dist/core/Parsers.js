@@ -350,7 +350,7 @@ async function PollParser(ctx, rawContent) {
         return null;
     const duration = ctx.helpers.time.parse(durationRaw)?.ms ?? 86400000;
     const answers = [];
-    const matches = content.matchAll(answerRegex);
+    const matches = [...content.matchAll(answerRegex)];
     for (const match of matches) {
         const [text, emoji] = splitEscapedEmoji(match[1]);
         if (!text)
