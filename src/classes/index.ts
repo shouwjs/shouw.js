@@ -1,24 +1,25 @@
 /**
- * Export ShouwClient class
+ * Exporting all classes from the classes folder
  */
-export * from './ShouwClient.js';
+export {
+    ShouwClient,
+    type ShouwClientOptions
+} from './ShouwClient.js';
 
-/**
- * Export FunctionsManager class
- */
-export * from './Functions.js';
+export {
+    BaseClient,
+    type Objects
+} from './BaseClient.js';
 
-/**
- * Export BaseClient class
- */
-export * from './BaseClient.js';
+export {
+    CommandsManager,
+    type CommandData,
+    type CommandsEventMap
+} from './Commands.js';
 
-/**
- * Export CommandsManager class
- */
-export * from './Commands.js';
+export {
+    FunctionsManager,
+    type FunctionData
+} from './Functions.js';
 
-/**
- * Export VariablesManager class
- */
-export * from './Variable.js';
+export { Variables } from './Variable.js';

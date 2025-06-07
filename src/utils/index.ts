@@ -1,19 +1,15 @@
 /**
- * Export collective class
+ * Export all utilities from the utils folder
  */
-export * from './Collective.js';
+export { Collective } from './Collective.js';
 
-/**
- * Export functions
- */
-export * from './Functions.js';
+export {
+    sleep,
+    wait,
+    filterArray,
+    filterObject
+} from './Functions.js';
 
-/**
- * Export utilities
- */
-export * from './Util.js';
+export { Util } from './Util.js';
 
-/**
- * export constants
- */
-export * from './Constants.js';
+export { Constants } from './Constants.js';

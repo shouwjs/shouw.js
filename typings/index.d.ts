@@ -30,6 +30,34 @@ declare class ShouwClient extends BaseClient {
     debug(message: string, type?: 'ERROR' | 'DEBUG' | 'WARN', force?: boolean): ShouwClient;
 }
 
+interface CommandData extends Objects {
+    name?: string;
+    aliases?: string | string[];
+    channel?: string;
+    code: string | ((ctx: Interpreter) => any);
+    type?: string;
+    prototype?: string;
+    [key: string | number | symbol | `${any}`]: any;
+}
+type CommandsEventMap = {
+    [K in keyof typeof EventsMap]?: Collective<number, CommandData>;
+};
+declare const EventsMap: Record<string, string>;
+declare class CommandsManager implements CommandsEventMap {
+    readonly client: ShouwClient;
+    events?: string[];
+    [key: string]: CommandsEventMap | any;
+    interactionCreate?: {
+        slash: Collective<number, CommandData>;
+        button: Collective<number, CommandData>;
+        selectMenu: Collective<number, CommandData>;
+        modal: Collective<number, CommandData>;
+    };
+    constructor(client: ShouwClient, events?: string[]);
+    private loadEvents;
+    private getEventPath;
+}
+
 declare class Collective<K, V> extends Map<K, V> {
     create(key: K, value: V): Collective<K, V>;
     filter(fn: (value: V, index: number, array: V[]) => V[]): V[];
@@ -63,34 +91,6 @@ declare class FunctionsManager extends Collective<string, Functions> {
     constructor(client: ShouwClient);
     load(basePath: string, debug: boolean): Promise<undefined>;
     new(data: FunctionData): FunctionsManager;
-}
-
-interface CommandData extends Objects {
-    name?: string;
-    aliases?: string | string[];
-    channel?: string;
-    code: string | ((ctx: Interpreter) => any);
-    type?: string;
-    prototype?: string;
-    [key: string | number | symbol | `${any}`]: any;
-}
-type CommandsEventMap = {
-    [K in keyof typeof EventsMap]?: Collective<number, CommandData>;
-};
-declare const EventsMap: Record<string, string>;
-declare class CommandsManager implements CommandsEventMap {
-    readonly client: ShouwClient;
-    events?: string[];
-    [key: string]: CommandsEventMap | any;
-    interactionCreate?: {
-        slash: Collective<number, CommandData>;
-        button: Collective<number, CommandData>;
-        selectMenu: Collective<number, CommandData>;
-        modal: Collective<number, CommandData>;
-    };
-    constructor(client: ShouwClient, events?: string[]);
-    private loadEvents;
-    private getEventPath;
 }
 
 declare class Variables {

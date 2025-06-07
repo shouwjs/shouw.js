@@ -6,22 +6,20 @@
     "type": "commonjs",
     "main": "./dist/index.js",
     "types": "./typings/index.d.ts",
-    "exports": "./dist/index.js",
     "directories": {
         "lib": "dist",
         "typings": "typings",
-        "test": "test",
-        "docs": "docs"
+        "test": "test"
     },
     "scripts": {
-        "prepare": "npm run pretty && npm run build",
+        "build": "npm run pretty && npm run build:all",
         "build:ts": "tsc -p tsconfig.json",
         "build:types": "npx tsup --config tsup.config.json --dts-only --outDir typings",
         "build:docs": "npx typedoc --options typedoc.json",
         "lint": "biome lint src --fix",
         "format": "biome format src --write",
         "pretty": "npm run lint && npm run format",
-        "build": "npm run build:ts && npm run build:types && npm run build:docs",
+        "build:all": "npm run build:ts && npm run build:types && npm run build:docs",
         "dev": "node test"
     },
     "keywords": [

@@ -1,14 +1,62 @@
 /**
- * Export all classes
+ * Export all classes and functions from the src folder
  */
-export * from './classes/index.js';
 
-/**
- * Export all core utilities
- */
-export * from './core/index.js';
+export {
+    ShouwClient,
+    BaseClient,
+    CommandsManager,
+    FunctionsManager,
+    Variables,
+    type Objects,
+    type CommandData,
+    type CommandsEventMap,
+    type FunctionData,
+    type ShouwClientOptions
+} from './classes/index.js';
 
-/**
- * Export all utils
- */
-export * from './utils/index.js';
+export {
+    Interpreter,
+    Context,
+    Functions,
+    CheckCondition,
+    IF,
+    Time,
+    Reader,
+    Parser,
+    EmbedParser,
+    ActionRowParser,
+    AttachmentParser,
+    FlagsParser,
+    PollParser,
+    ComponentsV2Parser,
+    parseSeparatorV2,
+    parseSectionV2,
+    parseGalleryV2,
+    parseButton,
+    ParamType,
+    type InterpreterOptions,
+    type TemporarilyData,
+    type HelpersData,
+    type ExtraOptionsData,
+    type Interaction,
+    type InteractionWithMessage,
+    type SendData,
+    type MessageReplyData,
+    type InteractionReplyData,
+    type SendableChannel,
+    type FunctionResultData,
+    type ComponentTypes,
+    type Flags,
+    type SelectMenuTypes
+} from './core/index.js';
+
+export {
+    Collective,
+    sleep,
+    wait,
+    filterArray,
+    filterObject,
+    Util,
+    Constants
+} from './utils/index.js';

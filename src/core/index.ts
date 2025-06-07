@@ -1,42 +1,54 @@
 /**
- * Export interpreter class
+ * Export all the core classes and functions
  */
-export * from './Interpreter.js';
+export {
+    Interpreter,
+    type InterpreterOptions,
+    type TemporarilyData,
+    type HelpersData,
+    type ExtraOptionsData
+} from './Interpreter.js';
 
-/**
- * Export context class
- */
-export * from './Context.js';
+export {
+    Context,
+    type Interaction,
+    type InteractionWithMessage,
+    type SendData,
+    type MessageReplyData,
+    type InteractionReplyData,
+    type SendableChannel
+} from './Context.js';
 
-/**
- * Export functions class
- */
-export * from './Functions.js';
+export {
+    Functions,
+    type FunctionResultData,
+    ParamType
+} from './Functions.js';
 
-/**
- * Export conditions function
- */
-export * from './Conditions.js';
+export { CheckCondition } from './Conditions.js';
 
-/**
- * Export IF function
- */
-export * from './IF.js';
+export { IF } from './IF.js';
 
-/**
- * Export time class
- */
-export * from './Time.js';
+export { Time } from './Time.js';
 
-/**
- * Export reader class
- */
-export * from './Reader.js';
+export { Reader } from './Reader.js';
 
-/**
- * Export parsers class
- */
-export * from './Parsers.js';
+export {
+    Parser,
+    EmbedParser,
+    ActionRowParser,
+    AttachmentParser,
+    FlagsParser,
+    PollParser,
+    ComponentsV2Parser,
+    parseSeparatorV2,
+    parseSectionV2,
+    parseGalleryV2,
+    parseButton,
+    type ComponentTypes,
+    type Flags,
+    type SelectMenuTypes
+} from './Parsers.js';
 
 declare global {
     interface String {
