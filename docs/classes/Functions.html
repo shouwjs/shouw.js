@@ -1,0 +1,238 @@
+<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>Functions | shouw.js</title><meta name="description" content="Documentation for shouw.js"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script><style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --md-sys-color-primary: #b2c5ff;
+    --md-sys-color-on-primary: #002c72;
+    --md-sys-color-primary-container: #0040a0;
+    --md-sys-color-on-primary-container: #dae2ff;
+    --md-sys-color-secondary: #c0c6dd;
+    --md-sys-color-on-secondary: #2a3042;
+    --md-sys-color-secondary-container: #404659;
+    --md-sys-color-on-secondary-container: #dce2f9;
+    --md-sys-color-tertiary: #e1bbdd;
+    --md-sys-color-on-tertiary: #412742;
+    --md-sys-color-tertiary-container: #5a3d59;
+    --md-sys-color-on-tertiary-container: #fed7f9;
+    --md-sys-color-error: #ffb4ab;
+    --md-sys-color-on-error: #690005;
+    --md-sys-color-error-container: #93000a;
+    --md-sys-color-on-error-container: #ffb4ab;
+    --md-sys-color-background: #1b1b1f;
+    --md-sys-color-on-background: #e4e2e6;
+    --md-sys-color-surface: #1b1b1f;
+    --md-sys-color-on-surface: #e4e2e6;
+    --md-sys-color-surface-variant: #45464f;
+    --md-sys-color-on-surface-variant: #c5c6d0;
+    --md-sys-color-outline: #8f9099;
+    --md-sys-color-outline-variant: #45464f;
+    --md-sys-color-shadow: #000000;
+    --md-sys-color-scrim: #000000;
+    --md-sys-color-inverse-surface: #e4e2e6;
+    --md-sys-color-inverse-on-surface: #303034;
+    --md-sys-color-inverse-primary: #0056d1;
+    --md-sys-color-surface-dim: #131316;
+    --md-sys-color-surface-bright: #39393c;
+    --md-sys-color-surface-container-lowest: #0d0e11;
+    --md-sys-color-surface-container-low: #1b1b1f;
+    --md-sys-color-surface-container: #1f1f23;
+    --md-sys-color-surface-container-high: #292a2d;
+    --md-sys-color-surface-container-highest: #343438
+  }
+}
+:root[data-theme="dark"] {
+  --md-sys-color-primary: #b2c5ff;
+  --md-sys-color-on-primary: #002c72;
+  --md-sys-color-primary-container: #0040a0;
+  --md-sys-color-on-primary-container: #dae2ff;
+  --md-sys-color-secondary: #c0c6dd;
+  --md-sys-color-on-secondary: #2a3042;
+  --md-sys-color-secondary-container: #404659;
+  --md-sys-color-on-secondary-container: #dce2f9;
+  --md-sys-color-tertiary: #e1bbdd;
+  --md-sys-color-on-tertiary: #412742;
+  --md-sys-color-tertiary-container: #5a3d59;
+  --md-sys-color-on-tertiary-container: #fed7f9;
+  --md-sys-color-error: #ffb4ab;
+  --md-sys-color-on-error: #690005;
+  --md-sys-color-error-container: #93000a;
+  --md-sys-color-on-error-container: #ffb4ab;
+  --md-sys-color-background: #1b1b1f;
+  --md-sys-color-on-background: #e4e2e6;
+  --md-sys-color-surface: #1b1b1f;
+  --md-sys-color-on-surface: #e4e2e6;
+  --md-sys-color-surface-variant: #45464f;
+  --md-sys-color-on-surface-variant: #c5c6d0;
+  --md-sys-color-outline: #8f9099;
+  --md-sys-color-outline-variant: #45464f;
+  --md-sys-color-shadow: #000000;
+  --md-sys-color-scrim: #000000;
+  --md-sys-color-inverse-surface: #e4e2e6;
+  --md-sys-color-inverse-on-surface: #303034;
+  --md-sys-color-inverse-primary: #0056d1;
+  --md-sys-color-surface-dim: #131316;
+  --md-sys-color-surface-bright: #39393c;
+  --md-sys-color-surface-container-lowest: #0d0e11;
+  --md-sys-color-surface-container-low: #1b1b1f;
+  --md-sys-color-surface-container: #1f1f23;
+  --md-sys-color-surface-container-high: #292a2d;
+  --md-sys-color-surface-container-highest: #343438
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --md-sys-color-primary: #0056d1;
+    --md-sys-color-on-primary: #ffffff;
+    --md-sys-color-primary-container: #dae2ff;
+    --md-sys-color-on-primary-container: #001847;
+    --md-sys-color-secondary: #585e71;
+    --md-sys-color-on-secondary: #ffffff;
+    --md-sys-color-secondary-container: #dce2f9;
+    --md-sys-color-on-secondary-container: #151b2c;
+    --md-sys-color-tertiary: #735471;
+    --md-sys-color-on-tertiary: #ffffff;
+    --md-sys-color-tertiary-container: #fed7f9;
+    --md-sys-color-on-tertiary-container: #2b122c;
+    --md-sys-color-error: #ba1a1a;
+    --md-sys-color-on-error: #ffffff;
+    --md-sys-color-error-container: #ffdad6;
+    --md-sys-color-on-error-container: #410002;
+    --md-sys-color-background: #fefbff;
+    --md-sys-color-on-background: #1b1b1f;
+    --md-sys-color-surface: #fefbff;
+    --md-sys-color-on-surface: #1b1b1f;
+    --md-sys-color-surface-variant: #e1e2ec;
+    --md-sys-color-on-surface-variant: #45464f;
+    --md-sys-color-outline: #757780;
+    --md-sys-color-outline-variant: #c5c6d0;
+    --md-sys-color-shadow: #000000;
+    --md-sys-color-scrim: #000000;
+    --md-sys-color-inverse-surface: #303034;
+    --md-sys-color-inverse-on-surface: #f2f0f4;
+    --md-sys-color-inverse-primary: #b2c5ff;
+    --md-sys-color-surface-dim: #dbd9dd;
+    --md-sys-color-surface-bright: #fbf8fd;
+    --md-sys-color-surface-container-lowest: #ffffff;
+    --md-sys-color-surface-container-low: #f5f3f7;
+    --md-sys-color-surface-container: #efedf1;
+    --md-sys-color-surface-container-high: #e9e7ec;
+    --md-sys-color-surface-container-highest: #e4e2e6
+  }
+}
+:root[data-theme="light"] {
+  --md-sys-color-primary: #0056d1;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #dae2ff;
+  --md-sys-color-on-primary-container: #001847;
+  --md-sys-color-secondary: #585e71;
+  --md-sys-color-on-secondary: #ffffff;
+  --md-sys-color-secondary-container: #dce2f9;
+  --md-sys-color-on-secondary-container: #151b2c;
+  --md-sys-color-tertiary: #735471;
+  --md-sys-color-on-tertiary: #ffffff;
+  --md-sys-color-tertiary-container: #fed7f9;
+  --md-sys-color-on-tertiary-container: #2b122c;
+  --md-sys-color-error: #ba1a1a;
+  --md-sys-color-on-error: #ffffff;
+  --md-sys-color-error-container: #ffdad6;
+  --md-sys-color-on-error-container: #410002;
+  --md-sys-color-background: #fefbff;
+  --md-sys-color-on-background: #1b1b1f;
+  --md-sys-color-surface: #fefbff;
+  --md-sys-color-on-surface: #1b1b1f;
+  --md-sys-color-surface-variant: #e1e2ec;
+  --md-sys-color-on-surface-variant: #45464f;
+  --md-sys-color-outline: #757780;
+  --md-sys-color-outline-variant: #c5c6d0;
+  --md-sys-color-shadow: #000000;
+  --md-sys-color-scrim: #000000;
+  --md-sys-color-inverse-surface: #303034;
+  --md-sys-color-inverse-on-surface: #f2f0f4;
+  --md-sys-color-inverse-primary: #b2c5ff;
+  --md-sys-color-surface-dim: #dbd9dd;
+  --md-sys-color-surface-bright: #fbf8fd;
+  --md-sys-color-surface-container-lowest: #ffffff;
+  --md-sys-color-surface-container-low: #f5f3f7;
+  --md-sys-color-surface-container: #efedf1;
+  --md-sys-color-surface-container-high: #e9e7ec;
+  --md-sys-color-surface-container-highest: #e4e2e6
+}
+</style><link rel="stylesheet" href="../assets/material-style.css"/></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><a href="../index.html" class="title">shouw.js</a><div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/><ul role="listbox" id="tsd-search-results"></ul><div id="tsd-search-status" aria-live="polite" aria-atomic="true"><div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-menu"></use></svg></a></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><ul class="tsd-breadcrumb" aria-label="Breadcrumb"><li><a href="" aria-current="page">Functions</a></li></ul><h1>Class Functions</h1></div><section class="tsd-panel tsd-comment"><div class="tsd-comment tsd-typography"><p>Functions instance for building and managing functions</p>
+<p>Functions</p>
+</div><div class="tsd-comment tsd-typography"><div class="tsd-tag-param"><h4 class="tsd-anchor-link" id="param-data">Param: data<a href="#param-data" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>The data of the function</p>
+</div></div></section><aside class="tsd-sources"><ul><li>Defined in <a href="https://github.com/shouwjs/shouw.js/blob/5a87edb4d1f55729c8b0f91b08038f3e6eff973f/src/core/Functions.ts#L31">src/core/Functions.ts:31</a></li></ul></aside><section class="tsd-panel-group tsd-index-group"><section class="tsd-panel tsd-index-panel"><details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg><h5 class="tsd-index-heading uppercase">Index</h5></summary><div class="tsd-accordion-details"><section class="tsd-index-section"><h3 class="tsd-index-heading">Constructors</h3><div class="tsd-index-list"><a href="#constructor" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Constructor"><use href="../assets/icons.svg#icon-512"></use></svg><span>constructor</span></a>
+</div></section><section class="tsd-index-section"><h3 class="tsd-index-heading">Accessors</h3><div class="tsd-index-list"><a href="#brackets" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Accessor"><use href="../assets/icons.svg#icon-262144"></use></svg><span>brackets</span></a>
+<a href="#description" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Accessor"><use href="../assets/icons.svg#icon-262144"></use></svg><span>description</span></a>
+<a href="#name" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Accessor"><use href="../assets/icons.svg#icon-262144"></use></svg><span>name</span></a>
+<a href="#params" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Accessor"><use href="../assets/icons.svg#icon-262144"></use></svg><span>params</span></a>
+<a href="#paramslength" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Accessor"><use href="../assets/icons.svg#icon-262144"></use></svg><span>params<wbr/>Length</span></a>
+<a href="#type" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Accessor"><use href="../assets/icons.svg#icon-262144"></use></svg><span>type</span></a>
+<a href="#withparams" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Accessor"><use href="../assets/icons.svg#icon-262144"></use></svg><span>with<wbr/>Params</span></a>
+</div></section><section class="tsd-index-section"><h3 class="tsd-index-heading">Methods</h3><div class="tsd-index-list"><a href="#code" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>code</span></a>
+<a href="#error" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>error</span></a>
+<a href="#getparams" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Params</span></a>
+<a href="#success" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>success</span></a>
+</div></section></div></details></section></section><details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Constructors"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg><h2>Constructors</h2></summary><section><section class="tsd-panel tsd-member"><h3 class="tsd-anchor-link" id="constructor"><span>constructor</span><a href="#constructor" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><ul class="tsd-signatures"><li class=""><div class="tsd-signature tsd-anchor-link" id="constructorfunctions"><span class="tsd-signature-keyword">new</span> <span class="tsd-kind-constructor-signature">Functions</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">data</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/FunctionData.html" class="tsd-signature-type tsd-kind-interface">FunctionData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type tsd-kind-class">Functions</a><a href="#constructorfunctions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div><div class="tsd-description"><div class="tsd-parameters"><h4 class="tsd-parameters-title">Parameters</h4><ul class="tsd-parameter-list"><li><span><span class="tsd-kind-parameter">data</span>: <a href="../interfaces/FunctionData.html" class="tsd-signature-type tsd-kind-interface">FunctionData</a></span></li></ul></div><h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">Functions</a></h4><aside class="tsd-sources"><ul><li>Defined in <a href="https://github.com/shouwjs/shouw.js/blob/5a87edb4d1f55729c8b0f91b08038f3e6eff973f/src/core/Functions.ts#L62">src/core/Functions.ts:62</a></li></ul></aside></div></li></ul></section></section></details><details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Accessors"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg><h2>Accessors</h2></summary><section><section class="tsd-panel tsd-member"><h3 class="tsd-anchor-link" id="brackets"><span>brackets</span><a href="#brackets" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><ul class="tsd-signatures"><li><div class="tsd-signature" id="bracketsbrackets"><span class="tsd-signature-keyword">get</span> <span class="tsd-kind-get-signature">brackets</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">boolean</span></div><div class="tsd-description"><div class="tsd-comment tsd-typography"><p>Whether the function uses brackets</p>
+</div><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">boolean</span></h4><ul>
+<li>Whether the function uses brackets</li>
+</ul>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources"><ul><li>Defined in <a href="https://github.com/shouwjs/shouw.js/blob/5a87edb4d1f55729c8b0f91b08038f3e6eff973f/src/core/Functions.ts#L101">src/core/Functions.ts:101</a></li></ul></aside></div></li></ul></section><section class="tsd-panel tsd-member"><h3 class="tsd-anchor-link" id="description"><span>description</span><a href="#description" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><ul class="tsd-signatures"><li><div class="tsd-signature" id="descriptiondescription"><span class="tsd-signature-keyword">get</span> <span class="tsd-kind-get-signature">description</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">string</span></div><div class="tsd-description"><div class="tsd-comment tsd-typography"><p>The description of the function</p>
+</div><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">string</span></h4><ul>
+<li>The description of the function</li>
+</ul>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources"><ul><li>Defined in <a href="https://github.com/shouwjs/shouw.js/blob/5a87edb4d1f55729c8b0f91b08038f3e6eff973f/src/core/Functions.ts#L110">src/core/Functions.ts:110</a></li></ul></aside></div></li></ul></section><section class="tsd-panel tsd-member"><h3 class="tsd-anchor-link" id="name"><span>name</span><a href="#name" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><ul class="tsd-signatures"><li><div class="tsd-signature" id="namename"><span class="tsd-signature-keyword">get</span> <span class="tsd-kind-get-signature">name</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">string</span></div><div class="tsd-description"><div class="tsd-comment tsd-typography"><p>The name of the function</p>
+</div><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">string</span></h4><ul>
+<li>The name of the function</li>
+</ul>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources"><ul><li>Defined in <a href="https://github.com/shouwjs/shouw.js/blob/5a87edb4d1f55729c8b0f91b08038f3e6eff973f/src/core/Functions.ts#L92">src/core/Functions.ts:92</a></li></ul></aside></div></li></ul></section><section class="tsd-panel tsd-member"><h3 class="tsd-anchor-link" id="params"><span>params</span><a href="#params" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><ul class="tsd-signatures"><li><div class="tsd-signature" id="paramsparams"><span class="tsd-signature-keyword">get</span> <span class="tsd-kind-get-signature">params</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><br/><span class="tsd-signature-symbol">|</span> <span class="tsd-signature-symbol">{</span><br/>    <span class="tsd-kind-property">description</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">name</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">required</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">type</span><span class="tsd-signature-symbol">?:</span> <a href="../enums/ParamType.html" class="tsd-signature-type tsd-kind-enum">ParamType</a><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">[]</span></div><div class="tsd-description"><div class="tsd-comment tsd-typography"><p>The parameters of the function</p>
+</div><h4 class="tsd-returns-title">Returns <br/>    <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><br/>    <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-symbol">{</span><br/>        <span class="tsd-kind-property">description</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>        <span class="tsd-kind-property">name</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>        <span class="tsd-kind-property">required</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>        <span class="tsd-kind-property">type</span><span class="tsd-signature-symbol">?:</span> <a href="../enums/ParamType.html" class="tsd-signature-type tsd-kind-enum">ParamType</a><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">[]</span></h4><ul>
+<li>The parameters of the function</li>
+</ul>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources"><ul><li>Defined in <a href="https://github.com/shouwjs/shouw.js/blob/5a87edb4d1f55729c8b0f91b08038f3e6eff973f/src/core/Functions.ts#L128">src/core/Functions.ts:128</a></li></ul></aside></div></li></ul></section><section class="tsd-panel tsd-member"><h3 class="tsd-anchor-link" id="paramslength"><span>params<wbr/>Length</span><a href="#paramslength" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><ul class="tsd-signatures"><li><div class="tsd-signature" id="paramslengthparamslength"><span class="tsd-signature-keyword">get</span> <span class="tsd-kind-get-signature">paramsLength</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><div class="tsd-description"><div class="tsd-comment tsd-typography"><p>The length of the parameters of the function</p>
+</div><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><ul>
+<li>The length of the parameters of the function</li>
+</ul>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources"><ul><li>Defined in <a href="https://github.com/shouwjs/shouw.js/blob/5a87edb4d1f55729c8b0f91b08038f3e6eff973f/src/core/Functions.ts#L144">src/core/Functions.ts:144</a></li></ul></aside></div></li></ul></section><section class="tsd-panel tsd-member"><h3 class="tsd-anchor-link" id="type"><span>type</span><a href="#type" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><ul class="tsd-signatures"><li><div class="tsd-signature" id="typetype"><span class="tsd-signature-keyword">get</span> <span class="tsd-kind-get-signature">type</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">string</span></div><div class="tsd-description"><div class="tsd-comment tsd-typography"><p>The type of the function</p>
+</div><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">string</span></h4><ul>
+<li>The type of the function</li>
+</ul>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources"><ul><li>Defined in <a href="https://github.com/shouwjs/shouw.js/blob/5a87edb4d1f55729c8b0f91b08038f3e6eff973f/src/core/Functions.ts#L119">src/core/Functions.ts:119</a></li></ul></aside></div></li></ul></section><section class="tsd-panel tsd-member"><h3 class="tsd-anchor-link" id="withparams"><span>with<wbr/>Params</span><a href="#withparams" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><ul class="tsd-signatures"><li><div class="tsd-signature" id="withparamswithparams"><span class="tsd-signature-keyword">get</span> <span class="tsd-kind-get-signature">withParams</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><div class="tsd-description"><div class="tsd-comment tsd-typography"><p>The name of the function with parameters</p>
+</div><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><ul>
+<li>The name of the function with parameters</li>
+</ul>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources"><ul><li>Defined in <a href="https://github.com/shouwjs/shouw.js/blob/5a87edb4d1f55729c8b0f91b08038f3e6eff973f/src/core/Functions.ts#L153">src/core/Functions.ts:153</a></li></ul></aside></div></li></ul></section></section></details><details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg><h2>Methods</h2></summary><section><section class="tsd-panel tsd-member"><h3 class="tsd-anchor-link" id="code"><span>code</span><a href="#code" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><ul class="tsd-signatures"><li class=""><div class="tsd-signature tsd-anchor-link" id="code-1"><span class="tsd-kind-call-signature">code</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">_ctx</span><span class="tsd-signature-symbol">:</span> <a href="Interpreter.html" class="tsd-signature-type tsd-kind-class">Interpreter</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">_args</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">_data</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/TemporarilyData.html" class="tsd-signature-type tsd-kind-interface">TemporarilyData</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/FunctionResultData.html" class="tsd-signature-type tsd-kind-interface">FunctionResultData</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/FunctionResultData.html" class="tsd-signature-type tsd-kind-interface">FunctionResultData</a><span class="tsd-signature-symbol">&gt;</span><a href="#code-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div><div class="tsd-description"><div class="tsd-comment tsd-typography"><p>The code of the function. This function is called when the function is executed.</p>
+</div><div class="tsd-parameters"><h4 class="tsd-parameters-title">Parameters</h4><ul class="tsd-parameter-list"><li><span><span class="tsd-kind-parameter">_ctx</span>: <a href="Interpreter.html" class="tsd-signature-type tsd-kind-class">Interpreter</a></span></li><li><span><span class="tsd-kind-parameter">_args</span>: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></span></li><li><span><span class="tsd-kind-parameter">_data</span>: <a href="../interfaces/TemporarilyData.html" class="tsd-signature-type tsd-kind-interface">TemporarilyData</a></span></li></ul></div><h4 class="tsd-returns-title">Returns <a href="../interfaces/FunctionResultData.html" class="tsd-signature-type tsd-kind-interface">FunctionResultData</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/FunctionResultData.html" class="tsd-signature-type tsd-kind-interface">FunctionResultData</a><span class="tsd-signature-symbol">&gt;</span></h4><ul>
+<li>The result of the function</li>
+</ul>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources"><ul><li>Defined in <a href="https://github.com/shouwjs/shouw.js/blob/5a87edb4d1f55729c8b0f91b08038f3e6eff973f/src/core/Functions.ts#L79">src/core/Functions.ts:79</a></li></ul></aside></div></li></ul></section><section class="tsd-panel tsd-member"><h3 class="tsd-anchor-link" id="error"><span>error</span><a href="#error" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><ul class="tsd-signatures"><li class=""><div class="tsd-signature tsd-anchor-link" id="error-1"><span class="tsd-kind-call-signature">error</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">data</span><span class="tsd-signature-symbol">?:</span> <a href="../interfaces/FunctionResultData.html" class="tsd-signature-type tsd-kind-interface">FunctionResultData</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/FunctionResultData.html" class="tsd-signature-type tsd-kind-interface">FunctionResultData</a><a href="#error-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div><div class="tsd-description"><div class="tsd-comment tsd-typography"><p>The error result of the function</p>
+</div><div class="tsd-parameters"><h4 class="tsd-parameters-title">Parameters</h4><ul class="tsd-parameter-list"><li><span><code class="tsd-tag">Optional</code><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">data</span>: <a href="../interfaces/FunctionResultData.html" class="tsd-signature-type tsd-kind-interface">FunctionResultData</a><span class="tsd-signature-symbol">[]</span></span><div class="tsd-comment tsd-typography"><p>The data of the function</p>
+</div><div class="tsd-comment tsd-typography"></div></li></ul></div><h4 class="tsd-returns-title">Returns <a href="../interfaces/FunctionResultData.html" class="tsd-signature-type tsd-kind-interface">FunctionResultData</a></h4><ul>
+<li>The error result of the function</li>
+</ul>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources"><ul><li>Defined in <a href="https://github.com/shouwjs/shouw.js/blob/5a87edb4d1f55729c8b0f91b08038f3e6eff973f/src/core/Functions.ts#L192">src/core/Functions.ts:192</a></li></ul></aside></div></li></ul></section><section class="tsd-panel tsd-member"><h3 class="tsd-anchor-link" id="getparams"><span>get<wbr/>Params</span><a href="#getparams" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><ul class="tsd-signatures"><li class=""><div class="tsd-signature tsd-anchor-link" id="getparams-1"><span class="tsd-kind-call-signature">getParams</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">index</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span><br/>    <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><br/>    <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-symbol">{</span><br/>        <span class="tsd-kind-property">description</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>        <span class="tsd-kind-property">name</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>        <span class="tsd-kind-property">required</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>        <span class="tsd-kind-property">type</span><span class="tsd-signature-symbol">?:</span> <a href="../enums/ParamType.html" class="tsd-signature-type tsd-kind-enum">ParamType</a><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-signature-symbol">}</span><a href="#getparams-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div><div class="tsd-description"><div class="tsd-comment tsd-typography"><p>Get a parameter of the function</p>
+</div><div class="tsd-parameters"><h4 class="tsd-parameters-title">Parameters</h4><ul class="tsd-parameter-list"><li><span><span class="tsd-kind-parameter">index</span>: <span class="tsd-signature-type">number</span></span><div class="tsd-comment tsd-typography"><p>The index of the parameter</p>
+</div><div class="tsd-comment tsd-typography"></div></li></ul></div><h4 class="tsd-returns-title">Returns <br/>    <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><br/>    <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-symbol">{</span><br/>        <span class="tsd-kind-property">description</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>        <span class="tsd-kind-property">name</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>        <span class="tsd-kind-property">required</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>        <span class="tsd-kind-property">type</span><span class="tsd-signature-symbol">?:</span> <a href="../enums/ParamType.html" class="tsd-signature-type tsd-kind-enum">ParamType</a><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-signature-symbol">}</span></h4><ul>
+<li>The parameter of the function</li>
+</ul>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources"><ul><li>Defined in <a href="https://github.com/shouwjs/shouw.js/blob/5a87edb4d1f55729c8b0f91b08038f3e6eff973f/src/core/Functions.ts#L163">src/core/Functions.ts:163</a></li></ul></aside></div></li></ul></section><section class="tsd-panel tsd-member"><h3 class="tsd-anchor-link" id="success"><span>success</span><a href="#success" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><ul class="tsd-signatures"><li class=""><div class="tsd-signature tsd-anchor-link" id="success-1"><span class="tsd-kind-call-signature">success</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">result</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">error</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">data</span><span class="tsd-signature-symbol">?:</span> <a href="../interfaces/FunctionResultData.html" class="tsd-signature-type tsd-kind-interface">FunctionResultData</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/FunctionResultData.html" class="tsd-signature-type tsd-kind-interface">FunctionResultData</a><a href="#success-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div><div class="tsd-description"><div class="tsd-comment tsd-typography"><p>The success result of the function</p>
+</div><div class="tsd-parameters"><h4 class="tsd-parameters-title">Parameters</h4><ul class="tsd-parameter-list"><li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">result</span>: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = ...</span></span><div class="tsd-comment tsd-typography"><p>The result of the function</p>
+</div><div class="tsd-comment tsd-typography"></div></li><li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">error</span>: <span class="tsd-signature-type">boolean</span></span><div class="tsd-comment tsd-typography"><p>Whether the function errored</p>
+</div><div class="tsd-comment tsd-typography"></div></li><li><span><code class="tsd-tag">Optional</code><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">data</span>: <a href="../interfaces/FunctionResultData.html" class="tsd-signature-type tsd-kind-interface">FunctionResultData</a><span class="tsd-signature-symbol">[]</span></span><div class="tsd-comment tsd-typography"><p>The data of the function</p>
+</div><div class="tsd-comment tsd-typography"></div></li></ul></div><h4 class="tsd-returns-title">Returns <a href="../interfaces/FunctionResultData.html" class="tsd-signature-type tsd-kind-interface">FunctionResultData</a></h4><ul>
+<li>The success result of the function</li>
+</ul>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources"><ul><li>Defined in <a href="https://github.com/shouwjs/shouw.js/blob/5a87edb4d1f55729c8b0f91b08038f3e6eff973f/src/core/Functions.ts#L182">src/core/Functions.ts:182</a></li></ul></aside></div></li></ul></section></section></details></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg><h3>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div><div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg><h3>On This Page</h3></summary><div class="tsd-accordion-details"><details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Constructors"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Constructors</summary><div><a href="#constructor"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Constructor"><use href="../assets/icons.svg#icon-512"></use></svg><span>constructor</span></a></div></details><details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Accessors"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Accessors</summary><div><a href="#brackets"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Accessor"><use href="../assets/icons.svg#icon-262144"></use></svg><span>brackets</span></a><a href="#description"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Accessor"><use href="../assets/icons.svg#icon-262144"></use></svg><span>description</span></a><a href="#name"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Accessor"><use href="../assets/icons.svg#icon-262144"></use></svg><span>name</span></a><a href="#params"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Accessor"><use href="../assets/icons.svg#icon-262144"></use></svg><span>params</span></a><a href="#paramslength"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Accessor"><use href="../assets/icons.svg#icon-262144"></use></svg><span>params<wbr/>Length</span></a><a href="#type"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Accessor"><use href="../assets/icons.svg#icon-262144"></use></svg><span>type</span></a><a href="#withparams"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Accessor"><use href="../assets/icons.svg#icon-262144"></use></svg><span>with<wbr/>Params</span></a></div></details><details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Methods</summary><div><a href="#code"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>code</span></a><a href="#error"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>error</span></a><a href="#getparams"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Params</span></a><a href="#success"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>success</span></a></div></details></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="../index.html">shouw.js</a><ul class="tsd-small-nested-navigation" id="tsd-nav-container"><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div><script>
+          try {
+            const generateLinkElement = document.querySelector(".tsd-generator a");
+            const link = document.createElement("a");
+            Object.assign(link, {
+              href: "https://github.com/dmnsgn/typedoc-material-theme",
+              target: "_blank",
+              rel: "noreferrer",
+              innerText: "typedoc-material-theme."
+            });
+            generateLinkElement.insertAdjacentElement("afterend", link);
+            generateLinkElement.insertAdjacentText("afterend", " with ");
+          } catch (error) {
+
+          }
+        </script></body></html>

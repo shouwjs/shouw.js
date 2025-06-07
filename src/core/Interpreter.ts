@@ -36,7 +36,7 @@ export interface InterpreterOptions {
     isAutocomplete?: boolean;
 }
 
-export interface TemporarilyData {
+export interface TemporarilyData extends Objects {
     arrays: Objects;
     variables: Objects;
     splits: Array<string>;
@@ -102,7 +102,7 @@ export class Interpreter {
     /**
      * The code to execute
      */
-    public code: string | ((ctx: Interpreter) => any);
+    public code: string | ((ctx: Interpreter, context: Context, data: TemporarilyData) => any);
 
     /**
      * The command data
@@ -132,7 +132,7 @@ export class Interpreter {
     /**
      * The context of the command
      */
-    public context?: Context;
+    public context: Context;
 
     /**
      * The arguments of the command
@@ -221,7 +221,7 @@ export class Interpreter {
         this.guild = options.guild;
         this.member = options.member;
         this.user = options.user;
-        this.context = options.context;
+        this.context = options.context as Context;
         this.args = options.args;
         this.helpers = {
             parser: Parser,
@@ -233,20 +233,21 @@ export class Interpreter {
             escape: (str: string) => str.escape(),
             mustEscape: (str: string) => str.mustEscape()
         };
-        this.Temporarily = (options.Temporarily ?? {
+        this.Temporarily = {
+            ...options.Temporarily,
             arrays: {},
             variables: {},
             splits: [],
             randoms: {},
             timezone: void 0
-        }) as TemporarilyData;
-        this.extras = (extras ?? {
-            sendMessage: true,
-            returnId: false,
-            returnResult: true,
-            returnError: false,
-            returnData: false
-        }) as ExtraOptionsData;
+        };
+        this.extras = {
+            sendMessage: extras?.sendMessage ?? true,
+            returnId: extras?.returnId ?? false,
+            returnResult: extras?.returnResult ?? true,
+            returnError: extras?.returnError ?? false,
+            returnData: extras?.returnData ?? false
+        };
 
         if (!this.context || !(this.context instanceof Context)) {
             this.context = new Context(
@@ -277,7 +278,7 @@ export class Interpreter {
     }> {
         try {
             if (typeof this.code === 'function') {
-                await this.code(this);
+                await this.code(this, this.context, this.Temporarily);
                 return {};
             }
 
@@ -449,11 +450,12 @@ export class Interpreter {
         const funcStart = code.toLowerCase().indexOf(func.toLowerCase());
         if (funcStart === -1) return { func, args: [], brackets: false, all: null };
         const openBracketIndex = code.indexOf('[', funcStart);
-        if (openBracketIndex === -1) return { func, args: [], brackets: false, all: func };
+        const onlyFunction = code.slice(funcStart, funcStart + func.length);
+        if (openBracketIndex === -1) return { func, args: [], brackets: false, all: onlyFunction };
 
         const textBetween = code.slice(funcStart + func.length, openBracketIndex + 1).trim();
         if (textBetween.match(/\$/) || !textBetween.startsWith('['))
-            return { func, args: [], brackets: false, all: func };
+            return { func, args: [], brackets: false, all: onlyFunction };
 
         let bracketStack = 0;
         let closeBracketIndex = openBracketIndex;
@@ -469,7 +471,8 @@ export class Interpreter {
             closeBracketIndex++;
         }
 
-        if (closeBracketIndex >= code.length || bracketStack > 0) return { func, args: [], brackets: false, all: func };
+        if (closeBracketIndex >= code.length || bracketStack > 0)
+            return { func, args: [], brackets: false, all: onlyFunction };
         const argsStr = code.slice(openBracketIndex + 1, closeBracketIndex).trim();
         const args = this.extractArguments(argsStr);
         const all = code.slice(funcStart, closeBracketIndex + 1);

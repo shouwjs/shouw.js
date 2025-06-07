@@ -88,20 +88,21 @@ class Interpreter {
             escape: (str) => str.escape(),
             mustEscape: (str) => str.mustEscape()
         };
-        this.Temporarily = (options.Temporarily ?? {
+        this.Temporarily = {
+            ...options.Temporarily,
             arrays: {},
             variables: {},
             splits: [],
             randoms: {},
             timezone: void 0
-        });
-        this.extras = (extras ?? {
-            sendMessage: true,
-            returnId: false,
-            returnResult: true,
-            returnError: false,
-            returnData: false
-        });
+        };
+        this.extras = {
+            sendMessage: extras?.sendMessage ?? true,
+            returnId: extras?.returnId ?? false,
+            returnResult: extras?.returnResult ?? true,
+            returnError: extras?.returnError ?? false,
+            returnData: extras?.returnData ?? false
+        };
         if (!this.context || !(this.context instanceof index_js_1.Context)) {
             this.context = new index_js_1.Context(this.message ??
                 this.interaction ??
@@ -117,7 +118,7 @@ class Interpreter {
     async initialize() {
         try {
             if (typeof this.code === 'function') {
-                await this.code(this);
+                await this.code(this, this.context, this.Temporarily);
                 return {};
             }
             const processFunction = async (code) => {
@@ -256,11 +257,12 @@ class Interpreter {
         if (funcStart === -1)
             return { func, args: [], brackets: false, all: null };
         const openBracketIndex = code.indexOf('[', funcStart);
+        const onlyFunction = code.slice(funcStart, funcStart + func.length);
         if (openBracketIndex === -1)
-            return { func, args: [], brackets: false, all: func };
+            return { func, args: [], brackets: false, all: onlyFunction };
         const textBetween = code.slice(funcStart + func.length, openBracketIndex + 1).trim();
         if (textBetween.match(/\$/) || !textBetween.startsWith('['))
-            return { func, args: [], brackets: false, all: func };
+            return { func, args: [], brackets: false, all: onlyFunction };
         let bracketStack = 0;
         let closeBracketIndex = openBracketIndex;
         while (closeBracketIndex < code.length) {
@@ -275,7 +277,7 @@ class Interpreter {
             closeBracketIndex++;
         }
         if (closeBracketIndex >= code.length || bracketStack > 0)
-            return { func, args: [], brackets: false, all: func };
+            return { func, args: [], brackets: false, all: onlyFunction };
         const argsStr = code.slice(openBracketIndex + 1, closeBracketIndex).trim();
         const args = this.extractArguments(argsStr);
         const all = code.slice(funcStart, closeBracketIndex + 1);

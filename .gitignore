@@ -1,7 +1,6 @@
 node_modules/
 pnpm-lock.yaml
 yarn.lock
-docs/
 yarn-debug.log*
 yarn-error.log*
 bun.lock

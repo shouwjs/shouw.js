@@ -12,7 +12,7 @@
         "test": "test"
     },
     "scripts": {
-        "build": "npm run pretty && npm run build:all",
+        "builds": "npm run pretty && npm run build:all",
         "build:ts": "tsc -p tsconfig.json",
         "build:types": "npx tsup --config tsup.config.json --dts-only --outDir typings",
         "build:docs": "npx typedoc --options typedoc.json",

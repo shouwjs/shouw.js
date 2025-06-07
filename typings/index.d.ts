@@ -127,7 +127,7 @@ interface InterpreterOptions {
     interaction?: Interaction;
     isAutocomplete?: boolean;
 }
-interface TemporarilyData {
+interface TemporarilyData extends Objects {
     arrays: Objects;
     variables: Objects;
     splits: Array<string>;
@@ -157,13 +157,13 @@ declare class Interpreter {
     readonly debug: boolean | undefined;
     start: number;
     interpreter: typeof Interpreter;
-    code: string | ((ctx: Interpreter) => any);
+    code: string | ((ctx: Interpreter, context: Context, data: TemporarilyData) => any);
     command: CommandData;
     channel?: Discord.Channel;
     guild?: Discord.Guild;
     member?: Discord.GuildMember;
     user?: Discord.User;
-    context?: Context;
+    context: Context;
     args?: string[];
     embeds: Discord.EmbedBuilder[];
     attachments: Discord.AttachmentBuilder[];

@@ -8,7 +8,7 @@ function CheckCondition(input) {
             const innerExpr = message.match(/\(([^()]+)\)/);
             if (innerExpr) {
                 const innerResult = CheckCondition(innerExpr[1].trim());
-                message = message.replace(innerExpr[0], innerResult.toString());
+                message = message.replace(innerExpr[0], () => innerResult.toString());
             }
             else {
                 break;

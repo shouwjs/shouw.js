@@ -3,9 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.IF = IF;
 const Interpreter_js_1 = require("./Interpreter.js");
 async function IF(code, oldCode, ctx) {
-    if (ctx.isError || !code.includes('$if['))
+    if (ctx.isError || !code.toLowerCase().includes('$if['))
         return { error: false, code, oldCode };
-    if (!code.includes('$endif')) {
+    if (!code.toLowerCase().includes('$endif')) {
         await ctx.error({
             message: 'Invalid $if usage: Missing $endif',
             solution: 'Make sure to always use $endif at the end of the $if block'
@@ -15,8 +15,8 @@ async function IF(code, oldCode, ctx) {
     let result = code;
     let oldResult = oldCode;
     const regex = /\$if\[/gi;
-    let match;
-    while ((match = regex.exec(result)) !== null) {
+    const matches = result.matchAll(regex);
+    for (const match of matches) {
         const startIndex = match.index;
         const blockContent = extractBlock(result.slice(startIndex), '$if[', '$endif');
         if (!blockContent) {
@@ -35,8 +35,8 @@ async function IF(code, oldCode, ctx) {
         let elseBlock = '';
         let remaining = content;
         const elseifRegex = /\$elseif\[/gi;
-        let elseifMatch;
-        while ((elseifMatch = elseifRegex.exec(remaining)) !== null) {
+        const elseifMatches = remaining.matchAll(elseifRegex);
+        for (const elseifMatch of elseifMatches) {
             const elseifStart = elseifMatch.index;
             const elseifContent = extractBlock(remaining.slice(elseifStart), '$elseif[', '$endelseif');
             if (!elseifContent) {
@@ -51,7 +51,7 @@ async function IF(code, oldCode, ctx) {
             elseIfBlocks.push({ condition: elseifCondition, content: elseifBody });
             remaining = remaining.replace(elseifContent.full, '');
         }
-        const elseIndex = remaining.indexOf('$else');
+        const elseIndex = remaining.toLowerCase().indexOf('$else');
         if (elseIndex !== -1) {
             ifBlock = remaining.slice(0, elseIndex);
             elseBlock = remaining.slice(elseIndex + 5);
@@ -100,11 +100,11 @@ function extractBlock(str, open, close) {
     let depth = 0;
     let i = 0;
     while (i < str.length) {
-        if (str.startsWith(open, i)) {
+        if (str.toLowerCase().startsWith(open, i)) {
             depth++;
             i += open.length;
         }
-        else if (str.startsWith(close, i)) {
+        else if (str.toLowerCase().startsWith(close, i)) {
             depth--;
             i += close.length;
             if (depth === 0)
