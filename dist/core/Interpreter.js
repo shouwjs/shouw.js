@@ -315,15 +315,34 @@ class Interpreter {
     }
     extractFunctions(code) {
         const functions = [];
-        const splited = code.split(/\$/g);
-        for (const part of splited) {
-            const matchingFunctions = this.functions.K.filter((func) => func && func.toLowerCase() === `$${part.toLowerCase()}`.slice(0, func.length));
-            if (matchingFunctions.length === 1) {
-                functions.push(matchingFunctions[0]);
+        const regex = /\$([^\$\[\];\s]+)/g;
+        let depth = 0;
+        let index = 0;
+        while (index < code.length) {
+            const char = code[index];
+            if (char === '[') {
+                depth++;
+                index++;
+                continue;
             }
-            else if (matchingFunctions.length > 1) {
-                functions.push(matchingFunctions.sort((a, b) => b.length - a.length)[0]);
+            if (char === ']') {
+                depth--;
+                index++;
+                continue;
             }
+            if (depth === 0 && char === '$') {
+                regex.lastIndex = index;
+                const match = regex.exec(code);
+                if (match && match.index === index) {
+                    const fullName = `$${match[1]}`;
+                    const matched = this.functions.K.filter((f) => fullName.toLowerCase().startsWith(f.toLowerCase())).sort((a, b) => b.length - a.length)[0];
+                    if (matched)
+                        functions.push(matched);
+                    index = regex.lastIndex;
+                    continue;
+                }
+            }
+            index++;
         }
         return (0, index_js_1.filterArray)(functions) ?? [];
     }

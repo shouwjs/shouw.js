@@ -524,18 +524,38 @@ export class Interpreter {
      */
     private extractFunctions(code: string): Array<string> {
         const functions: string[] = [];
-        const splited = code.split(/\$/g);
+        const regex = /\$([^\$\[\];\s]+)/g;
+        let depth = 0;
+        let index = 0;
 
-        for (const part of splited) {
-            const matchingFunctions = this.functions.K.filter(
-                (func) => func && func.toLowerCase() === `$${part.toLowerCase()}`.slice(0, func.length)
-            );
-
-            if (matchingFunctions.length === 1) {
-                functions.push(matchingFunctions[0]);
-            } else if (matchingFunctions.length > 1) {
-                functions.push(matchingFunctions.sort((a, b) => b.length - a.length)[0]);
+        while (index < code.length) {
+            const char = code[index];
+            if (char === '[') {
+                depth++;
+                index++;
+                continue;
             }
+            if (char === ']') {
+                depth--;
+                index++;
+                continue;
+            }
+
+            if (depth === 0 && char === '$') {
+                regex.lastIndex = index;
+                const match = regex.exec(code);
+                if (match && match.index === index) {
+                    const fullName = `$${match[1]}`;
+                    const matched = this.functions.K.filter((f) =>
+                        fullName.toLowerCase().startsWith(f.toLowerCase())
+                    ).sort((a, b) => b.length - a.length)[0];
+
+                    if (matched) functions.push(matched);
+                    index = regex.lastIndex;
+                    continue;
+                }
+            }
+            index++;
         }
 
         return filterArray(functions) ?? [];
