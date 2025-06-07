@@ -1,0 +1,12 @@
+.github
+.gitattributes
+.gitignore
+src/
+test/
+docs/
+biome.json
+tsconfig.json
+tsup.config.json
+package-lock.json
+bun.lock
+**.tgz
