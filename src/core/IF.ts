@@ -25,7 +25,7 @@ export async function IF(
     let result = code;
     let oldResult = oldCode;
     const regex = /\$if\[/gi;
-    const matches: RegExpStringIterator<RegExpExecArray> | null = result.matchAll(regex);
+    const matches: RegExpExecArray[] = [...result.matchAll(regex)];
 
     for (const match of matches) {
         const startIndex = match.index;
@@ -51,7 +51,7 @@ export async function IF(
         let remaining = content;
 
         const elseifRegex = /\$elseif\[/gi;
-        const elseifMatches: RegExpStringIterator<RegExpExecArray> | null = remaining.matchAll(elseifRegex);
+        const elseifMatches: RegExpExecArray[] = [...remaining.matchAll(elseifRegex)];
         for (const elseifMatch of elseifMatches) {
             const elseifStart = elseifMatch.index;
             const elseifContent = extractBlock(remaining.slice(elseifStart), '$elseif[', '$endelseif');

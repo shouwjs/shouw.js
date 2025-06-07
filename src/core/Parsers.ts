@@ -241,7 +241,7 @@ export async function ActionRowParser(ctx: Interpreter, content: string): Promis
             const [customId, placeholder, minValues = '1', maxValues = '1', disabled = 'false'] =
                 splitEscaped(rawValue);
             if (!customId || !placeholder || !minValues || !maxValues) continue;
-            const stringInputMatches = [...rawValue.matchAll(/\{stringInput:([^}]+)\}/gim)];
+            const stringInputMatches: RegExpExecArray[] = [...rawValue.matchAll(/\{stringInput:([^}]+)\}/gim)];
             let SelectMenu: SelectMenuTypes | null = null;
 
             /**
@@ -455,7 +455,7 @@ export async function PollParser(ctx: Interpreter, rawContent: string): Promise<
     const duration = ctx.helpers.time.parse(durationRaw)?.ms ?? 86400000;
 
     const answers: Array<{ text: string; emoji?: string }> = [];
-    const matches = [...content.matchAll(answerRegex)];
+    const matches: RegExpExecArray[] = [...content.matchAll(answerRegex)];
     for (const match of matches) {
         const [text, emoji] = splitEscapedEmoji(match[1]);
         if (!text) continue;

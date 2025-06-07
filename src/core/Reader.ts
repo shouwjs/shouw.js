@@ -84,7 +84,7 @@ export class Reader {
         const objectRegex = /@Command\(\s*(\{[\s\S]*?\})\s*\)(;)?/i;
         const cleanedContent = this.removeComments(this.fileContent);
 
-        const matches = [...cleanedContent.matchAll(commandRegex)];
+        const matches: RegExpExecArray[] = [...cleanedContent.matchAll(commandRegex)];
         if (!matches.length)
             throw new SyntaxError(generateError('Missing @Command({ ... }) declaration', this.filePath));
         const commands: Array<CommandData> = [];

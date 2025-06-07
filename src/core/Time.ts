@@ -65,7 +65,7 @@ export class Time {
 
         for (const unit of Time.units) {
             const regex = new RegExp(`(\\d+)${unit.short}\\b`, 'gi');
-            const matches: RegExpStringIterator<RegExpExecArray> | null = time.matchAll(regex);
+            const matches: RegExpExecArray[] = [...time.matchAll(regex)];
             for (const match of matches) {
                 const value = Number(match[1]);
                 totalMs += value * unit.ms;

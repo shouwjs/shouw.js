@@ -15,7 +15,7 @@ async function IF(code, oldCode, ctx) {
     let result = code;
     let oldResult = oldCode;
     const regex = /\$if\[/gi;
-    const matches = result.matchAll(regex);
+    const matches = [...result.matchAll(regex)];
     for (const match of matches) {
         const startIndex = match.index;
         const blockContent = extractBlock(result.slice(startIndex), '$if[', '$endif');
@@ -35,7 +35,7 @@ async function IF(code, oldCode, ctx) {
         let elseBlock = '';
         let remaining = content;
         const elseifRegex = /\$elseif\[/gi;
-        const elseifMatches = remaining.matchAll(elseifRegex);
+        const elseifMatches = [...remaining.matchAll(elseifRegex)];
         for (const elseifMatch of elseifMatches) {
             const elseifStart = elseifMatch.index;
             const elseifContent = extractBlock(remaining.slice(elseifStart), '$elseif[', '$endelseif');
