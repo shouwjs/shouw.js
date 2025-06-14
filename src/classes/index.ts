@@ -19,7 +19,8 @@ export {
 
 export {
     FunctionsManager,
-    type FunctionData
+    type FunctionData,
+    type CustomFunctionData
 } from './Functions.js';
 
 export { Variables } from './Variable.js';

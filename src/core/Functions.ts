@@ -1,4 +1,4 @@
-import type { Interpreter, InterpreterOptions, FunctionData, TemporarilyData } from '../index.js';
+import type { Interpreter, InterpreterOptions, FunctionData, TemporarilyData, CustomFunctionData } from '../index.js';
 import type { EmbedBuilder, ActionRowBuilder, AttachmentBuilder, Message } from 'discord.js';
 
 export interface FunctionResultData extends Omit<InterpreterOptions, 'client'> {
@@ -47,11 +47,6 @@ export class Functions {
     readonly #description?: string;
 
     /**
-     * The type of the function
-     */
-    readonly #type?: 'shouw.js' | 'discord.js' | 'djs';
-
-    /**
      * The parameters of the function
      */
     readonly #params?: {
@@ -66,7 +61,6 @@ export class Functions {
         this.#name = data.name;
         this.#brackets = data.brackets ?? false;
         this.#description = data.description ?? 'No description provided for this function.';
-        this.#type = data.type ?? 'shouw.js';
         this.#params = data.params ?? [];
     }
 
@@ -111,15 +105,6 @@ export class Functions {
      */
     public get description(): string | undefined {
         return this.#description;
-    }
-
-    /**
-     * The type of the function
-     *
-     * @return {string | undefined} - The type of the function
-     */
-    public get type(): string | undefined {
-        return this.#type;
     }
 
     /**
@@ -199,5 +184,84 @@ export class Functions {
      */
     public error(...data: FunctionResultData[]): FunctionResultData {
         return { result: void 0, ...data, error: true };
+    }
+}
+
+/**
+ * The custom function class to create custom functions
+ *
+ * @class CustomFunction
+ * @param {CustomFunctionData} data - The custom function data
+ * @example const func = new CustomFunction({ code: '$log[Hello wold]', type: 'shouw.js', name: '$console.log' });
+ * client.functions.createFunction(func);
+ */
+export class CustomFunction extends Functions {
+    /**
+     * The code of the function
+     */
+    readonly #code: CustomFunctionData['code'];
+
+    /**
+     * The type of the function
+     */
+    readonly #type: CustomFunctionData['type'];
+
+    constructor(data: CustomFunctionData) {
+        data.name = data.name.startsWith('$') ? data.name : `$${data.name}`;
+        super({
+            name: data.name,
+            brackets: data.brackets ?? false,
+            params: data.params?.map((x) => {
+                return {
+                    name: x.name,
+                    type: x.type ?? ParamType.Any,
+                    required: false
+                };
+            })
+        });
+
+        this.#code = data.code;
+        this.#type = data.type;
+    }
+
+    /**
+     * The code of the function. This function is called when the function is executed
+     *
+     * @return {string} - The code of the function
+     */
+    public get codeType(): string {
+        return typeof this.#code;
+    }
+
+    /**
+     * The type of the function
+     *
+     * @return {string} - The type of the function
+     */
+    public get type(): string {
+        return this.#type;
+    }
+
+    /**
+     * The code of the function. This function is called when the function is executed
+     *
+     * @return {string} - The code of the function
+     */
+    public get stringCode(): string {
+        if (typeof this.#code !== 'string') return '';
+        return this.#code as string;
+    }
+
+    /**
+     * The code of the function. This function is called when the function is executed
+     *
+     * @param {Interpreter} ctx - The interpreter context of the function
+     * @param {Array<any>} args - The arguments of the function
+     * @param {TemporarilyData} data - The temporarily data of the function
+     * @return {Promise<FunctionResultData> | FunctionResultData} - The result of the function
+     */
+    public async code(ctx: Interpreter, args: any[], data: TemporarilyData): Promise<FunctionResultData> {
+        if (typeof this.#code === 'string') return this.success();
+        return await this.#code(ctx, args, data);
     }
 }

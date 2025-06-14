@@ -81,7 +81,6 @@ interface FunctionData extends Objects {
     name: string;
     description?: string;
     brackets?: boolean;
-    type?: 'shouw.js' | 'discord.js' | 'djs';
     params?: {
         name: string;
         description?: string;
@@ -89,13 +88,20 @@ interface FunctionData extends Objects {
         type: ParamType;
         rest?: boolean;
     }[];
-    code?: string | ((int: Interpreter, args: any[], data: TemporarilyData) => FunctionResultData | Promise<FunctionResultData>);
+    code?: (int: Interpreter, args: any[], data: TemporarilyData) => FunctionResultData | Promise<FunctionResultData>;
 }
-declare class FunctionsManager extends Collective<string, Functions> {
+interface CustomFunctionData {
+    code: string | ((int: Interpreter, args: any[], data: TemporarilyData) => FunctionResultData | Promise<FunctionResultData>);
+    type: 'shouw.js' | 'discord.js' | 'djs';
+    brackets?: boolean;
+    params?: FunctionData['params'];
+    name: string;
+}
+declare class FunctionsManager extends Collective<string, Functions | CustomFunction> {
     readonly client: ShouwClient;
     constructor(client: ShouwClient);
     load(basePath: string, debug: boolean): Promise<undefined>;
-    createFunction(data: FunctionData): FunctionsManager;
+    createFunction(data: CustomFunctionData): FunctionsManager;
 }
 
 declare class Variables {
@@ -130,16 +136,6 @@ type CustomParserResult = {
 }[] | undefined;
 declare function Parser(ctx: Interpreter, input: string): Promise<SendData>;
 declare function CustomParser(key: string, value: string, split?: 'normal' | 'emoji' | 'none', many?: boolean): CustomParserResult;
-declare function EmbedParser(_ctx: Interpreter, content: string): Discord.APIEmbed;
-declare function ActionRowParser(ctx: Interpreter, content: string): Promise<Discord.APIActionRowComponent<Discord.APIComponentInActionRow> | null>;
-declare function AttachmentParser(_ctx: Interpreter, rawContent: string, type?: 'attachment' | 'file'): unknown | null;
-declare function FlagsParser(ctx: Interpreter, rawContent: string, type?: 'flags' | 'flag'): Array<Discord.MessageFlags | null>;
-declare function PollParser(ctx: Interpreter, rawContent: string): Promise<Discord.PollData | null>;
-declare function ComponentsV2Parser(ctx: Interpreter, content: string): Promise<Discord.APIContainerComponent>;
-declare function parseSeparatorV2(_ctx: Interpreter, content: string): Discord.APISeparatorComponent;
-declare function parseSectionV2(ctx: Interpreter, content: string): Promise<Discord.APISectionComponent>;
-declare function parseGalleryV2(_ctx: Interpreter, rawContent: string): Discord.APIMediaGalleryComponent;
-declare function parseButton(ctx: Interpreter, content: string): Promise<Discord.ButtonBuilder | undefined>;
 
 interface InterpreterOptions {
     client: ShouwClient;
@@ -368,7 +364,6 @@ declare class Functions {
     get name(): string;
     get brackets(): boolean | undefined;
     get description(): string | undefined;
-    get type(): string | undefined;
     get params(): {
         name: string;
         description?: string;
@@ -387,6 +382,14 @@ declare class Functions {
     };
     success(result?: any, error?: boolean, ...data: FunctionResultData[]): FunctionResultData;
     error(...data: FunctionResultData[]): FunctionResultData;
+}
+declare class CustomFunction extends Functions {
+    #private;
+    constructor(data: CustomFunctionData);
+    get codeType(): string;
+    get type(): string;
+    get stringCode(): string;
+    code(ctx: Interpreter, args: any[], data: TemporarilyData): Promise<FunctionResultData>;
 }
 
 declare function CheckCondition(input: string): boolean;
@@ -444,7 +447,7 @@ declare class Constants {
             message: string;
             solution?: string;
         }) => string;
-        missingBrackets: (func: string, functionData: Functions) => {
+        missingBrackets: (func: string, functionData: Functions | CustomFunction) => {
             message: string;
             solution: string;
         };
@@ -525,4 +528,4 @@ declare class Util extends Constants {
     static getEmoji(ctx: Interpreter, _emojiInput: string, onlyId?: boolean): Promise<any>;
 }
 
-export { ActionRowParser, AttachmentParser, BaseClient, CheckCondition, Collective, type CommandData, type CommandsEventMap, CommandsManager, type ComponentTypes, ComponentsV2Parser, Constants, Context, CustomParser, EmbedParser, type ExtraOptionsData, type Flags, FlagsParser, type FunctionData, type FunctionResultData, Functions, FunctionsManager, type HelpersData, IF, type Interaction, type InteractionReplyData, type InteractionWithMessage, Interpreter, type InterpreterOptions, type InterpreterResult, type MessageReplyData, type Objects, ParamType, Parser, PollParser, Reader, type SelectMenuTypes, type SendData, type SendableChannel, ShouwClient, type ShouwClientOptions, type TemporarilyData, Time, Util, Variables, filterArray, filterObject, parseButton, parseGalleryV2, parseSectionV2, parseSeparatorV2, sleep, wait };
+export { BaseClient, CheckCondition, Collective, type CommandData, type CommandsEventMap, CommandsManager, type ComponentTypes, Constants, Context, CustomFunction, type CustomFunctionData, CustomParser, type ExtraOptionsData, type Flags, type FunctionData, type FunctionResultData, Functions, FunctionsManager, type HelpersData, IF, type Interaction, type InteractionReplyData, type InteractionWithMessage, Interpreter, type InterpreterOptions, type InterpreterResult, type MessageReplyData, type Objects, ParamType, Parser, Reader, type SelectMenuTypes, type SendData, type SendableChannel, ShouwClient, type ShouwClientOptions, type TemporarilyData, Time, Util, Variables, filterArray, filterObject, sleep, wait };

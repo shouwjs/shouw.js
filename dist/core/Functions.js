@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Functions = exports.ParamType = void 0;
+exports.CustomFunction = exports.Functions = exports.ParamType = void 0;
 var ParamType;
 (function (ParamType) {
     ParamType["URL"] = "URL";
@@ -18,13 +18,11 @@ class Functions {
     #name;
     #brackets;
     #description;
-    #type;
     #params;
     constructor(data) {
         this.#name = data.name;
         this.#brackets = data.brackets ?? false;
         this.#description = data.description ?? 'No description provided for this function.';
-        this.#type = data.type ?? 'shouw.js';
         this.#params = data.params ?? [];
     }
     code(_ctx, _args, _data) {
@@ -38,9 +36,6 @@ class Functions {
     }
     get description() {
         return this.#description;
-    }
-    get type() {
-        return this.#type;
     }
     get params() {
         return this.#params;
@@ -66,3 +61,40 @@ class Functions {
     }
 }
 exports.Functions = Functions;
+class CustomFunction extends Functions {
+    #code;
+    #type;
+    constructor(data) {
+        data.name = data.name.startsWith('$') ? data.name : `$${data.name}`;
+        super({
+            name: data.name,
+            brackets: data.brackets ?? false,
+            params: data.params?.map((x) => {
+                return {
+                    name: x.name,
+                    type: x.type ?? ParamType.Any,
+                    required: false
+                };
+            })
+        });
+        this.#code = data.code;
+        this.#type = data.type;
+    }
+    get codeType() {
+        return typeof this.#code;
+    }
+    get type() {
+        return this.#type;
+    }
+    get stringCode() {
+        if (typeof this.#code !== 'string')
+            return '';
+        return this.#code;
+    }
+    async code(ctx, args, data) {
+        if (typeof this.#code === 'string')
+            return this.success();
+        return await this.#code(ctx, args, data);
+    }
+}
+exports.CustomFunction = CustomFunction;

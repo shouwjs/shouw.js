@@ -7,7 +7,7 @@ import {
     InteractionType,
     ComponentType
 } from 'discord.js';
-import type { Functions } from '../index.js';
+import type { Functions, CustomFunction } from '../index.js';
 
 /**
  * Constant class that contains all the constants used in the bot
@@ -24,7 +24,7 @@ export class Constants {
             const { message, solution } = typeof options === 'string' ? { message: options } : options;
             return `${message} ${solution ? solution : ''}`;
         },
-        missingBrackets: (func: string, functionData: Functions) => ({
+        missingBrackets: (func: string, functionData: Functions | CustomFunction) => ({
             message: `Invalid ${func} usage: Missing brackets`,
             solution: `Make sure to add brackets to the function. Example: ${functionData.withParams}`
         }),

@@ -72,32 +72,15 @@ class FunctionsManager extends Collective_js_1.Collective {
         }
     }
     createFunction(data) {
-        const func = new index_js_1.Functions(data);
-        if (!func.name)
+        if (!data.name || !data.code) {
+            this.client.debug('Failed to creating function: Missing required function data', 'ERROR');
             return this;
-        if ((func.type === 'discord.js' || func.type === 'djs') && typeof data.code === 'function')
-            func.code = data.code;
-        else if (func.type === 'shouw.js' && typeof data.code === 'string')
-            func.code =
-                data.code !== ''
-                    ? async (ctx) => {
-                        const result = await ctx.interpreter.run({
-                            ...func,
-                            code: (data.code ?? '')
-                        }, ctx, {
-                            sendMessage: true,
-                            returnId: false,
-                            returnResult: true,
-                            returnError: true,
-                            returnData: true
-                        });
-                        if (result.error)
-                            return func.error();
-                        return func.success(result.result, result.error, result.data);
-                    }
-                    : func.code;
-        if (this.has(func.name))
-            this.delete(func.name);
+        }
+        data.name = data.name.startsWith('$') ? data.name : `$${data.name}`;
+        if (this.has(data.name))
+            this.delete(data.name);
+        data.type = !['shouw.js', 'discord.js', 'djs'].includes(data.type) ? 'shouw.js' : data.type;
+        const func = new index_js_1.CustomFunction(data);
         this.create(func.name, func);
         this.client.debug(`Function created: ${(0, chalk_1.cyan)(func.name)}`);
         return this;

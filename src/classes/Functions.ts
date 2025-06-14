@@ -8,7 +8,8 @@ import {
     type FunctionResultData,
     type TemporarilyData,
     type ShouwClient,
-    Functions
+    type Functions,
+    CustomFunction
 } from '../index.js';
 import { Collective } from '../utils/Collective.js';
 
@@ -16,7 +17,6 @@ export interface FunctionData extends Objects {
     name: string;
     description?: string;
     brackets?: boolean;
-    type?: 'shouw.js' | 'discord.js' | 'djs';
     params?: {
         name: string;
         description?: string;
@@ -24,9 +24,17 @@ export interface FunctionData extends Objects {
         type: ParamType;
         rest?: boolean;
     }[];
-    code?:
+    code?: (int: Interpreter, args: any[], data: TemporarilyData) => FunctionResultData | Promise<FunctionResultData>;
+}
+
+export interface CustomFunctionData {
+    code:
         | string
         | ((int: Interpreter, args: any[], data: TemporarilyData) => FunctionResultData | Promise<FunctionResultData>);
+    type: 'shouw.js' | 'discord.js' | 'djs';
+    brackets?: boolean;
+    params?: FunctionData['params'];
+    name: string;
 }
 
 /**
@@ -39,7 +47,7 @@ export interface FunctionData extends Objects {
  * functions.load('./functions', true); // Load functions from the functions directory
  * functions.createFunction(<FunctionData>) // Create a new function
  */
-export class FunctionsManager extends Collective<string, Functions> {
+export class FunctionsManager extends Collective<string, Functions | CustomFunction> {
     /**
      * The client instance
      */
@@ -89,35 +97,17 @@ export class FunctionsManager extends Collective<string, Functions> {
      * @param {FunctionData} data - The function data
      * @return {FunctionsManager} - The functions manager class
      */
-    public createFunction(data: FunctionData): FunctionsManager {
-        const func = new Functions(data);
-        if (!func.name) return this;
-        if ((func.type === 'discord.js' || func.type === 'djs') && typeof data.code === 'function')
-            func.code = data.code;
-        else if (func.type === 'shouw.js' && typeof data.code === 'string')
-            func.code =
-                data.code !== ''
-                    ? async (ctx: Interpreter) => {
-                          const result = await ctx.interpreter.run(
-                              {
-                                  ...func,
-                                  code: (data.code ?? '') as string
-                              },
-                              ctx,
-                              {
-                                  sendMessage: true,
-                                  returnId: false,
-                                  returnResult: true,
-                                  returnError: true,
-                                  returnData: true
-                              }
-                          );
-                          if (result.error) return func.error();
-                          return func.success(result.result, result.error, result.data as any);
-                      }
-                    : func.code;
+    public createFunction(data: CustomFunctionData): FunctionsManager {
+        if (!data.name || !data.code) {
+            this.client.debug('Failed to creating function: Missing required function data', 'ERROR');
+            return this;
+        }
 
-        if (this.has(func.name)) this.delete(func.name);
+        data.name = data.name.startsWith('$') ? data.name : `$${data.name}`;
+        if (this.has(data.name)) this.delete(data.name);
+        data.type = !['shouw.js', 'discord.js', 'djs'].includes(data.type) ? 'shouw.js' : data.type;
+
+        const func = new CustomFunction(data);
         this.create(func.name, func);
 
         this.client.debug(`Function created: ${cyan(func.name)}`);

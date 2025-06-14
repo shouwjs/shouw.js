@@ -48,7 +48,7 @@ class Interpreter extends Container_js_1.Container {
                 return new Object();
             }
             const result = await this.processFunction(this.code);
-            this.replaceExecutionTime(result);
+            this.code = this.replaceExecutionTime(result);
             if (this.shouldSendMessage()) {
                 this.message = (await this.getSendableChannel()?.send({
                     content: this.code !== '' ? this.code : void 0,
@@ -69,14 +69,16 @@ class Interpreter extends Container_js_1.Container {
         const functions = this.extractFunctions(code);
         if (!functions.length)
             return input;
-        let oldCode = code;
+        let lastIndex = 0;
         let currentCode = code;
         for (const func of functions) {
             if (this.isError)
                 break;
-            const unpacked = this.unpack(func, oldCode);
+            const unpacked = this.unpack(func, currentCode, lastIndex);
             const functionData = this.functions.get(func);
-            if (!unpacked.all || !functionData || !functionData.code || typeof functionData.code !== 'function')
+            if (!unpacked.all || !functionData || !functionData.code)
+                continue;
+            if (!(functionData instanceof index_js_1.CustomFunction) && typeof functionData.code !== 'function')
                 continue;
             if (functionData.brackets && !unpacked.brackets) {
                 await this.error(index_js_1.Constants.Errors.missingBrackets(func, functionData));
@@ -85,6 +87,18 @@ class Interpreter extends Container_js_1.Container {
             if (this.isError)
                 break;
             const processedArgs = await this.processArgs(unpacked.args, functionData);
+            if (functionData instanceof index_js_1.CustomFunction && typeof functionData.codeType === 'string') {
+                let code = functionData.stringCode;
+                for (const param of functionData.params ?? []) {
+                    code = code.replaceAll(`{{${param.name}}}`, processedArgs.shift()?.toString() ?? '');
+                }
+                currentCode =
+                    currentCode.slice(0, unpacked.index) +
+                        code.trim() +
+                        currentCode.slice(unpacked.index + unpacked.all.length);
+                currentCode = await this.processFunction(currentCode);
+                break;
+            }
             if (func.match(/\$if$/i)) {
                 if (this.isError)
                     break;
@@ -96,12 +110,16 @@ class Interpreter extends Container_js_1.Container {
                 break;
             }
             try {
-                if (this.isError)
+                if (this.isError || typeof functionData.code !== 'function')
                     break;
-                const DATA = ((await functionData.code(this, processedArgs, this.Temporarily)) ??
-                    {});
-                currentCode = currentCode.replace(unpacked.all, () => DATA.result?.toString().mustEscape() ?? '');
-                oldCode = oldCode.replace(unpacked.all, '');
+                const DATA = ((await functionData.code(this, processedArgs, this.Temporarily)) ?? {
+                    result: ''
+                });
+                currentCode =
+                    currentCode.slice(0, unpacked.index) +
+                        (DATA.result ?? '') +
+                        currentCode.slice(unpacked.index + unpacked.all.length);
+                lastIndex = unpacked.index + (typeof DATA.result === 'string' ? DATA.result.length : 0);
                 if (this.isError || DATA.error === true)
                     this.setError(true);
                 for (const [key, value] of Object.entries(DATA)) {
@@ -132,7 +150,7 @@ class Interpreter extends Container_js_1.Container {
                     break;
                 }
                 processedArgs.push(result);
-                break;
+                return processedArgs;
             }
             const input = (args[i] ?? '');
             const arg = await this.switchArg(input, param.type ?? index_js_1.ParamType.String, functionData);
@@ -162,17 +180,17 @@ class Interpreter extends Container_js_1.Container {
         }
         return processedArgs;
     }
-    unpack(func, code) {
-        const funcStart = code.toLowerCase().indexOf(func.toLowerCase());
+    unpack(func, code, index) {
+        const funcStart = code.toLowerCase().indexOf(func.toLowerCase(), index ?? void 0);
         if (funcStart === -1)
-            return returnUnpack(func, [], false, null);
+            return returnUnpack(func, [], false, null, 0);
         const openBracketIndex = code.indexOf('[', funcStart);
         const onlyFunction = code.slice(funcStart, funcStart + func.length);
         if (openBracketIndex === -1)
-            return returnUnpack(func, [], false, onlyFunction);
+            return returnUnpack(func, [], false, onlyFunction, funcStart);
         const textBetween = code.slice(funcStart + func.length, openBracketIndex + 1).trim();
         if (textBetween.match(/\$/) || !textBetween.startsWith('['))
-            return returnUnpack(func, [], false, onlyFunction);
+            return returnUnpack(func, [], false, onlyFunction, funcStart);
         let bracketStack = 0;
         let closeBracketIndex = openBracketIndex;
         while (closeBracketIndex < code.length) {
@@ -187,13 +205,13 @@ class Interpreter extends Container_js_1.Container {
             closeBracketIndex++;
         }
         if (closeBracketIndex >= code.length || bracketStack > 0)
-            return returnUnpack(func, [], false, onlyFunction);
+            return returnUnpack(func, [], false, onlyFunction, funcStart);
         const argsStr = code.slice(openBracketIndex + 1, closeBracketIndex).trim();
         const args = this.extractArguments(argsStr);
         const all = code.slice(funcStart, closeBracketIndex + 1);
-        return returnUnpack(func, args, true, all);
-        function returnUnpack(func, args, brackets, all) {
-            return { func, args, brackets, all };
+        return returnUnpack(func, args, true, all, funcStart);
+        function returnUnpack(func, args, brackets, all, i) {
+            return { func, args, brackets, all, index: i };
         }
     }
     extractArguments(argsStr) {
@@ -226,7 +244,7 @@ class Interpreter extends Container_js_1.Container {
             return void 0;
         });
     }
-    extractFunctions(code) {
+    extractFunctions(code, custom = false) {
         const functions = [];
         const regex = /\$([^\$\[\];\s]+)/g;
         let depth = 0;
@@ -248,9 +266,10 @@ class Interpreter extends Container_js_1.Container {
                 const match = regex.exec(code);
                 if (match && match.index === index) {
                     const fullName = `$${match[1]}`;
-                    const matched = this.functions.K.filter((f) => fullName.toLowerCase().startsWith(f.toLowerCase())).sort((a, b) => b.length - a.length)[0];
+                    const matched = this.functions.V.filter((f) => fullName.toLowerCase().startsWith(f.name.toLowerCase()) &&
+                        (custom ? f instanceof index_js_1.CustomFunction : true)).sort((a, b) => b.name.length - a.name.length)[0];
                     if (matched)
-                        functions.push(matched);
+                        functions.push(matched.name);
                     index = regex.lastIndex;
                     continue;
                 }
@@ -365,9 +384,9 @@ class Interpreter extends Container_js_1.Container {
     replaceExecutionTime(input) {
         const result = input.unescape();
         const end = (performance.now() - this.start).toFixed(2).toString();
-        this.code = result.replace(/\$executionTime/gi, end);
         this.embeds = JSON.parse(JSON.stringify(this.embeds).replace(/\$executionTime/gi, end));
         this.components = JSON.parse(JSON.stringify(this.components).replace(/\$executionTime/gi, end));
+        return result.replace(/\$executionTime/gi, end);
     }
 }
 exports.Interpreter = Interpreter;

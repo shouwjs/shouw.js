@@ -3,6 +3,7 @@ import {
     ParamType,
     IF,
     filterArray,
+    CustomFunction,
     type FunctionResultData,
     type CommandData,
     type InterpreterOptions,
@@ -51,7 +52,7 @@ export class Interpreter extends Container {
             }
 
             const result = await this.processFunction(this.code);
-            this.replaceExecutionTime(result);
+            this.code = this.replaceExecutionTime(result);
 
             if (this.shouldSendMessage()) {
                 this.message = (await this.getSendableChannel()?.send({
@@ -81,16 +82,16 @@ export class Interpreter extends Container {
         const functions = this.extractFunctions(code);
         if (!functions.length) return input;
 
-        let oldCode = code;
+        let lastIndex = 0;
         let currentCode = code;
 
         for (const func of functions) {
             if (this.isError) break;
-            const unpacked = this.unpack(func, oldCode);
-            const functionData: Functions | undefined = this.functions.get(func);
+            const unpacked = this.unpack(func, currentCode, lastIndex);
+            const functionData: Functions | CustomFunction | undefined = this.functions.get(func);
 
-            if (!unpacked.all || !functionData || !functionData.code || typeof functionData.code !== 'function')
-                continue;
+            if (!unpacked.all || !functionData || !functionData.code) continue;
+            if (!(functionData instanceof CustomFunction) && typeof functionData.code !== 'function') continue;
 
             if (functionData.brackets && !unpacked.brackets) {
                 await this.error(Constants.Errors.missingBrackets(func, functionData));
@@ -100,23 +101,41 @@ export class Interpreter extends Container {
             if (this.isError) break;
             const processedArgs: Array<unknown> = await this.processArgs(unpacked.args, functionData);
 
+            if (functionData instanceof CustomFunction && typeof functionData.codeType === 'string') {
+                let code = functionData.stringCode;
+                for (const param of functionData.params ?? []) {
+                    code = code.replaceAll(`{{${param.name}}}`, processedArgs.shift()?.toString() ?? '');
+                }
+
+                currentCode =
+                    currentCode.slice(0, unpacked.index) +
+                    code.trim() +
+                    currentCode.slice(unpacked.index + unpacked.all.length);
+                currentCode = await this.processFunction(currentCode);
+                break;
+            }
+
             if (func.match(/\$if$/i)) {
                 if (this.isError) break;
                 const { code: ifCode, error: isError } = await IF(currentCode, this);
                 this.setError(isError);
                 if (this.isError) break;
-
                 currentCode = await this.processFunction(ifCode);
                 break;
             }
 
             try {
-                if (this.isError) break;
-                const DATA = ((await functionData.code(this, processedArgs, this.Temporarily)) ??
-                    {}) as FunctionResultData;
+                if (this.isError || typeof functionData.code !== 'function') break;
+                const DATA = ((await functionData.code(this, processedArgs, this.Temporarily)) ?? {
+                    result: ''
+                }) as FunctionResultData;
 
-                currentCode = currentCode.replace(unpacked.all, () => DATA.result?.toString().mustEscape() ?? '');
-                oldCode = oldCode.replace(unpacked.all, '');
+                currentCode =
+                    currentCode.slice(0, unpacked.index) +
+                    (DATA.result ?? '') +
+                    currentCode.slice(unpacked.index + unpacked.all.length);
+
+                lastIndex = unpacked.index + (typeof DATA.result === 'string' ? DATA.result.length : 0);
                 if (this.isError || DATA.error === true) this.setError(true);
 
                 for (const [key, value] of Object.entries(DATA)) {
@@ -139,7 +158,7 @@ export class Interpreter extends Container {
      * @return {Promise<Array<unknown>>} - The processed arguments
      * @private
      */
-    private async processArgs(args: Array<unknown>, functionData: Functions): Promise<Array<unknown>> {
+    private async processArgs(args: Array<unknown>, functionData: Functions | CustomFunction): Promise<Array<unknown>> {
         const processedArgs: Array<unknown> = [];
         const totalArgs = Math.max(args.length, functionData.paramsLength);
 
@@ -160,7 +179,7 @@ export class Interpreter extends Container {
                     break;
                 }
                 processedArgs.push(result);
-                break;
+                return processedArgs;
             }
 
             const input = (args[i] ?? '') as string;
@@ -208,22 +227,25 @@ export class Interpreter extends Container {
      */
     private unpack(
         func: string,
-        code: string
+        code: string,
+        index?: number
     ): {
         func: string;
         args: Array<unknown>;
         brackets: boolean;
         all: string | null;
+        index: number;
     } {
-        const funcStart = code.toLowerCase().indexOf(func.toLowerCase());
-        if (funcStart === -1) return returnUnpack(func, [], false, null);
+        const funcStart = code.toLowerCase().indexOf(func.toLowerCase(), index ?? void 0);
+        if (funcStart === -1) return returnUnpack(func, [], false, null, 0);
 
         const openBracketIndex = code.indexOf('[', funcStart);
         const onlyFunction = code.slice(funcStart, funcStart + func.length);
-        if (openBracketIndex === -1) return returnUnpack(func, [], false, onlyFunction);
+        if (openBracketIndex === -1) return returnUnpack(func, [], false, onlyFunction, funcStart);
 
         const textBetween = code.slice(funcStart + func.length, openBracketIndex + 1).trim();
-        if (textBetween.match(/\$/) || !textBetween.startsWith('[')) return returnUnpack(func, [], false, onlyFunction);
+        if (textBetween.match(/\$/) || !textBetween.startsWith('['))
+            return returnUnpack(func, [], false, onlyFunction, funcStart);
 
         let bracketStack = 0;
         let closeBracketIndex = openBracketIndex;
@@ -239,15 +261,16 @@ export class Interpreter extends Container {
             closeBracketIndex++;
         }
 
-        if (closeBracketIndex >= code.length || bracketStack > 0) return returnUnpack(func, [], false, onlyFunction);
+        if (closeBracketIndex >= code.length || bracketStack > 0)
+            return returnUnpack(func, [], false, onlyFunction, funcStart);
 
         const argsStr = code.slice(openBracketIndex + 1, closeBracketIndex).trim();
         const args = this.extractArguments(argsStr);
         const all = code.slice(funcStart, closeBracketIndex + 1);
-        return returnUnpack(func, args, true, all);
+        return returnUnpack(func, args, true, all, funcStart);
 
-        function returnUnpack(func: string, args: unknown[], brackets: boolean, all: string | null) {
-            return { func, args, brackets, all };
+        function returnUnpack(func: string, args: unknown[], brackets: boolean, all: string | null, i: number) {
+            return { func, args, brackets, all, index: i };
         }
     }
 
@@ -294,7 +317,7 @@ export class Interpreter extends Container {
      * @return {Array<string>} - The extracted functions
      * @private
      */
-    private extractFunctions(code: string): Array<string> {
+    private extractFunctions(code: string, custom = false): Array<string> {
         const functions: string[] = [];
         const regex = /\$([^\$\[\];\s]+)/g;
         let depth = 0;
@@ -318,11 +341,13 @@ export class Interpreter extends Container {
                 const match = regex.exec(code);
                 if (match && match.index === index) {
                     const fullName = `$${match[1]}`;
-                    const matched = this.functions.K.filter((f) =>
-                        fullName.toLowerCase().startsWith(f.toLowerCase())
-                    ).sort((a, b) => b.length - a.length)[0];
+                    const matched = this.functions.V.filter(
+                        (f: Functions | CustomFunction) =>
+                            fullName.toLowerCase().startsWith(f.name.toLowerCase()) &&
+                            (custom ? f instanceof CustomFunction : true)
+                    ).sort((a, b) => b.name.length - a.name.length)[0];
 
-                    if (matched) functions.push(matched);
+                    if (matched) functions.push(matched.name);
                     index = regex.lastIndex;
                     continue;
                 }
@@ -386,7 +411,7 @@ export class Interpreter extends Container {
      * @return {any} - The switched argument
      * @private
      */
-    private async switchArg(arg: string, type: ParamType, functionData: Functions): Promise<any> {
+    private async switchArg(arg: string, type: ParamType, functionData: Functions | CustomFunction): Promise<any> {
         if (!arg || arg === '') return void 0;
         let parsed: any;
 
@@ -483,11 +508,11 @@ export class Interpreter extends Container {
      * @return {void} - Nothing
      * @private
      */
-    private replaceExecutionTime(input: string): void {
+    private replaceExecutionTime(input: string): string {
         const result = input.unescape();
         const end = (performance.now() - this.start).toFixed(2).toString();
-        this.code = result.replace(/\$executionTime/gi, end);
         this.embeds = JSON.parse(JSON.stringify(this.embeds).replace(/\$executionTime/gi, end));
         this.components = JSON.parse(JSON.stringify(this.components).replace(/\$executionTime/gi, end));
+        return result.replace(/\$executionTime/gi, end);
     }
 }
