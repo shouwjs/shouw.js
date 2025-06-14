@@ -1,0 +1,55 @@
+{
+    "$schema": "https://json.schemastore.org/package.json",
+    "name": "shouw.js",
+    "version": "1.0.0",
+    "description": "A simple string package that help you to interacts with Discord's API easily.",
+    "type": "commonjs",
+    "main": "./dist/index.js",
+    "types": "./typings/index.d.ts",
+    "bin": {
+        "shouw": "./bin/index.js",
+        "shouw.js": "./bin/index.js"
+    },
+    "directories": {
+        "lib": "dist",
+        "bin": "bin",
+        "typings": "typings",
+        "test": "test"
+    },
+    "scripts": {
+        "builds": "npm run pretty && npm run build:all",
+        "build:ts": "npx tsgo -p tsconfig.json",
+        "build:types": "npx tsup --config tsup.config.json --dts-only --outDir typings",
+        "build:docs": "npx typedoc --options typedoc.json",
+        "lint": "biome lint src --fix .",
+        "format": "biome format src --write .",
+        "pretty": "npm run format && npm run lint",
+        "build:all": "npm run build:ts && npm run build:types",
+        "dev": "node tests/client"
+    },
+    "keywords": ["discord.js", "aoi.js", "shouw.js", "bdfd", "discord", "bot"],
+    "author": "Tyowk <tyowk@outlook.com>",
+    "license": "Apache-2.0",
+    "dependencies": {
+        "chalk": "^4.1.2",
+        "discord.js": "^14.19.3"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^1.9.4",
+        "@typescript/native-preview": "^7.0.0-dev.20250613.1",
+        "tsup": "^8.5.0",
+        "typescript": "^5.8.3"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/shouwjs/shouw.js.git"
+    },
+    "bugs": {
+        "url": "https://github.com/shouwjs/shouw.js/issues"
+    },
+    "files": ["dist", "bin", "typings", "README.md", "LICENSE", "package.json", "CHANGELOG.md"],
+    "engines": {
+        "node": ">=20.x",
+        "npm": ">=9.x"
+    }
+}
