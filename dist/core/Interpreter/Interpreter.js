@@ -36,6 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Interpreter = void 0;
 const index_js_1 = require("../../index.js");
 const Container_js_1 = require("./Container.js");
+const IF_js_1 = require("./IF.js");
 const Discord = __importStar(require("discord.js"));
 class Interpreter extends Container_js_1.Container {
     static async run(command, options, extras) {
@@ -74,47 +75,49 @@ class Interpreter extends Container_js_1.Container {
         for (const func of functions) {
             if (this.isError)
                 break;
-            const unpacked = this.unpack(func, currentCode, lastIndex);
             const functionData = this.functions.get(func);
-            if (!unpacked.all || !functionData || !functionData.code)
+            if (!functionData || !functionData.code)
                 continue;
             if (!(functionData instanceof index_js_1.CustomFunction) && typeof functionData.code !== 'function')
                 continue;
-            if (functionData.brackets && !unpacked.brackets) {
+            const unpacked = this.unpack(func, currentCode, lastIndex);
+            if (!unpacked.all)
+                continue;
+            if (functionData.brackets && !unpacked.brackets)
                 await this.error(index_js_1.Constants.Errors.missingBrackets(func, functionData));
-                break;
-            }
             if (this.isError)
                 break;
             const processedArgs = await this.processArgs(unpacked.args, functionData);
+            if (this.isError)
+                break;
             if (functionData instanceof index_js_1.CustomFunction && typeof functionData.codeType === 'string') {
                 let code = functionData.stringCode;
                 for (const param of functionData.params ?? []) {
-                    code = code.replaceAll(`{{${param.name}}}`, processedArgs.shift()?.toString() ?? '');
+                    code = code.replaceAll(`{{${param.name}}}`, () => processedArgs.shift()?.toString() ?? '');
                 }
+                const result = await this.processFunction(code);
+                lastIndex = unpacked.index + (result?.toString().trim() ?? '').length;
                 currentCode =
                     currentCode.slice(0, unpacked.index) +
-                        code.trim() +
+                        (result?.toString().trim() ?? '') +
                         currentCode.slice(unpacked.index + unpacked.all.length);
-                currentCode = await this.processFunction(currentCode);
-                break;
+                continue;
             }
-            if (func.match(/\$if$/i)) {
+            if (func.match(/\$if$/i) || func === '$if') {
+                const { code, error, index, length } = await (0, index_js_1.IF)(currentCode, this);
+                this.setError(error);
                 if (this.isError)
                     break;
-                const { code: ifCode, error: isError } = await (0, index_js_1.IF)(currentCode, this);
-                this.setError(isError);
-                if (this.isError)
-                    break;
-                currentCode = await this.processFunction(ifCode);
-                break;
+                const result = await this.processFunction(code);
+                lastIndex = index + result.length;
+                currentCode = currentCode.slice(0, index) + result + currentCode.slice(index + length);
+                continue;
             }
             try {
                 if (this.isError || typeof functionData.code !== 'function')
                     break;
-                const DATA = ((await functionData.code(this, processedArgs, this.Temporarily)) ?? {
-                    result: ''
-                });
+                const DATA = ((await functionData.code(this, processedArgs, this.Temporarily)) ??
+                    {});
                 currentCode =
                     currentCode.slice(0, unpacked.index) +
                         (DATA.result ?? '') +
@@ -139,16 +142,18 @@ class Interpreter extends Container_js_1.Container {
         const totalArgs = Math.max(args.length, functionData.paramsLength);
         for (let i = 0; i < totalArgs; i++) {
             const param = functionData.getParam(i);
+            if (!param)
+                continue;
             const isVoid = (v) => param.type !== index_js_1.ParamType.Void && (v === undefined || v === null || v === '');
             if (param.rest) {
                 const joined = args.slice(i).join(';');
                 const result = await this.switchArg(await this.processFunction(joined), param.type ?? index_js_1.ParamType.String, functionData);
                 if (this.isError)
                     break;
-                if (param.required && isVoid(result)) {
+                if (param.required && isVoid(result))
                     await this.error(index_js_1.Constants.Errors.missingRequiredArgument(functionData.name, param.name));
+                if (this.isError)
                     break;
-                }
                 processedArgs.push(result);
                 return processedArgs;
             }
@@ -157,10 +162,10 @@ class Interpreter extends Container_js_1.Container {
             if (this.isError)
                 break;
             if (isVoid(arg)) {
-                if (param.required) {
+                if (param.required)
                     await this.error(index_js_1.Constants.Errors.missingRequiredArgument(functionData.name, param.name));
+                if (this.isError)
                     break;
-                }
                 processedArgs.push(undefined);
                 continue;
             }
@@ -172,10 +177,10 @@ class Interpreter extends Container_js_1.Container {
             const processed = await this.switchArg(await this.processFunction(arg), param.type ?? index_js_1.ParamType.String, functionData);
             if (this.isError)
                 break;
-            if (param.required && isVoid(processed)) {
+            if (param.required && isVoid(processed))
                 await this.error(index_js_1.Constants.Errors.missingRequiredArgument(functionData.name, param.name));
+            if (this.isError)
                 break;
-            }
             processedArgs.push(processed);
         }
         return processedArgs;
@@ -244,7 +249,14 @@ class Interpreter extends Container_js_1.Container {
             return void 0;
         });
     }
-    extractFunctions(code, custom = false) {
+    extractFunctions(input, custom = false) {
+        const startIndex = input.toLowerCase().indexOf('$if[');
+        let code = input;
+        if (startIndex !== -1) {
+            const block = (0, IF_js_1.extractTopLevelBlock)(input.slice(startIndex), '$if[', '$endif');
+            if (block?.full)
+                code = `${code.slice(0, startIndex)}$if[true]${code.slice(startIndex + block.full.length)}`;
+        }
         const functions = [];
         const regex = /\$([^\$\[\];\s]+)/g;
         let depth = 0;

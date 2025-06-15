@@ -1,4 +1,4 @@
-import { Interpreter, Constants } from '../../index.js';
+import { type Interpreter, Constants } from '../../index.js';
 
 /**
  * Handles the $if block in the code and returns the modified code.
@@ -7,16 +7,19 @@ import { Interpreter, Constants } from '../../index.js';
  * @param {Interpreter} ctx - The interpreter context.
  * @return {Promise<{ code: string; error: boolean }>} The modified code and whether there was an error.
  */
-export async function IF(code: string, ctx: Interpreter): Promise<{ code: string; error: boolean }> {
+export async function IF(
+    code: string,
+    ctx: Interpreter
+): Promise<{ code: string; error: boolean; index: number; length: number }> {
     const lower = code.toLowerCase();
-    if (!lower.includes('$if[')) return { code, error: false };
+    if (!lower.includes('$if[')) return { code, error: false, index: 0, length: 0 };
 
     /**
      * Check if the $if block is properly closed with $endif.
      */
     if (!lower.includes('$endif')) {
         await ctx.error(Constants.Errors.missingEndif);
-        return { code, error: true };
+        return { code, error: true, index: 0, length: 0 };
     }
 
     /**
@@ -27,7 +30,7 @@ export async function IF(code: string, ctx: Interpreter): Promise<{ code: string
 
     if (!block) {
         await ctx.error(Constants.Errors.missingEndif);
-        return { code, error: true };
+        return { code, error: true, index: 0, length: 0 };
     }
 
     const { full } = block;
@@ -42,7 +45,10 @@ export async function IF(code: string, ctx: Interpreter): Promise<{ code: string
         const isConditionBranch = branch.type === 'if' || branch.type === 'elseif';
 
         if (isConditionBranch && !matched) {
-            const result = branch.condition ? await INIT(branch.condition, ctx) : 'false';
+            const result = branch.condition
+                ? // @ts-ignore
+                  await ctx.processFunction(`$checkCondition[${branch.condition}]`)
+                : 'false';
             if (result === 'true') {
                 output = branch.code;
                 matched = true;
@@ -53,8 +59,7 @@ export async function IF(code: string, ctx: Interpreter): Promise<{ code: string
         }
     }
 
-    const finalCode = code.slice(0, startIndex) + output + code.slice(startIndex + full.length);
-    return { code: finalCode, error: false };
+    return { code: output, error: false, index: startIndex, length: full.length };
 }
 
 /**
@@ -138,7 +143,7 @@ function parseBranches(full: string): Array<{ type: string; condition: string; c
  * @param {string} close - The closing tag of the block.
  * @return {{ full: string, body: string } | null} The extracted block.
  */
-function extractTopLevelBlock(
+export function extractTopLevelBlock(
     str: string,
     open: string,
     close: string
@@ -198,24 +203,4 @@ function extractCondition(str: string): string {
         }
     }
     return '';
-}
-
-/**
- * Initializes the condition and returns the result.
- *
- * @param {string} condition - The condition to be evaluated.
- * @param {Interpreter} ctx - The interpreter context.
- */
-async function INIT(condition: string, ctx: Interpreter) {
-    return (
-        (
-            await Interpreter.run({ code: `$checkCondition[${condition}]` }, ctx, {
-                sendMessage: false,
-                returnResult: true,
-                returnError: false,
-                returnData: false,
-                returnId: false
-            })
-        )?.result ?? 'false'
-    );
 }

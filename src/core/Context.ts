@@ -14,6 +14,8 @@ import {
     type ForumChannel,
     type MediaChannel,
     type InteractionReplyOptions,
+    type InteractionEditReplyOptions,
+    type InteractionResponse,
     Message,
     ChatInputCommandInteraction,
     MessageComponentInteraction,
@@ -26,6 +28,8 @@ export type Interaction =
     | MessageComponentInteraction
     | ModalSubmitInteraction
     | ContextMenuCommandInteraction;
+
+export type InteractionEdit = string | MessagePayload | InteractionEditReplyOptions;
 
 export type InteractionWithMessage = Interaction | Message;
 
@@ -117,6 +121,16 @@ export class Context {
     }
 
     /**
+     * Check if the interaction has already been replied to
+     *
+     * @returns {boolean} - Whether the interaction has already been replied to
+     */
+    private get isReplied(): boolean {
+        if (!this.isInteraction) return false;
+        return (this.interaction?.replied || this.interaction?.deferred) ?? false;
+    }
+
+    /**
      * Send a message to the channel the command was sent in
      *
      * @param {SendData} data - The data to send
@@ -124,7 +138,7 @@ export class Context {
      * @example <Context>.send('Hello World!'); // Send a message to the channel the command was sent in
      */
     public async send(data: SendData): Promise<Message<boolean> | undefined> {
-        if (this.isInteraction) return await this.reply(data);
+        if (this.isInteraction && !this.isReplied) return await this.reply(data);
 
         if (!this.channel) return void 0;
         if (this.channel.partial) await this.channel.fetch();
@@ -145,10 +159,79 @@ export class Context {
     public async reply(data: InteractionReplyData): Promise<InteractionCallbackResponse>;
 
     public async reply(data: any): Promise<any> {
-        if (this.isInteraction && this.interaction) return await this.interaction.reply(data);
+        if (this.isInteraction && this.interaction && !this.isReplied) return await this.interaction.reply(data);
 
         if (!this.message) return await this.send(data);
         if (this.message.partial) await this.message.fetch();
         return await this.message.reply(data);
+    }
+
+    /**
+     * Edit the reply to the message the command was sent in
+     *
+     * @param {InteractionEdit} data - The data to edit the reply with
+     * @returns {Promise<Message<boolean> | undefined>} - The message sent
+     */
+    public async editReply(data: InteractionEdit): Promise<Message<boolean> | undefined> {
+        return await this.interaction?.editReply(data);
+    }
+
+    /**
+     * Delete the reply to the message the command was sent in
+     *
+     * @returns {Promise<void>} - The message sent
+     */
+    public async deleteReply(): Promise<void> {
+        return await this.interaction?.deleteReply();
+    }
+
+    /**
+     * Fetch the reply to the message the command was sent in
+     *
+     * @returns {Promise<Message<boolean> | undefined>} - The message sent
+     */
+    public async fetchReply(): Promise<Message<boolean> | undefined> {
+        return await this.interaction?.fetchReply();
+    }
+
+    /**
+     * Defer the reply to the message the command was sent in
+     *
+     * @param {boolean} [ephemeral] - Whether the reply should be ephemeral
+     * @returns {Promise<InteractionResponse<boolean> | undefined>} - The message sent
+     */
+    public async deferReply(ephemeral = false): Promise<InteractionCallbackResponse | undefined> {
+        return await this.interaction?.deferReply({ flags: ephemeral ? 64 : void 0, withResponse: true });
+    }
+
+    /**
+     * Follow up to the reply to the message the command was sent in
+     *
+     * @param {InteractionReplyData} data - The data to follow up with
+     * @returns {Promise<Message<boolean> | undefined>} - The message sent
+     */
+    public async followUp(data: InteractionReplyData): Promise<Message<boolean> | undefined> {
+        return await this.interaction?.followUp(data);
+    }
+
+    /**
+     * Defer the update to the message the command was sent in
+     *
+     * @returns {Promise<InteractionResponse<boolean> | undefined>} - The message sent
+     */
+    public async deferUpdate(): Promise<InteractionCallbackResponse | undefined> {
+        if (!this.interaction?.isMessageComponent()) return;
+        return await this.interaction?.deferUpdate({ withResponse: true });
+    }
+
+    /**
+     * Update the message the command was sent in
+     *
+     * @param {InteractionEdit} data - The data to update the message with
+     * @returns {Promise<InteractionResponse<boolean> | undefined>} - The message sent
+     */
+    public async update(data: InteractionEdit): Promise<InteractionResponse<boolean> | undefined> {
+        if (!this.interaction?.isMessageComponent()) return;
+        return await this.interaction?.update(data);
     }
 }

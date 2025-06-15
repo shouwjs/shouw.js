@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import { Client, ClientOptions, ClientEvents, Channel, CategoryChannel, PartialGroupDMChannel, PartialDMChannel, ForumChannel, MediaChannel, User, GuildMember, Guild, Message, ChatInputCommandInteraction, MessageComponentInteraction, ModalSubmitInteraction, ContextMenuCommandInteraction, MessagePayload, MessageReplyOptions, MessageCreateOptions, OmitPartialGroupDMChannel, InteractionReplyOptions, InteractionCallbackResponse, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ChannelType, MessageFlags, Role } from 'discord.js';
+import { Client, ClientOptions, ClientEvents, Channel, CategoryChannel, PartialGroupDMChannel, PartialDMChannel, ForumChannel, MediaChannel, User, GuildMember, Guild, Message, ChatInputCommandInteraction, MessageComponentInteraction, ModalSubmitInteraction, ContextMenuCommandInteraction, MessagePayload, MessageReplyOptions, MessageCreateOptions, OmitPartialGroupDMChannel, InteractionReplyOptions, InteractionCallbackResponse, InteractionEditReplyOptions, InteractionResponse, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ChannelType, MessageFlags, Role } from 'discord.js';
 
 interface Objects {
     [key: string | symbol | number | `${any}`]: unknown;
@@ -215,7 +215,7 @@ declare class Container {
     readonly util: typeof Util;
     readonly extras: ExtraOptionsData;
     isError: boolean;
-    components: Discord.TopLevelComponent[];
+    components: any[];
     readonly suppressErrors: {
         suppress: boolean;
         message: SendData | undefined;
@@ -239,10 +239,10 @@ declare class Container {
     getStickers(): Discord.Sticker[];
     setError(error: boolean): this;
     getError(): boolean;
-    setComponents(components: Discord.TopLevelComponent[]): this;
-    pushComponent(component: Discord.TopLevelComponent, index?: number): this;
-    getComponent(index?: number): Discord.TopLevelComponent;
-    getComponents(): Discord.TopLevelComponent[];
+    setComponents(components: any[]): this;
+    pushComponent(component: any, index?: number): this;
+    getComponent(index?: number): any;
+    getComponents(): any[];
     setFlags(flags: Array<number | string | bigint>): this;
     pushFlag(flag: number | string | bigint): this;
     getFlags(): (string | number | bigint)[];
@@ -310,9 +310,12 @@ declare class Interpreter extends Container {
 declare function IF(code: string, ctx: Interpreter): Promise<{
     code: string;
     error: boolean;
+    index: number;
+    length: number;
 }>;
 
 type Interaction = ChatInputCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction | ContextMenuCommandInteraction;
+type InteractionEdit = string | MessagePayload | InteractionEditReplyOptions;
 type InteractionWithMessage = Interaction | Message;
 type SendData = string | MessagePayload | MessageReplyOptions | MessageCreateOptions;
 type MessageReplyData = string | MessagePayload | MessageReplyOptions;
@@ -331,9 +334,17 @@ declare class Context {
     interaction?: Interaction | null;
     constructor(ctx: InteractionWithMessage, args?: Array<string>);
     private get isInteraction();
+    private get isReplied();
     send(data: SendData): Promise<Message<boolean> | undefined>;
     reply(data: MessageReplyData): Promise<Message<boolean> | OmitPartialGroupDMChannel<Message<boolean>> | undefined>;
     reply(data: InteractionReplyData): Promise<InteractionCallbackResponse>;
+    editReply(data: InteractionEdit): Promise<Message<boolean> | undefined>;
+    deleteReply(): Promise<void>;
+    fetchReply(): Promise<Message<boolean> | undefined>;
+    deferReply(ephemeral?: boolean): Promise<InteractionCallbackResponse | undefined>;
+    followUp(data: InteractionReplyData): Promise<Message<boolean> | undefined>;
+    deferUpdate(): Promise<InteractionCallbackResponse | undefined>;
+    update(data: InteractionEdit): Promise<InteractionResponse<boolean> | undefined>;
 }
 
 interface FunctionResultData extends Omit<InterpreterOptions, 'client'> {

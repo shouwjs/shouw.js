@@ -184,7 +184,7 @@ class Container {
         return this;
     }
     setStickers(stickers) {
-        this.stickers = stickers;
+        this.stickers = stickers.filter(Boolean);
         return this;
     }
     pushSticker(sticker) {
@@ -202,66 +202,73 @@ class Container {
         return this.isError;
     }
     setComponents(components) {
-        this.components = components;
+        this.components = components.filter(Boolean);
         return this;
     }
     pushComponent(component, index) {
-        if (index) {
-            this.components.splice(index, 0, component);
+        if (index !== null && index !== void 0) {
+            this.components[index] = component;
+            this.components = this.components.filter(Boolean);
             return this;
         }
         this.components.push(component);
+        this.components = this.components.filter(Boolean);
         return this;
     }
     getComponent(index) {
-        return !index || Number.isNaN(index) ? this.components[0] : this.components[index];
+        return index === null || index === void 0 ? this.components[0] : this.components[index];
     }
     getComponents() {
         return this.components;
     }
     setFlags(flags) {
-        this.flags = flags;
+        this.flags = flags.filter(Boolean);
         return this;
     }
     pushFlag(flag) {
         this.flags.push(flag);
+        this.flags = this.flags.filter(Boolean);
         return this;
     }
     getFlags() {
         return this.flags;
     }
     setAttachments(attachments) {
-        this.attachments = attachments;
+        this.attachments = attachments.filter(Boolean);
         return this;
     }
     pushAttachment(attachment, index) {
-        if (index) {
-            this.attachments.splice(index, 0, attachment);
+        if (index !== null && index !== void 0) {
+            this.attachments[index] = attachment;
+            this.attachments = this.attachments.filter(Boolean);
             return this;
         }
         this.attachments.push(attachment);
+        this.attachments = this.attachments.filter(Boolean);
         return this;
     }
     getAttachment(index) {
-        return !index || Number.isNaN(index) ? this.attachments[0] : this.attachments[index];
+        return index === null || index === void 0 ? this.attachments[0] : this.attachments[index];
     }
     getAttachments() {
         return this.attachments;
     }
     setEmbeds(embeds) {
-        this.embeds = embeds;
+        this.embeds = embeds.filter(Boolean);
         return this;
     }
     pushEmbed(embed, index) {
-        if (index) {
-            this.embeds.splice(index, 0, embed);
+        if (index !== null && index !== void 0) {
+            this.embeds[index] = embed;
+            this.embeds = this.embeds.filter(Boolean);
             return this;
         }
         this.embeds.push(embed);
+        this.embeds = this.embeds.filter(Boolean);
         return this;
     }
     getEmbed(index) {
-        return !index || Number.isNaN(index) ? this.embeds[0] : this.embeds[index];
+        return index === null || index === void 0 ? this.embeds[0] : this.embeds[index];
     }
     getEmbeds() {
         return this.embeds;

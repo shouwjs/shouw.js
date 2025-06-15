@@ -13,6 +13,7 @@ import {
     type Functions
 } from '../../index.js';
 import { Container } from './Container.js';
+import { extractTopLevelBlock } from './IF.js';
 import * as Discord from 'discord.js';
 
 /**
@@ -75,7 +76,6 @@ export class Interpreter extends Container {
      *
      * @param {string} input - The input to process
      * @return {Promise<string>} - The result of the processing
-     * @private
      */
     private async processFunction(input: string): Promise<string> {
         const code = input.mustEscape();
@@ -87,48 +87,50 @@ export class Interpreter extends Container {
 
         for (const func of functions) {
             if (this.isError) break;
-            const unpacked = this.unpack(func, currentCode, lastIndex);
             const functionData: Functions | CustomFunction | undefined = this.functions.get(func);
-
-            if (!unpacked.all || !functionData || !functionData.code) continue;
+            if (!functionData || !functionData.code) continue;
             if (!(functionData instanceof CustomFunction) && typeof functionData.code !== 'function') continue;
 
-            if (functionData.brackets && !unpacked.brackets) {
+            const unpacked = this.unpack(func, currentCode, lastIndex);
+            if (!unpacked.all) continue;
+            if (functionData.brackets && !unpacked.brackets)
                 await this.error(Constants.Errors.missingBrackets(func, functionData));
-                break;
-            }
 
             if (this.isError) break;
             const processedArgs: Array<unknown> = await this.processArgs(unpacked.args, functionData);
 
+            if (this.isError) break;
             if (functionData instanceof CustomFunction && typeof functionData.codeType === 'string') {
                 let code = functionData.stringCode;
                 for (const param of functionData.params ?? []) {
-                    code = code.replaceAll(`{{${param.name}}}`, processedArgs.shift()?.toString() ?? '');
+                    code = code.replaceAll(`{{${param.name}}}`, () => processedArgs.shift()?.toString() ?? '');
                 }
 
+                const result = await this.processFunction(code);
+                lastIndex = unpacked.index + (result?.toString().trim() ?? '').length;
                 currentCode =
                     currentCode.slice(0, unpacked.index) +
-                    code.trim() +
+                    (result?.toString().trim() ?? '') +
                     currentCode.slice(unpacked.index + unpacked.all.length);
-                currentCode = await this.processFunction(currentCode);
-                break;
+
+                continue;
             }
 
-            if (func.match(/\$if$/i)) {
+            if (func.match(/\$if$/i) || func === '$if') {
+                const { code, error, index, length } = await IF(currentCode, this);
+                this.setError(error);
                 if (this.isError) break;
-                const { code: ifCode, error: isError } = await IF(currentCode, this);
-                this.setError(isError);
-                if (this.isError) break;
-                currentCode = await this.processFunction(ifCode);
-                break;
+
+                const result = await this.processFunction(code);
+                lastIndex = index + result.length;
+                currentCode = currentCode.slice(0, index) + result + currentCode.slice(index + length);
+                continue;
             }
 
             try {
                 if (this.isError || typeof functionData.code !== 'function') break;
-                const DATA = ((await functionData.code(this, processedArgs, this.Temporarily)) ?? {
-                    result: ''
-                }) as FunctionResultData;
+                const DATA = ((await functionData.code(this, processedArgs, this.Temporarily)) ??
+                    {}) as FunctionResultData;
 
                 currentCode =
                     currentCode.slice(0, unpacked.index) +
@@ -164,6 +166,7 @@ export class Interpreter extends Container {
 
         for (let i = 0; i < totalArgs; i++) {
             const param = functionData.getParam(i);
+            if (!param) continue;
             const isVoid = (v: any) => param.type !== ParamType.Void && (v === undefined || v === null || v === '');
 
             if (param.rest) {
@@ -173,11 +176,12 @@ export class Interpreter extends Container {
                     param.type ?? ParamType.String,
                     functionData
                 );
+
                 if (this.isError) break;
-                if (param.required && isVoid(result)) {
+                if (param.required && isVoid(result))
                     await this.error(Constants.Errors.missingRequiredArgument(functionData.name, param.name));
-                    break;
-                }
+
+                if (this.isError) break;
                 processedArgs.push(result);
                 return processedArgs;
             }
@@ -187,10 +191,9 @@ export class Interpreter extends Container {
             if (this.isError) break;
 
             if (isVoid(arg)) {
-                if (param.required) {
+                if (param.required)
                     await this.error(Constants.Errors.missingRequiredArgument(functionData.name, param.name));
-                    break;
-                }
+                if (this.isError) break;
                 processedArgs.push(undefined);
                 continue;
             }
@@ -206,11 +209,11 @@ export class Interpreter extends Container {
                 param.type ?? ParamType.String,
                 functionData
             );
+
             if (this.isError) break;
-            if (param.required && isVoid(processed)) {
+            if (param.required && isVoid(processed))
                 await this.error(Constants.Errors.missingRequiredArgument(functionData.name, param.name));
-                break;
-            }
+            if (this.isError) break;
             processedArgs.push(processed);
         }
 
@@ -313,11 +316,19 @@ export class Interpreter extends Container {
     /**
      * Extract all functions from the code and return them as an array of strings
      *
-     * @param {string} code - The code to extract functions from
+     * @param {string} input - The code to extract functions from
      * @return {Array<string>} - The extracted functions
      * @private
      */
-    private extractFunctions(code: string, custom = false): Array<string> {
+    private extractFunctions(input: string, custom = false): Array<string> {
+        const startIndex = input.toLowerCase().indexOf('$if[');
+        let code: string = input;
+        if (startIndex !== -1) {
+            const block = extractTopLevelBlock(input.slice(startIndex), '$if[', '$endif');
+            if (block?.full)
+                code = `${code.slice(0, startIndex)}$if[true]${code.slice(startIndex + block.full.length)}`;
+        }
+
         const functions: string[] = [];
         const regex = /\$([^\$\[\];\s]+)/g;
         let depth = 0;

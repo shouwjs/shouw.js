@@ -221,7 +221,7 @@ export class Container {
     /**
      * The components to send
      */
-    public components: Discord.TopLevelComponent[] = [];
+    public components: any[] = [];
 
     /**
      * Whether to suppress errors and not send them to the channel the command was sent in
@@ -372,7 +372,7 @@ export class Container {
      * Functions to manage strickers
      */
     public setStickers(stickers: Discord.Sticker[]) {
-        this.stickers = stickers;
+        this.stickers = stickers.filter(Boolean);
         return this;
     }
 
@@ -400,23 +400,25 @@ export class Container {
     /**
      * Functions to manage components
      */
-    public setComponents(components: Discord.TopLevelComponent[]) {
-        this.components = components;
+    public setComponents(components: any[]) {
+        this.components = components.filter(Boolean);
         return this;
     }
 
-    public pushComponent(component: Discord.TopLevelComponent, index?: number) {
-        if (index) {
-            this.components.splice(index, 0, component);
+    public pushComponent(component: any, index?: number) {
+        if (index !== null && index !== void 0) {
+            this.components[index] = component;
+            this.components = this.components.filter(Boolean);
             return this;
         }
 
         this.components.push(component);
+        this.components = this.components.filter(Boolean);
         return this;
     }
 
     public getComponent(index?: number) {
-        return !index || Number.isNaN(index) ? this.components[0] : this.components[index];
+        return index === null || index === void 0 ? this.components[0] : this.components[index];
     }
 
     public getComponents() {
@@ -427,12 +429,13 @@ export class Container {
      * Functions to manage flags
      */
     public setFlags(flags: Array<number | string | bigint>) {
-        this.flags = flags;
+        this.flags = flags.filter(Boolean);
         return this;
     }
 
     public pushFlag(flag: number | string | bigint) {
         this.flags.push(flag);
+        this.flags = this.flags.filter(Boolean);
         return this;
     }
 
@@ -444,22 +447,24 @@ export class Container {
      * Functions to manage attachments
      */
     public setAttachments(attachments: Discord.AttachmentBuilder[]) {
-        this.attachments = attachments;
+        this.attachments = attachments.filter(Boolean);
         return this;
     }
 
     public pushAttachment(attachment: Discord.AttachmentBuilder, index?: number) {
-        if (index) {
-            this.attachments.splice(index, 0, attachment);
+        if (index !== null && index !== void 0) {
+            this.attachments[index] = attachment;
+            this.attachments = this.attachments.filter(Boolean);
             return this;
         }
 
         this.attachments.push(attachment);
+        this.attachments = this.attachments.filter(Boolean);
         return this;
     }
 
     public getAttachment(index?: number) {
-        return !index || Number.isNaN(index) ? this.attachments[0] : this.attachments[index];
+        return index === null || index === void 0 ? this.attachments[0] : this.attachments[index];
     }
 
     public getAttachments() {
@@ -470,22 +475,24 @@ export class Container {
      * Functions to manage embeds
      */
     public setEmbeds(embeds: Discord.EmbedBuilder[]) {
-        this.embeds = embeds;
+        this.embeds = embeds.filter(Boolean);
         return this;
     }
 
     public pushEmbed(embed: Discord.EmbedBuilder, index?: number) {
-        if (index) {
-            this.embeds.splice(index, 0, embed);
+        if (index !== null && index !== void 0) {
+            this.embeds[index] = embed;
+            this.embeds = this.embeds.filter(Boolean);
             return this;
         }
 
         this.embeds.push(embed);
+        this.embeds = this.embeds.filter(Boolean);
         return this;
     }
 
     public getEmbed(index?: number) {
-        return !index || Number.isNaN(index) ? this.embeds[0] : this.embeds[index];
+        return index === null || index === void 0 ? this.embeds[0] : this.embeds[index];
     }
 
     public getEmbeds() {

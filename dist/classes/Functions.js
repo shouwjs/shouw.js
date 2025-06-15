@@ -72,7 +72,7 @@ class FunctionsManager extends Collective_js_1.Collective {
         }
     }
     createFunction(data) {
-        if (!data.name || !data.code) {
+        if (!data.name || !data.code || !Array.isArray(data.params)) {
             this.client.debug('Failed to creating function: Missing required function data', 'ERROR');
             return this;
         }

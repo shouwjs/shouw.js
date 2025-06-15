@@ -1,20 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.IF = IF;
+exports.extractTopLevelBlock = extractTopLevelBlock;
 const index_js_1 = require("../../index.js");
 async function IF(code, ctx) {
     const lower = code.toLowerCase();
     if (!lower.includes('$if['))
-        return { code, error: false };
+        return { code, error: false, index: 0, length: 0 };
     if (!lower.includes('$endif')) {
         await ctx.error(index_js_1.Constants.Errors.missingEndif);
-        return { code, error: true };
+        return { code, error: true, index: 0, length: 0 };
     }
     const startIndex = lower.indexOf('$if[');
     const block = extractTopLevelBlock(code.slice(startIndex), '$if[', '$endif');
     if (!block) {
         await ctx.error(index_js_1.Constants.Errors.missingEndif);
-        return { code, error: true };
+        return { code, error: true, index: 0, length: 0 };
     }
     const { full } = block;
     const branches = parseBranches(full);
@@ -23,7 +24,10 @@ async function IF(code, ctx) {
     for (const branch of branches) {
         const isConditionBranch = branch.type === 'if' || branch.type === 'elseif';
         if (isConditionBranch && !matched) {
-            const result = branch.condition ? await INIT(branch.condition, ctx) : 'false';
+            const result = branch.condition
+                ?
+                    await ctx.processFunction(`$checkCondition[${branch.condition}]`)
+                : 'false';
             if (result === 'true') {
                 output = branch.code;
                 matched = true;
@@ -34,8 +38,7 @@ async function IF(code, ctx) {
             break;
         }
     }
-    const finalCode = code.slice(0, startIndex) + output + code.slice(startIndex + full.length);
-    return { code: finalCode, error: false };
+    return { code: output, error: false, index: startIndex, length: full.length };
 }
 function parseBranches(full) {
     const branches = [];
@@ -138,13 +141,4 @@ function extractCondition(str) {
         }
     }
     return '';
-}
-async function INIT(condition, ctx) {
-    return ((await index_js_1.Interpreter.run({ code: `$checkCondition[${condition}]` }, ctx, {
-        sendMessage: false,
-        returnResult: true,
-        returnError: false,
-        returnData: false,
-        returnId: false
-    }))?.result ?? 'false');
 }

@@ -98,7 +98,7 @@ export class FunctionsManager extends Collective<string, Functions | CustomFunct
      * @return {FunctionsManager} - The functions manager class
      */
     public createFunction(data: CustomFunctionData): FunctionsManager {
-        if (!data.name || !data.code) {
+        if (!data.name || !data.code || !Array.isArray(data.params)) {
             this.client.debug('Failed to creating function: Missing required function data', 'ERROR');
             return this;
         }
