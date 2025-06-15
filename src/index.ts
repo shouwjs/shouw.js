@@ -8,6 +8,8 @@ export {
     CommandsManager,
     FunctionsManager,
     Variables,
+    CacheManager,
+    CustomEvent,
     type Objects,
     type CommandData,
     type CommandsEventMap,

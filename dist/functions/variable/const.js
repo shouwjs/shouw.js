@@ -25,11 +25,11 @@ class Const extends index_js_1.Functions {
         });
     }
     async code(ctx, [varname, value]) {
-        if (ctx.hasVariable(varname))
-            ctx.deleteVariable(varname);
-        if (ctx.hasConstantVariable(varname))
-            return await ctx.error(index_js_1.Constants.Errors.constantVariable(varname), this.name);
-        ctx.setConstantVariable(varname, value);
+        if (ctx.hasVariable(varname.unescape()))
+            ctx.deleteVariable(varname.unescape());
+        if (ctx.hasConstantVariable(varname.unescape()))
+            return await ctx.error(index_js_1.Constants.Errors.constantVariable(varname.unescape()), this.name);
+        ctx.setConstantVariable(varname.unescape(), value.unescape());
         return this.success();
     }
 }

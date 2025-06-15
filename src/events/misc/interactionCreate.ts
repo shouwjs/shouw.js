@@ -123,25 +123,15 @@ export default async function Events(interaction: Interaction, client: any): Pro
 async function INIT(command: CommandData, interaction: Interaction, args: any[], client: ShouwClient): Promise<string> {
     return (
         (
-            await Interpreter.run(
-                command,
-                {
-                    client: client,
-                    interaction: interaction,
-                    channel: interaction.channel ?? void 0,
-                    guild: interaction.guild ?? void 0,
-                    args: args.filter(Boolean),
-                    user: interaction.user,
-                    member: (interaction.member as GuildMember) ?? void 0
-                },
-                {
-                    sendMessage: true,
-                    returnId: false,
-                    returnResult: true,
-                    returnError: false,
-                    returnData: false
-                }
-            )
+            await Interpreter.run(command, {
+                client: client,
+                interaction: interaction,
+                channel: interaction.channel ?? void 0,
+                guild: interaction.guild ?? void 0,
+                args: args.filter(Boolean),
+                user: interaction.user,
+                member: (interaction.member as GuildMember) ?? void 0
+            })
         )?.result ?? ''
     );
 }

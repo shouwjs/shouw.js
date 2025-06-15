@@ -153,7 +153,7 @@ const music = new ShouwMusic({
     }
 
 const client = new ShouwClient({
-    token: '${token}',${
+    token: ${token === 'process.env.TOKEN' ? 'process.env.TOKEN' : `'${token}'`},${
         music
             ? `
     extensions: [music],`

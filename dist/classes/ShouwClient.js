@@ -45,6 +45,8 @@ class ShouwClient extends BaseClient_js_1.BaseClient {
     database;
     music;
     variablesManager;
+    cacheManager;
+    customEvents;
     prefix;
     shouwOptions;
     constructor(options) {
@@ -54,6 +56,8 @@ class ShouwClient extends BaseClient_js_1.BaseClient {
         this.functions = new index_js_1.FunctionsManager(this);
         this.commands = new index_js_1.CommandsManager(this, options.events);
         this.variablesManager = new index_js_1.Variables(this);
+        this.cacheManager = new index_js_1.CacheManager(this);
+        this.customEvents = new index_js_1.CustomEvent(this);
         this.functions.load(path.join(__dirname, '../functions'), options.debug ?? false);
         options.extensions = Array.isArray(options.extensions) ? options.extensions : [options.extensions];
         for (const extension of options.extensions) {

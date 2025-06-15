@@ -54,7 +54,7 @@ class AddButton extends index_js_1.Functions {
         if (!ctx.getComponent(row))
             ctx.pushComponent(new ctx.discord.ActionRowBuilder(), row);
         if (emoji)
-            emoji = (await ctx.util.getEmoji(ctx, emoji, true)) ?? emoji;
+            emoji = (await ctx.util.getEmoji(ctx, emoji.unescape(), true)) ?? emoji.unescape();
         let style = ctx.discord.ButtonStyle.Primary;
         switch (styleStr.unescape().toLowerCase()) {
             case 'primary':
@@ -91,9 +91,9 @@ class AddButton extends index_js_1.Functions {
             if (emoji)
                 button.setEmoji(emoji);
             if (ctx.discord.ButtonStyle.Link === style)
-                button.setURL(customId);
+                button.setURL(customId.unescape());
             else
-                button.setCustomId(customId);
+                button.setCustomId(customId.unescape());
         }
         ctx.getComponent(row).addComponents(button);
         return this.success();

@@ -269,7 +269,7 @@ export class Container {
             constants: {},
             splits: [],
             randoms: {},
-            timezone: 'UTC'
+            timezone: void 0
         };
 
         this.extras = {
@@ -372,7 +372,7 @@ export class Container {
      * Functions to manage strickers
      */
     public setStickers(stickers: Discord.Sticker[]) {
-        this.stickers = stickers.filter(Boolean);
+        this.stickers = stickers;
         return this;
     }
 
@@ -401,19 +401,17 @@ export class Container {
      * Functions to manage components
      */
     public setComponents(components: any[]) {
-        this.components = components.filter(Boolean);
+        this.components = components;
         return this;
     }
 
     public pushComponent(component: any, index?: number) {
         if (index !== null && index !== void 0) {
             this.components[index] = component;
-            this.components = this.components.filter(Boolean);
             return this;
         }
 
         this.components.push(component);
-        this.components = this.components.filter(Boolean);
         return this;
     }
 
@@ -429,13 +427,12 @@ export class Container {
      * Functions to manage flags
      */
     public setFlags(flags: Array<number | string | bigint>) {
-        this.flags = flags.filter(Boolean);
+        this.flags = flags;
         return this;
     }
 
     public pushFlag(flag: number | string | bigint) {
         this.flags.push(flag);
-        this.flags = this.flags.filter(Boolean);
         return this;
     }
 
@@ -447,19 +444,17 @@ export class Container {
      * Functions to manage attachments
      */
     public setAttachments(attachments: Discord.AttachmentBuilder[]) {
-        this.attachments = attachments.filter(Boolean);
+        this.attachments = attachments;
         return this;
     }
 
     public pushAttachment(attachment: Discord.AttachmentBuilder, index?: number) {
         if (index !== null && index !== void 0) {
             this.attachments[index] = attachment;
-            this.attachments = this.attachments.filter(Boolean);
             return this;
         }
 
         this.attachments.push(attachment);
-        this.attachments = this.attachments.filter(Boolean);
         return this;
     }
 
@@ -475,19 +470,17 @@ export class Container {
      * Functions to manage embeds
      */
     public setEmbeds(embeds: Discord.EmbedBuilder[]) {
-        this.embeds = embeds.filter(Boolean);
+        this.embeds = embeds;
         return this;
     }
 
     public pushEmbed(embed: Discord.EmbedBuilder, index?: number) {
         if (index !== null && index !== void 0) {
             this.embeds[index] = embed;
-            this.embeds = this.embeds.filter(Boolean);
             return this;
         }
 
         this.embeds.push(embed);
-        this.embeds = this.embeds.filter(Boolean);
         return this;
     }
 
@@ -614,6 +607,49 @@ export class Container {
 
     public getTimezone() {
         return this.Temporarily.timezone;
+    }
+
+    /**
+     * Functions to manage cache
+     */
+    public createCache(name: string) {
+        return this.client.cacheManager.createCache(name);
+    }
+
+    public getCache(name: string) {
+        return this.client.cacheManager.getCache(name);
+    }
+
+    public hasCache(name: string) {
+        return this.client.cacheManager.hasCache(name);
+    }
+
+    public deleteCache(name: string) {
+        return this.client.cacheManager.deleteCache(name);
+    }
+
+    public getCacheData(name: string, key: any) {
+        return this.client.cacheManager.get(name, key);
+    }
+
+    public setCacheData(name: string, key: any, value: any) {
+        return this.client.cacheManager.set(name, key, value);
+    }
+
+    public deleteCacheData(name: string, key: any) {
+        return this.client.cacheManager.delete(name, key);
+    }
+
+    public clearCache(name: string) {
+        return this.client.cacheManager.clear(name);
+    }
+
+    public hasCacheData(name: string, key: any) {
+        return this.client.cacheManager.has(name, key);
+    }
+
+    public getCacheSize(name: string) {
+        return this.client.cacheManager.size(name);
     }
 
     /**

@@ -76,7 +76,7 @@ export default class Eval extends Functions {
         );
 
         return this.success(
-            returnId || returnResult || returnError || returnData ? inspect(interpreterResult) : void 0
+            returnId || returnResult || returnError || returnData ? inspect(interpreterResult, { depth: 0 }) : void 0
         );
     }
 }

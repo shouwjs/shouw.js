@@ -81,11 +81,5 @@ async function INIT(command, interaction, args, client) {
         args: args.filter(Boolean),
         user: interaction.user,
         member: interaction.member ?? void 0
-    }, {
-        sendMessage: true,
-        returnId: false,
-        returnResult: true,
-        returnError: false,
-        returnData: false
     }))?.result ?? '');
 }

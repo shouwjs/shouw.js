@@ -18,6 +18,6 @@ export default class ChannelID extends Functions {
     }
 
     async code(ctx: Interpreter, [name]: [string]) {
-        return this.success((await ctx.util.getChannel(ctx, name))?.id ?? ctx.channel?.id);
+        return this.success((await ctx.util.getChannel(ctx, name.unescape()))?.id ?? ctx.channel?.id);
     }
 }

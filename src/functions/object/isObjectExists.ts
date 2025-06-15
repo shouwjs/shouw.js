@@ -18,6 +18,6 @@ export default class IsObjectExists extends Functions {
     }
 
     code(ctx: Interpreter, [name]: [string]) {
-        return this.success(ctx.hasObject(name));
+        return this.success(ctx.hasObject(name.unescape()));
     }
 }

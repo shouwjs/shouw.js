@@ -102,7 +102,7 @@ class Container {
             constants: {},
             splits: [],
             randoms: {},
-            timezone: 'UTC'
+            timezone: void 0
         };
         this.extras = {
             sendMessage: extras?.sendMessage ?? true,
@@ -184,7 +184,7 @@ class Container {
         return this;
     }
     setStickers(stickers) {
-        this.stickers = stickers.filter(Boolean);
+        this.stickers = stickers;
         return this;
     }
     pushSticker(sticker) {
@@ -202,17 +202,15 @@ class Container {
         return this.isError;
     }
     setComponents(components) {
-        this.components = components.filter(Boolean);
+        this.components = components;
         return this;
     }
     pushComponent(component, index) {
         if (index !== null && index !== void 0) {
             this.components[index] = component;
-            this.components = this.components.filter(Boolean);
             return this;
         }
         this.components.push(component);
-        this.components = this.components.filter(Boolean);
         return this;
     }
     getComponent(index) {
@@ -222,29 +220,26 @@ class Container {
         return this.components;
     }
     setFlags(flags) {
-        this.flags = flags.filter(Boolean);
+        this.flags = flags;
         return this;
     }
     pushFlag(flag) {
         this.flags.push(flag);
-        this.flags = this.flags.filter(Boolean);
         return this;
     }
     getFlags() {
         return this.flags;
     }
     setAttachments(attachments) {
-        this.attachments = attachments.filter(Boolean);
+        this.attachments = attachments;
         return this;
     }
     pushAttachment(attachment, index) {
         if (index !== null && index !== void 0) {
             this.attachments[index] = attachment;
-            this.attachments = this.attachments.filter(Boolean);
             return this;
         }
         this.attachments.push(attachment);
-        this.attachments = this.attachments.filter(Boolean);
         return this;
     }
     getAttachment(index) {
@@ -254,17 +249,15 @@ class Container {
         return this.attachments;
     }
     setEmbeds(embeds) {
-        this.embeds = embeds.filter(Boolean);
+        this.embeds = embeds;
         return this;
     }
     pushEmbed(embed, index) {
         if (index !== null && index !== void 0) {
             this.embeds[index] = embed;
-            this.embeds = this.embeds.filter(Boolean);
             return this;
         }
         this.embeds.push(embed);
-        this.embeds = this.embeds.filter(Boolean);
         return this;
     }
     getEmbed(index) {
@@ -350,6 +343,36 @@ class Container {
     }
     getTimezone() {
         return this.Temporarily.timezone;
+    }
+    createCache(name) {
+        return this.client.cacheManager.createCache(name);
+    }
+    getCache(name) {
+        return this.client.cacheManager.getCache(name);
+    }
+    hasCache(name) {
+        return this.client.cacheManager.hasCache(name);
+    }
+    deleteCache(name) {
+        return this.client.cacheManager.deleteCache(name);
+    }
+    getCacheData(name, key) {
+        return this.client.cacheManager.get(name, key);
+    }
+    setCacheData(name, key, value) {
+        return this.client.cacheManager.set(name, key, value);
+    }
+    deleteCacheData(name, key) {
+        return this.client.cacheManager.delete(name, key);
+    }
+    clearCache(name) {
+        return this.client.cacheManager.clear(name);
+    }
+    hasCacheData(name, key) {
+        return this.client.cacheManager.has(name, key);
+    }
+    getCacheSize(name) {
+        return this.client.cacheManager.size(name);
     }
     async parser(ctx, input) {
         return await (0, index_js_1.Parser)(ctx, input);

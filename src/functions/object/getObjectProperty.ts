@@ -25,9 +25,9 @@ export default class GetObjectProperty extends Functions {
     }
 
     async code(ctx: Interpreter, [name, property]: [string, string]) {
-        if (!ctx.hasObject(name)) return await ctx.error(Constants.Errors.objectNotFound(name), this.name);
+        if (!ctx.hasObject(name.unescape())) return await ctx.error(Constants.Errors.objectNotFound(name), this.name);
 
-        let v = ctx.getObjectProperty(name, property);
+        let v = ctx.getObjectProperty(name.unescape(), property.unescape());
         if (typeof v === 'object') v = JSON.stringify(v);
 
         return this.success(v);

@@ -15,7 +15,7 @@ export class Variables {
     /**
      * The cache for the variables
      */
-    public readonly cache: Collective<string, { name: string; value: any; table: string }>;
+    readonly #cache: Collective<string, { name: string; value: any; table: string }>;
 
     /**
      * The database instance
@@ -29,9 +29,18 @@ export class Variables {
 
     constructor(client: ShouwClient) {
         this.client = client;
-        this.cache = new Collective();
+        this.#cache = new Collective();
         this.database = client.database ?? void 0;
         this.tables = Array.isArray(this.database?.tables) ? this.database?.tables : [];
+    }
+
+    /**
+     * Get the cache
+     *
+     * @return {Collective<string, { name: string; value: any; table: string }>} - The cache
+     */
+    public get cache(): Collective<string, { name: string; value: any; table: string }> {
+        return this.#cache;
     }
 
     /**
@@ -97,5 +106,43 @@ export class Variables {
     public clear(): Variables {
         this.cache.clear();
         return this;
+    }
+
+    /**
+     * Check if a variable exists
+     *
+     * @param {string} name - The name of the variable
+     * @param {string} [table] - The table to check the variable in
+     * @return {boolean} - Whether the variable exists
+     */
+    public has(name: string, table: string = this.tables[0]): boolean {
+        return this.cache.has(`${table}_${name}`);
+    }
+
+    /**
+     * Get the size of the cache
+     *
+     * @return {number} - The size of the cache
+     */
+    public get size(): number {
+        return this.cache.size;
+    }
+
+    /**
+     * Get the keys of the cache
+     *
+     * @return {string[]} - The keys of the cache
+     */
+    public get keys(): string[] {
+        return this.cache.K;
+    }
+
+    /**
+     * Get the values of the cache
+     *
+     * @return {{ name: string; value: any; table: string }[]} - The values of the cache
+     */
+    public get values(): { name: string; value: any; table: string }[] {
+        return this.cache.V;
     }
 }

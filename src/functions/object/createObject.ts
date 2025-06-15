@@ -25,7 +25,7 @@ export default class CreateObject extends Functions {
     }
 
     code(ctx: Interpreter, [name, value]: [string, Objects]) {
-        ctx.setObject(name, value);
+        ctx.setObject(name.unescape(), value);
         return this.success();
     }
 }

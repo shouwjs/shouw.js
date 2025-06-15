@@ -60,7 +60,7 @@ class Eval extends index_js_1.Functions {
             returnError,
             returnData
         });
-        return this.success(returnId || returnResult || returnError || returnData ? (0, node_util_1.inspect)(interpreterResult) : void 0);
+        return this.success(returnId || returnResult || returnError || returnData ? (0, node_util_1.inspect)(interpreterResult, { depth: 0 }) : void 0);
     }
 }
 exports.default = Eval;

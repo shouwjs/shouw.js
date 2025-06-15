@@ -61,7 +61,7 @@ export default class AddButton extends Functions {
         row = (Number.isNaN(row) ? 1 : row) - 1;
         if (!ctx.getComponents()) ctx.setComponents([]);
         if (!ctx.getComponent(row)) ctx.pushComponent(new ctx.discord.ActionRowBuilder(), row);
-        if (emoji) emoji = (await ctx.util.getEmoji(ctx, emoji, true)) ?? emoji;
+        if (emoji) emoji = (await ctx.util.getEmoji(ctx, emoji.unescape(), true)) ?? emoji.unescape();
 
         let style = ctx.discord.ButtonStyle.Primary;
         switch (styleStr.unescape().toLowerCase()) {
@@ -98,8 +98,8 @@ export default class AddButton extends Functions {
             button.setLabel(label.unescape()).setStyle(style).setDisabled(disabled);
 
             if (emoji) button.setEmoji(emoji);
-            if (ctx.discord.ButtonStyle.Link === style) button.setURL(customId);
-            else button.setCustomId(customId);
+            if (ctx.discord.ButtonStyle.Link === style) button.setURL(customId.unescape());
+            else button.setCustomId(customId.unescape());
         }
 
         ctx.getComponent(row).addComponents(button);

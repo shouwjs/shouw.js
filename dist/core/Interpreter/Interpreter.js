@@ -66,7 +66,7 @@ class Interpreter extends Container_js_1.Container {
         return this.buildResult();
     }
     async processFunction(input) {
-        const code = input.mustEscape();
+        const code = input.mustEscape().replace(/\$executionTime/gi, '#SEMI#executionTime');
         const functions = this.extractFunctions(code);
         if (!functions.length)
             return input;
@@ -314,7 +314,8 @@ class Interpreter extends Container_js_1.Container {
         }
         return this.success(void 0, true);
     }
-    async switchArg(arg, type, functionData) {
+    async switchArg(input, type, functionData) {
+        const arg = functionData.escapeArgs ? input.trim().unescape() : input.trim();
         if (!arg || arg === '')
             return void 0;
         let parsed;
@@ -375,10 +376,10 @@ class Interpreter extends Container_js_1.Container {
                 ? {
                     data: {
                         ...this.Temporarily,
-                        embeds: this.embeds,
-                        components: this.components,
-                        attachments: this.attachments,
-                        flags: this.flags
+                        embeds: this.embeds.filter(Boolean),
+                        components: this.components.filter(Boolean),
+                        attachments: this.attachments.filter(Boolean),
+                        flags: this.flags.filter(Boolean)
                     }
                 }
                 : {})

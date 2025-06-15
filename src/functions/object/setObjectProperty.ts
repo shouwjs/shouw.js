@@ -31,16 +31,16 @@ export default class SetObjectProperty extends Functions {
     }
 
     async code(ctx: Interpreter, [name, property, value]: [string, string, string]) {
-        if (!ctx.hasObject(name)) return await ctx.error(Constants.Errors.objectNotFound(name), this.name);
+        if (!ctx.hasObject(name.unescape())) return await ctx.error(Constants.Errors.objectNotFound(name), this.name);
 
-        let v = value;
+        let v = value.unescape();
         try {
-            v = JSON.parse(value);
+            v = JSON.parse(value.unescape());
         } catch {
             v = value;
         }
 
-        ctx.setObjectProperty(name, property, v);
+        ctx.setObjectProperty(name.unescape(), property.unescape(), v);
         return this.success();
     }
 }

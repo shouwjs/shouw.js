@@ -18,12 +18,14 @@ class Functions {
     #name;
     #brackets;
     #description;
+    escapeArgs = false;
     #params;
     constructor(data) {
         this.#name = data.name;
         this.#brackets = data.brackets ?? false;
         this.#description = data.description ?? 'No description provided for this function.';
         this.#params = data.params ?? [];
+        this.escapeArgs = data.escapeArgs ?? false;
     }
     code(_ctx, _args, _data) {
         return { result: void 0 };
@@ -36,6 +38,9 @@ class Functions {
     }
     get description() {
         return this.#description;
+    }
+    get escapeArguments() {
+        return this.escapeArgs;
     }
     get params() {
         return this.#params;
@@ -69,6 +74,7 @@ class CustomFunction extends Functions {
         super({
             name: data.name,
             brackets: data.brackets ?? false,
+            escapeArgs: data.escapeArgs ?? false,
             params: data.params?.map((x) => {
                 return {
                     name: x.name,

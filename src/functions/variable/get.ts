@@ -19,9 +19,9 @@ export default class Get extends Functions {
     }
 
     async code(ctx: Interpreter, [varname]: [string]) {
-        if (!ctx.hasVariable(varname) && !ctx.hasConstantVariable(varname))
+        if (!ctx.hasVariable(varname.unescape()) && !ctx.hasConstantVariable(varname.unescape()))
             return await ctx.error(Constants.Errors.variableNotFound(varname), this.name);
 
-        return this.success(ctx.getVariable(varname) ?? ctx.getConstantVariable(varname));
+        return this.success(ctx.getVariable(varname.unescape()) ?? ctx.getConstantVariable(varname.unescape()));
     }
 }

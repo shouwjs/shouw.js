@@ -52,11 +52,5 @@ async function INIT(command, message, args, client) {
         guild: message.guild ?? void 0,
         user: message.author,
         member: message.member ?? void 0
-    }, {
-        sendMessage: true,
-        returnId: false,
-        returnResult: true,
-        returnError: false,
-        returnData: false
     })).result ?? void 0);
 }

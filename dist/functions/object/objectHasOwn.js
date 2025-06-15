@@ -24,7 +24,7 @@ class ObjectHasOwn extends index_js_1.Functions {
         });
     }
     async code(_ctx, [object, property]) {
-        return this.success(Object.hasOwn(object, property));
+        return this.success(Object.hasOwn(object, property.unescape()));
     }
 }
 exports.default = ObjectHasOwn;

@@ -18,7 +18,7 @@ class IsObjectExists extends index_js_1.Functions {
         });
     }
     code(ctx, [name]) {
-        return this.success(ctx.hasObject(name));
+        return this.success(ctx.hasObject(name.unescape()));
     }
 }
 exports.default = IsObjectExists;

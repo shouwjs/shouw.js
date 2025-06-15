@@ -24,9 +24,9 @@ export default class ObjectHasProperty extends Functions {
     }
 
     async code(ctx: Interpreter, [name, property]: [string, string]) {
-        if (!ctx.hasObject(name)) return await ctx.error(Constants.Errors.objectNotFound(name), this.name);
+        if (!ctx.hasObject(name.unescape())) return await ctx.error(Constants.Errors.objectNotFound(name), this.name);
 
-        const object = ctx.getObject(name);
-        return this.success(Object.hasOwn(object ?? {}, property));
+        const object = ctx.getObject(name.unescape());
+        return this.success(Object.hasOwn(object ?? {}, property.unescape()));
     }
 }

@@ -23,7 +23,7 @@ export class Collective<K, V> extends Map<K, V> {
      * @param {Function} fn - The function to filter the values with
      * @return {V[]} - The filtered values
      */
-    public filter(fn: (value: V, index: number, array: V[]) => V[]): V[] {
+    public filter(fn: (value: V, index: number, array: V[]) => boolean): V[] {
         return Array.from(this.V).filter(fn);
     }
 
@@ -33,7 +33,7 @@ export class Collective<K, V> extends Map<K, V> {
      * @param {Function} fn - The function to filter the keys with
      * @return {K[]} - The filtered keys
      */
-    public filterKeys(fn: (value: K, index: number, array: K[]) => K[]): K[] {
+    public filterKeys(fn: (value: K, index: number, array: K[]) => boolean): K[] {
         return Array.from(this.K).filter(fn);
     }
 
@@ -43,7 +43,7 @@ export class Collective<K, V> extends Map<K, V> {
      * @param {Function} fn - The function to find the value with
      * @return {V | undefined} - The found value
      */
-    public find(fn: (value: V, index: number, array: V[]) => V | undefined): V | undefined {
+    public find(fn: (value: V, index: number, array: V[]) => boolean): V | undefined {
         return Array.from(this.V).find(fn);
     }
 
@@ -53,7 +53,7 @@ export class Collective<K, V> extends Map<K, V> {
      * @param {Function} fn - The function to find the key with
      * @return {K | undefined} - The found key
      */
-    public findKey(fn: (value: K, index: number, array: K[]) => K | undefined): K | undefined {
+    public findKey(fn: (value: K, index: number, array: K[]) => boolean): K | undefined {
         return Array.from(this.K).find(fn);
     }
 

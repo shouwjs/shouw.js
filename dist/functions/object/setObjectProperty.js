@@ -31,16 +31,16 @@ class SetObjectProperty extends index_js_1.Functions {
         });
     }
     async code(ctx, [name, property, value]) {
-        if (!ctx.hasObject(name))
+        if (!ctx.hasObject(name.unescape()))
             return await ctx.error(index_js_1.Constants.Errors.objectNotFound(name), this.name);
-        let v = value;
+        let v = value.unescape();
         try {
-            v = JSON.parse(value);
+            v = JSON.parse(value.unescape());
         }
         catch {
             v = value;
         }
-        ctx.setObjectProperty(name, property, v);
+        ctx.setObjectProperty(name.unescape(), property.unescape(), v);
         return this.success();
     }
 }

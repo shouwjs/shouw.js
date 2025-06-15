@@ -78,7 +78,7 @@ export class Interpreter extends Container {
      * @return {Promise<string>} - The result of the processing
      */
     private async processFunction(input: string): Promise<string> {
-        const code = input.mustEscape();
+        const code = input.mustEscape().replace(/\$executionTime/gi, '#SEMI#executionTime');
         const functions = this.extractFunctions(code);
         if (!functions.length) return input;
 
@@ -422,7 +422,8 @@ export class Interpreter extends Container {
      * @return {any} - The switched argument
      * @private
      */
-    private async switchArg(arg: string, type: ParamType, functionData: Functions | CustomFunction): Promise<any> {
+    private async switchArg(input: string, type: ParamType, functionData: Functions | CustomFunction): Promise<any> {
+        const arg: string = functionData.escapeArgs ? input.trim().unescape() : input.trim();
         if (!arg || arg === '') return void 0;
         let parsed: any;
 
@@ -484,10 +485,10 @@ export class Interpreter extends Container {
                 ? {
                       data: {
                           ...this.Temporarily,
-                          embeds: this.embeds,
-                          components: this.components,
-                          attachments: this.attachments,
-                          flags: this.flags
+                          embeds: this.embeds.filter(Boolean),
+                          components: this.components.filter(Boolean),
+                          attachments: this.attachments.filter(Boolean),
+                          flags: this.flags.filter(Boolean)
                       }
                   }
                 : {})

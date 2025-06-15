@@ -76,6 +76,10 @@ export class Constants {
             message: `Object with name "${name}" does not exist`,
             solution: 'Ensure the object name is correct and the object exists.'
         }),
+        cacheNotFound: (name: string) => ({
+            message: `Cache with name "${name}" does not exist`,
+            solution: 'Ensure the cache name is correct and the cache exists.'
+        }),
         outsideIfStatement: {
             message: 'This function is not meant to be used outside of an $if statement',
             solution: 'Ensure that this function is used inside an $if statement'

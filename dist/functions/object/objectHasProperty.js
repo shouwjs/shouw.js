@@ -24,10 +24,10 @@ class ObjectHasProperty extends index_js_1.Functions {
         });
     }
     async code(ctx, [name, property]) {
-        if (!ctx.hasObject(name))
+        if (!ctx.hasObject(name.unescape()))
             return await ctx.error(index_js_1.Constants.Errors.objectNotFound(name), this.name);
-        const object = ctx.getObject(name);
-        return this.success(Object.hasOwn(object ?? {}, property));
+        const object = ctx.getObject(name.unescape());
+        return this.success(Object.hasOwn(object ?? {}, property.unescape()));
     }
 }
 exports.default = ObjectHasProperty;

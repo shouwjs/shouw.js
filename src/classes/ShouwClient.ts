@@ -2,7 +2,15 @@ import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { cyan, blue, yellow, red } from 'chalk';
 import type { ClientEvents, ClientOptions } from 'discord.js';
-import { Reader, FunctionsManager, CommandsManager, type CommandData, Variables } from '../index.js';
+import {
+    Reader,
+    FunctionsManager,
+    CommandsManager,
+    Variables,
+    CacheManager,
+    CustomEvent,
+    type CommandData
+} from '../index.js';
 import { BaseClient } from './BaseClient.js';
 
 export interface ShouwClientOptions extends ClientOptions {
@@ -60,6 +68,18 @@ export class ShouwClient extends BaseClient {
     public readonly variablesManager: Variables;
 
     /**
+     * The cache manager instance
+     * @type {CacheManager}
+     */
+    public readonly cacheManager: CacheManager;
+
+    /**
+     * The custom events instance
+     * @type {CustomEvent}
+     */
+    public readonly customEvents: CustomEvent;
+
+    /**
      * The prefix for the client
      * @type {Array<string>}
      */
@@ -78,6 +98,8 @@ export class ShouwClient extends BaseClient {
         this.functions = new FunctionsManager(this);
         this.commands = new CommandsManager(this, options.events);
         this.variablesManager = new Variables(this);
+        this.cacheManager = new CacheManager(this);
+        this.customEvents = new CustomEvent(this);
         this.functions.load(path.join(__dirname, '../functions'), options.debug ?? false);
 
         options.extensions = Array.isArray(options.extensions) ? options.extensions : [options.extensions];

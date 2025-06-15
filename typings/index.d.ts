@@ -1,5 +1,6 @@
 import * as Discord from 'discord.js';
 import { Client, ClientOptions, ClientEvents, Channel, CategoryChannel, PartialGroupDMChannel, PartialDMChannel, ForumChannel, MediaChannel, User, GuildMember, Guild, Message, ChatInputCommandInteraction, MessageComponentInteraction, ModalSubmitInteraction, ContextMenuCommandInteraction, MessagePayload, MessageReplyOptions, MessageCreateOptions, OmitPartialGroupDMChannel, InteractionReplyOptions, InteractionCallbackResponse, InteractionEditReplyOptions, InteractionResponse, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ChannelType, MessageFlags, Role } from 'discord.js';
+import EventEmitter from 'node:events';
 
 interface Objects {
     [key: string | symbol | number | `${any}`]: unknown;
@@ -23,6 +24,8 @@ declare class ShouwClient extends BaseClient {
     database?: any;
     music?: any;
     readonly variablesManager: Variables;
+    readonly cacheManager: CacheManager;
+    readonly customEvents: CustomEvent;
     readonly prefix: Array<string>;
     readonly shouwOptions: ShouwClientOptions;
     constructor(options: ShouwClientOptions);
@@ -64,10 +67,10 @@ declare class CommandsManager implements CommandsEventMap {
 
 declare class Collective<K, V> extends Map<K, V> {
     create(key: K, value: V): Collective<K, V>;
-    filter(fn: (value: V, index: number, array: V[]) => V[]): V[];
-    filterKeys(fn: (value: K, index: number, array: K[]) => K[]): K[];
-    find(fn: (value: V, index: number, array: V[]) => V | undefined): V | undefined;
-    findKey(fn: (value: K, index: number, array: K[]) => K | undefined): K | undefined;
+    filter(fn: (value: V, index: number, array: V[]) => boolean): V[];
+    filterKeys(fn: (value: K, index: number, array: K[]) => boolean): K[];
+    find(fn: (value: V, index: number, array: V[]) => boolean): V | undefined;
+    findKey(fn: (value: K, index: number, array: K[]) => boolean): K | undefined;
     some(fn: (value: V, index: number, array: V[]) => boolean): boolean;
     someKeys(fn: (value: K, index: number, array: K[]) => boolean): boolean;
     every(fn: (value: V, index: number, array: V[]) => boolean): boolean;
@@ -81,6 +84,7 @@ interface FunctionData extends Objects {
     name: string;
     description?: string;
     brackets?: boolean;
+    escapeArgs?: boolean;
     params?: {
         name: string;
         description?: string;
@@ -93,6 +97,7 @@ interface FunctionData extends Objects {
 interface CustomFunctionData {
     code: string | ((int: Interpreter, args: any[], data: TemporarilyData) => FunctionResultData | Promise<FunctionResultData>);
     type: 'shouw.js' | 'discord.js' | 'djs';
+    escapeArgs?: boolean;
     brackets?: boolean;
     params?: FunctionData['params'];
     name: string;
@@ -105,15 +110,16 @@ declare class FunctionsManager extends Collective<string, Functions | CustomFunc
 }
 
 declare class Variables {
+    #private;
     readonly client: ShouwClient;
-    readonly cache: Collective<string, {
+    readonly database: any;
+    readonly tables: string[];
+    constructor(client: ShouwClient);
+    get cache(): Collective<string, {
         name: string;
         value: any;
         table: string;
     }>;
-    readonly database: any;
-    readonly tables: string[];
-    constructor(client: ShouwClient);
     set(name: string, value: any, table?: string): Variables;
     get(name: string, table?: string): {
         name: string;
@@ -122,6 +128,52 @@ declare class Variables {
     } | undefined;
     delete(name: string, table?: string): Variables;
     clear(): Variables;
+    has(name: string, table?: string): boolean;
+    get size(): number;
+    get keys(): string[];
+    get values(): {
+        name: string;
+        value: any;
+        table: string;
+    }[];
+}
+
+declare class CacheManager {
+    #private;
+    readonly client: ShouwClient;
+    constructor(client: ShouwClient);
+    get cache(): {
+        [name: string]: Collective<any, any>;
+    };
+    createCache<K, V>(name: string): Collective<K, V>;
+    getCache(name: string): Collective<any, any>;
+    deleteCache(name: string): void;
+    hasCache(name: string): boolean;
+    get cacheNames(): string[];
+    get caches(): Collective<any, any>[];
+    get(name: string, key: any): any;
+    set(name: string, key: any, value: any): Collective<any, any> | undefined;
+    delete(name: string, key: any): boolean;
+    clear(name: string): void;
+    has(name: string, key: any): boolean;
+    size(name: string): number;
+    keys(name: string): any[];
+    values(name: string): any[];
+}
+
+interface CustomEventData extends Objects {
+    name?: string;
+    listen: string;
+    channel?: string;
+    code: string | ((int: Interpreter, ctx: Context, data: Interpreter['Temporarily']) => any);
+}
+declare class CustomEvent extends EventEmitter {
+    #private;
+    readonly client: ShouwClient;
+    constructor(client: ShouwClient);
+    get listenedEvents(): Collective<string, CustomEventData>;
+    command(data: CustomEventData): CustomEvent;
+    listen(name: string): CustomEvent;
 }
 
 type Flags = Discord.BitFieldResolvable<'SuppressEmbeds' | 'SuppressNotifications' | 'IsComponentsV2', Discord.MessageFlags.SuppressEmbeds | Discord.MessageFlags.SuppressNotifications | Discord.MessageFlags.IsComponentsV2> | undefined;
@@ -278,6 +330,16 @@ declare class Container {
     getRandom(name: string): unknown;
     setTimezone(timezone: string): this;
     getTimezone(): string | undefined;
+    createCache(name: string): Collective<unknown, unknown>;
+    getCache(name: string): Collective<any, any>;
+    hasCache(name: string): boolean;
+    deleteCache(name: string): void;
+    getCacheData(name: string, key: any): any;
+    setCacheData(name: string, key: any, value: any): Collective<any, any> | undefined;
+    deleteCacheData(name: string, key: any): boolean;
+    clearCache(name: string): void;
+    hasCacheData(name: string, key: any): boolean;
+    getCacheSize(name: string): number;
     parser(ctx: Interpreter, input: string): Promise<SendData>;
     sleep(ms: number): Promise<void>;
     get time(): typeof Time;
@@ -370,11 +432,13 @@ declare enum ParamType {
 }
 declare class Functions {
     #private;
+    readonly escapeArgs: boolean;
     constructor(data: FunctionData);
     code(_ctx: Interpreter, _args: Array<any>, _data: TemporarilyData): Promise<FunctionResultData> | FunctionResultData;
     get name(): string;
     get brackets(): boolean | undefined;
     get description(): string | undefined;
+    get escapeArguments(): boolean;
     get params(): {
         name: string;
         description?: string;
@@ -510,6 +574,10 @@ declare class Constants {
             message: string;
             solution: string;
         };
+        cacheNotFound: (name: string) => {
+            message: string;
+            solution: string;
+        };
         outsideIfStatement: {
             message: string;
             solution: string;
@@ -539,4 +607,4 @@ declare class Util extends Constants {
     static getEmoji(ctx: Interpreter, _emojiInput: string, onlyId?: boolean): Promise<any>;
 }
 
-export { BaseClient, CheckCondition, Collective, type CommandData, type CommandsEventMap, CommandsManager, type ComponentTypes, Constants, Context, CustomFunction, type CustomFunctionData, CustomParser, type ExtraOptionsData, type Flags, type FunctionData, type FunctionResultData, Functions, FunctionsManager, type HelpersData, IF, type Interaction, type InteractionReplyData, type InteractionWithMessage, Interpreter, type InterpreterOptions, type InterpreterResult, type MessageReplyData, type Objects, ParamType, Parser, Reader, type SelectMenuTypes, type SendData, type SendableChannel, ShouwClient, type ShouwClientOptions, type TemporarilyData, Time, Util, Variables, filterArray, filterObject, sleep, wait };
+export { BaseClient, CacheManager, CheckCondition, Collective, type CommandData, type CommandsEventMap, CommandsManager, type ComponentTypes, Constants, Context, CustomEvent, CustomFunction, type CustomFunctionData, CustomParser, type ExtraOptionsData, type Flags, type FunctionData, type FunctionResultData, Functions, FunctionsManager, type HelpersData, IF, type Interaction, type InteractionReplyData, type InteractionWithMessage, Interpreter, type InterpreterOptions, type InterpreterResult, type MessageReplyData, type Objects, ParamType, Parser, Reader, type SelectMenuTypes, type SendData, type SendableChannel, ShouwClient, type ShouwClientOptions, type TemporarilyData, Time, Util, Variables, filterArray, filterObject, sleep, wait };

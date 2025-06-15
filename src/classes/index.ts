@@ -24,3 +24,7 @@ export {
 } from './Functions.js';
 
 export { Variables } from './Variable.js';
+
+export { CacheManager } from './CacheManager.js';
+
+export { CustomEvent } from './CustomEvent.js';

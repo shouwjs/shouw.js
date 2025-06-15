@@ -24,6 +24,6 @@ export default class ObjectHasOwn extends Functions {
     }
 
     async code(_ctx: Interpreter, [object, property]: [Objects, string]) {
-        return this.success(Object.hasOwn(object, property));
+        return this.success(Object.hasOwn(object, property.unescape()));
     }
 }

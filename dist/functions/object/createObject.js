@@ -25,7 +25,7 @@ class CreateObject extends index_js_1.Functions {
         });
     }
     code(ctx, [name, value]) {
-        ctx.setObject(name, value);
+        ctx.setObject(name.unescape(), value);
         return this.success();
     }
 }

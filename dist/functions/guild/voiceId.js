@@ -24,10 +24,10 @@ class VoiceID extends index_js_1.Functions {
         });
     }
     async code(ctx, [userId, guildId]) {
-        const guild = (guildId ? (await ctx.util.getGuild(ctx, guildId))?.id : ctx.guild?.id) ?? '';
+        const guild = (guildId ? (await ctx.util.getGuild(ctx, guildId.unescape()))?.id : ctx.guild?.id) ?? '';
         if (guildId && !guild)
             return await ctx.error(index_js_1.Constants.Errors.invalidGuildId(guildId), this.name);
-        const member = userId ? await ctx.util.getMember(ctx, guild, userId) : ctx.member;
+        const member = userId ? await ctx.util.getMember(ctx, guild, userId.unescape()) : ctx.member;
         if (userId && !member)
             return await ctx.error(index_js_1.Constants.Errors.invalidUserId(userId), this.name);
         return this.success(member?.voice.channelId);

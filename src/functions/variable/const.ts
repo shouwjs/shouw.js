@@ -25,11 +25,11 @@ export default class Const extends Functions {
     }
 
     async code(ctx: Interpreter, [varname, value]: [string, string]) {
-        if (ctx.hasVariable(varname)) ctx.deleteVariable(varname);
-        if (ctx.hasConstantVariable(varname))
-            return await ctx.error(Constants.Errors.constantVariable(varname), this.name);
+        if (ctx.hasVariable(varname.unescape())) ctx.deleteVariable(varname.unescape());
+        if (ctx.hasConstantVariable(varname.unescape()))
+            return await ctx.error(Constants.Errors.constantVariable(varname.unescape()), this.name);
 
-        ctx.setConstantVariable(varname, value);
+        ctx.setConstantVariable(varname.unescape(), value.unescape());
         return this.success();
     }
 }

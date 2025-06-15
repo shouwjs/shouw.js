@@ -19,9 +19,9 @@ class Get extends index_js_1.Functions {
         });
     }
     async code(ctx, [varname]) {
-        if (!ctx.hasVariable(varname) && !ctx.hasConstantVariable(varname))
+        if (!ctx.hasVariable(varname.unescape()) && !ctx.hasConstantVariable(varname.unescape()))
             return await ctx.error(index_js_1.Constants.Errors.variableNotFound(varname), this.name);
-        return this.success(ctx.getVariable(varname) ?? ctx.getConstantVariable(varname));
+        return this.success(ctx.getVariable(varname.unescape()) ?? ctx.getConstantVariable(varname.unescape()));
     }
 }
 exports.default = Get;

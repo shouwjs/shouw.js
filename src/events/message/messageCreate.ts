@@ -85,25 +85,15 @@ async function INIT(
 ): Promise<string | undefined> {
     return (
         (
-            await Interpreter.run(
-                command,
-                {
-                    client: client,
-                    channel: message.channel,
-                    args: args,
-                    message: message,
-                    guild: message.guild ?? void 0,
-                    user: message.author,
-                    member: message.member ?? void 0
-                },
-                {
-                    sendMessage: true,
-                    returnId: false,
-                    returnResult: true,
-                    returnError: false,
-                    returnData: false
-                }
-            )
+            await Interpreter.run(command, {
+                client: client,
+                channel: message.channel,
+                args: args,
+                message: message,
+                guild: message.guild ?? void 0,
+                user: message.author,
+                member: message.member ?? void 0
+            })
         ).result ?? void 0
     );
 }

@@ -25,9 +25,9 @@ class GetObjectProperty extends index_js_1.Functions {
         });
     }
     async code(ctx, [name, property]) {
-        if (!ctx.hasObject(name))
+        if (!ctx.hasObject(name.unescape()))
             return await ctx.error(index_js_1.Constants.Errors.objectNotFound(name), this.name);
-        let v = ctx.getObjectProperty(name, property);
+        let v = ctx.getObjectProperty(name.unescape(), property.unescape());
         if (typeof v === 'object')
             v = JSON.stringify(v);
         return this.success(v);
