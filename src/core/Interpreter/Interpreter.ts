@@ -78,7 +78,7 @@ export class Interpreter extends Container {
      * @return {Promise<string>} - The result of the processing
      */
     private async processFunction(input: string): Promise<string> {
-        const code = input.mustEscape().replace(/\$executionTime/gi, '#SEMI#executionTime');
+        const code = input.mustEscape().replace(/\$executionTime/gi, () => '#CHAR#executionTime');
         const functions = this.extractFunctions(code);
         if (!functions.length) return input;
 
@@ -523,8 +523,8 @@ export class Interpreter extends Container {
     private replaceExecutionTime(input: string): string {
         const result = input.unescape();
         const end = (performance.now() - this.start).toFixed(2).toString();
-        this.embeds = JSON.parse(JSON.stringify(this.embeds).replace(/\$executionTime/gi, end));
-        this.components = JSON.parse(JSON.stringify(this.components).replace(/\$executionTime/gi, end));
-        return result.replace(/\$executionTime/gi, end);
+        this.embeds = JSON.parse(JSON.stringify(this.embeds).replace(/\$executionTime/gi, () => end));
+        this.components = JSON.parse(JSON.stringify(this.components).replace(/\$executionTime/gi, () => end));
+        return result.replace(/\$executionTime/gi, () => end);
     }
 }

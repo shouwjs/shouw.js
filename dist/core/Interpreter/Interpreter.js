@@ -66,7 +66,7 @@ class Interpreter extends Container_js_1.Container {
         return this.buildResult();
     }
     async processFunction(input) {
-        const code = input.mustEscape().replace(/\$executionTime/gi, '#SEMI#executionTime');
+        const code = input.mustEscape().replace(/\$executionTime/gi, () => '#CHAR#executionTime');
         const functions = this.extractFunctions(code);
         if (!functions.length)
             return input;
@@ -397,9 +397,9 @@ class Interpreter extends Container_js_1.Container {
     replaceExecutionTime(input) {
         const result = input.unescape();
         const end = (performance.now() - this.start).toFixed(2).toString();
-        this.embeds = JSON.parse(JSON.stringify(this.embeds).replace(/\$executionTime/gi, end));
-        this.components = JSON.parse(JSON.stringify(this.components).replace(/\$executionTime/gi, end));
-        return result.replace(/\$executionTime/gi, end);
+        this.embeds = JSON.parse(JSON.stringify(this.embeds).replace(/\$executionTime/gi, () => end));
+        this.components = JSON.parse(JSON.stringify(this.components).replace(/\$executionTime/gi, () => end));
+        return result.replace(/\$executionTime/gi, () => end);
     }
 }
 exports.Interpreter = Interpreter;
