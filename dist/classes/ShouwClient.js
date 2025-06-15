@@ -59,12 +59,8 @@ class ShouwClient extends BaseClient_js_1.BaseClient {
         this.cacheManager = new index_js_1.CacheManager(this);
         this.customEvents = new index_js_1.CustomEvent(this);
         this.functions.load(path.join(__dirname, '../functions'), options.debug ?? false);
-        options.extensions = Array.isArray(options.extensions) ? options.extensions : [options.extensions];
-        for (const extension of options.extensions) {
-            if (!extension || typeof extension?.initialize !== 'function')
-                continue;
-            extension.initialize(this);
-        }
+        this._disableFunctions(options.disableFunctions);
+        this._loadExtensions(options.extensions);
     }
     command(data) {
         if (typeof data !== 'object' ||
@@ -131,6 +127,29 @@ class ShouwClient extends BaseClient_js_1.BaseClient {
             this.variablesManager.set(key, value, table);
         }
         return this;
+    }
+    _loadExtensions(extensions) {
+        if (!Array.isArray(extensions))
+            return;
+        for (const extension of extensions) {
+            if (!extension || typeof extension?.initialize !== 'function')
+                continue;
+            extension.initialize(this);
+            this.debug(`Loaded extension ${(0, chalk_1.cyan)(extension.name ?? 'unknown')}`, 'DEBUG');
+        }
+    }
+    _disableFunctions(funcs) {
+        if (!Array.isArray(funcs))
+            return;
+        for (const func of funcs) {
+            if (!func)
+                continue;
+            const matched = this.functions.filter((f) => f.name.toLowerCase() === func.toLowerCase())[0];
+            if (!matched)
+                continue;
+            this.functions.delete(matched.name);
+            this.debug(`Disabled function ${(0, chalk_1.red)(matched.name)}`, 'DEBUG');
+        }
     }
     debug(message, type = 'DEBUG', force = false) {
         if (message && (force === true || this.shouwOptions.debug === true)) {

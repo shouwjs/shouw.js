@@ -16,6 +16,7 @@ interface ShouwClientOptions extends ClientOptions {
     debug?: boolean;
     extensions?: any[];
     suppressAllErrors?: boolean;
+    disableFunctions?: string[];
     [key: string | number | symbol | `${any}`]: any;
 }
 declare class ShouwClient extends BaseClient {
@@ -32,6 +33,8 @@ declare class ShouwClient extends BaseClient {
     command(data: CommandData): ShouwClient;
     loadCommands(dir: string, _logging?: boolean): ShouwClient;
     variables(variables: Record<string, any>, table?: string): ShouwClient;
+    private _loadExtensions;
+    private _disableFunctions;
     debug(message: string, type?: 'ERROR' | 'DEBUG' | 'WARN', force?: boolean): ShouwClient;
 }
 

@@ -30,7 +30,7 @@ export default class SetCacheData extends Functions {
     }
 
     async code(ctx: Interpreter, [name, key, value]: [string, string, string]) {
-        if (!ctx.hasCache(name.unescape())) return await ctx.error(Constants.Errors.cacheNotFound(name));
+        if (!ctx.hasCache(name.unescape())) return await ctx.error(Constants.Errors.cacheNotFound(name), this.name);
 
         ctx.setCacheData(name.unescape(), key.unescape(), value.unescape());
         return this.success();

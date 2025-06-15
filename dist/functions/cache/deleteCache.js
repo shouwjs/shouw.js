@@ -20,7 +20,7 @@ class DeleteCache extends index_js_1.Functions {
     }
     async code(ctx, [input]) {
         if (!ctx.hasCache(input.unescape()))
-            return await ctx.error(index_js_1.Constants.Errors.cacheNotFound(input));
+            return await ctx.error(index_js_1.Constants.Errors.cacheNotFound(input), this.name);
         ctx.deleteCache(input.unescape());
         return this.success();
     }

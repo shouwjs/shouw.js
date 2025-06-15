@@ -18,7 +18,7 @@ export default class DjsEval extends Functions {
         });
     }
 
-    code(ctx: Interpreter, arr: Array<string>) {
+    async code(ctx: Interpreter, arr: Array<string>) {
         const { client, guild, member, user, message, interaction, channel } = ctx;
         const returnResult = arr.length >= 2 ? ((arr.pop() === 'true') as boolean) : false;
         const input = arr.join(';') as string;
@@ -27,8 +27,8 @@ export default class DjsEval extends Functions {
             // biome-ignore lint: security/detect-eval-with-expression
             const result = eval(input.unescape());
             return returnResult ? this.success(inspect(result, { depth: 0 })) : this.success();
-        } catch (err) {
-            return this.success(err);
+        } catch (err: any) {
+            return await ctx.error(err, this.name);
         }
     }
 }

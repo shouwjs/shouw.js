@@ -24,7 +24,7 @@ export default class GetCacheData extends Functions {
     }
 
     async code(ctx: Interpreter, [name, key]: [string, string]) {
-        if (!ctx.hasCache(name.unescape())) return await ctx.error(Constants.Errors.cacheNotFound(name));
+        if (!ctx.hasCache(name.unescape())) return await ctx.error(Constants.Errors.cacheNotFound(name), this.name);
 
         return this.success(ctx.getCacheData(name.unescape(), key.unescape()));
     }

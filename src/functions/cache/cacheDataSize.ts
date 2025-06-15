@@ -18,7 +18,8 @@ export default class CacheDataSize extends Functions {
     }
 
     async code(ctx: Interpreter, [name]: [string]) {
-        if (!ctx.hasCache(name.unescape())) return await ctx.error(Constants.Errors.cacheNotFound(name.unescape()));
+        if (!ctx.hasCache(name.unescape()))
+            return await ctx.error(Constants.Errors.cacheNotFound(name.unescape()), this.name);
 
         return this.success(ctx.getCacheSize(name.unescape()));
     }

@@ -19,7 +19,7 @@ export default class DeleteCache extends Functions {
     }
 
     async code(ctx: Interpreter, [input]: [string]) {
-        if (!ctx.hasCache(input.unescape())) return await ctx.error(Constants.Errors.cacheNotFound(input));
+        if (!ctx.hasCache(input.unescape())) return await ctx.error(Constants.Errors.cacheNotFound(input), this.name);
 
         ctx.deleteCache(input.unescape());
         return this.success();

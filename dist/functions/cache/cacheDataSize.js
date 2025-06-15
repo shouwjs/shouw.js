@@ -19,7 +19,7 @@ class CacheDataSize extends index_js_1.Functions {
     }
     async code(ctx, [name]) {
         if (!ctx.hasCache(name.unescape()))
-            return await ctx.error(index_js_1.Constants.Errors.cacheNotFound(name.unescape()));
+            return await ctx.error(index_js_1.Constants.Errors.cacheNotFound(name.unescape()), this.name);
         return this.success(ctx.getCacheSize(name.unescape()));
     }
 }

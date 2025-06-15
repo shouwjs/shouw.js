@@ -24,7 +24,7 @@ export default class DeleteCacheData extends Functions {
     }
 
     async code(ctx: Interpreter, [name, key]: [string, string]) {
-        if (!ctx.hasCache(name.unescape())) return await ctx.error(Constants.Errors.cacheNotFound(name));
+        if (!ctx.hasCache(name.unescape())) return await ctx.error(Constants.Errors.cacheNotFound(name), this.name);
 
         ctx.deleteCacheData(name.unescape(), key.unescape());
         return this.success();

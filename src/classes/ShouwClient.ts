@@ -20,6 +20,7 @@ export interface ShouwClientOptions extends ClientOptions {
     debug?: boolean;
     extensions?: any[];
     suppressAllErrors?: boolean;
+    disableFunctions?: string[];
     [key: string | number | symbol | `${any}`]: any;
 }
 
@@ -102,11 +103,8 @@ export class ShouwClient extends BaseClient {
         this.customEvents = new CustomEvent(this);
         this.functions.load(path.join(__dirname, '../functions'), options.debug ?? false);
 
-        options.extensions = Array.isArray(options.extensions) ? options.extensions : [options.extensions];
-        for (const extension of options.extensions) {
-            if (!extension || typeof extension?.initialize !== 'function') continue;
-            extension.initialize(this);
-        }
+        this._disableFunctions(options.disableFunctions);
+        this._loadExtensions(options.extensions);
     }
 
     /**
@@ -208,6 +206,38 @@ export class ShouwClient extends BaseClient {
         }
 
         return this;
+    }
+
+    /**
+     * Load extensions
+     *
+     * @param {any[] | undefined} extensions - The extensions to load
+     * @return {void} - Nothing
+     */
+    private _loadExtensions(extensions: any[] | undefined): void {
+        if (!Array.isArray(extensions)) return;
+        for (const extension of extensions) {
+            if (!extension || typeof extension?.initialize !== 'function') continue;
+            extension.initialize(this);
+            this.debug(`Loaded extension ${cyan(extension.name ?? 'unknown')}`, 'DEBUG');
+        }
+    }
+
+    /**
+     * Disable functions
+     *
+     * @param {string[] | undefined} funcs - The functions to disable
+     * @return {void} - Nothing
+     */
+    private _disableFunctions(funcs: string[] | undefined): void {
+        if (!Array.isArray(funcs)) return;
+        for (const func of funcs) {
+            if (!func) continue;
+            const matched = this.functions.filter((f) => f.name.toLowerCase() === func.toLowerCase())[0];
+            if (!matched) continue;
+            this.functions.delete(matched.name);
+            this.debug(`Disabled function ${red(matched.name)}`, 'DEBUG');
+        }
     }
 
     /**

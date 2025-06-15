@@ -31,7 +31,7 @@ class SetCacheData extends index_js_1.Functions {
     }
     async code(ctx, [name, key, value]) {
         if (!ctx.hasCache(name.unescape()))
-            return await ctx.error(index_js_1.Constants.Errors.cacheNotFound(name));
+            return await ctx.error(index_js_1.Constants.Errors.cacheNotFound(name), this.name);
         ctx.setCacheData(name.unescape(), key.unescape(), value.unescape());
         return this.success();
     }

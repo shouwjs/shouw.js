@@ -18,7 +18,7 @@ class DjsEval extends index_js_1.Functions {
             ]
         });
     }
-    code(ctx, arr) {
+    async code(ctx, arr) {
         const { client, guild, member, user, message, interaction, channel } = ctx;
         const returnResult = arr.length >= 2 ? (arr.pop() === 'true') : false;
         const input = arr.join(';');
@@ -27,7 +27,7 @@ class DjsEval extends index_js_1.Functions {
             return returnResult ? this.success((0, node_util_1.inspect)(result, { depth: 0 })) : this.success();
         }
         catch (err) {
-            return this.success(err);
+            return await ctx.error(err, this.name);
         }
     }
 }

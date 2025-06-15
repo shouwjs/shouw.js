@@ -25,7 +25,7 @@ class GetCacheData extends index_js_1.Functions {
     }
     async code(ctx, [name, key]) {
         if (!ctx.hasCache(name.unescape()))
-            return await ctx.error(index_js_1.Constants.Errors.cacheNotFound(name));
+            return await ctx.error(index_js_1.Constants.Errors.cacheNotFound(name), this.name);
         return this.success(ctx.getCacheData(name.unescape(), key.unescape()));
     }
 }

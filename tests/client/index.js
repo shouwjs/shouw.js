@@ -6,10 +6,7 @@ const client = new ShouwClient({
     intents: ['Guilds', 'GuildMessages', 'MessageContent'],
     events: ['messageCreate', 'interactionCreate'],
     debug: true,
-    allowedMentions: {
-        parse: ['users', 'roles'],
-        repliedUser: false
-    }
+    disableFunctions: ['$clientToken']
 });
 
 client.command({
