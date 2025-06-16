@@ -54,5 +54,6 @@ export {
     filterArray,
     filterObject,
     Util,
-    Constants
+    Constants,
+    ConsoleDisplay
 } from './utils/index.js';

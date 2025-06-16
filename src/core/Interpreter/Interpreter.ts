@@ -399,10 +399,12 @@ export class Interpreter extends Container {
         if (this.client.shouwOptions.suppressAllErrors === true) return this.success(void 0, true);
 
         try {
-            if (!this.context?.channel) throw new Error('No channel to send error message');
+            if (!this.getSendableChannel() || !this.context?.channel)
+                throw new Error('No channel to send error message');
+
             if (this.suppressErrors.suppress === true) {
                 if (!this.suppressErrors.message) return { result: void 0, error: true };
-                await this.context?.send(this.suppressErrors.message);
+                await this.getSendableChannel()?.send(this.suppressErrors.message);
                 return this.success(void 0, true);
             }
 
@@ -423,7 +425,7 @@ export class Interpreter extends Container {
      * @private
      */
     private async switchArg(input: string, type: ParamType, functionData: Functions | CustomFunction): Promise<any> {
-        const arg: string = functionData.escapeArgs ? input.trim().unescape() : input.trim();
+        const arg: string = functionData.escapeArguments ? input.trim().unescape() : input.trim();
         if (!arg || arg === '') return void 0;
         let parsed: any;
 

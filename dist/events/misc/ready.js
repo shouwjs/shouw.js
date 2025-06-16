@@ -3,6 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Events;
 const index_js_1 = require("../../index.js");
 async function Events(client) {
+    if (client.shouwOptions.shouwLogs) {
+        index_js_1.ConsoleDisplay.displayConsole('Shouw.js', 'white', [
+            { text: `Logged in as ${client.user?.tag}`, color: 'green' },
+            { text: `Installed on version v${index_js_1.Constants.Version}`, color: 'cyan' }
+        ]);
+    }
     const commands = client.commands?.ready?.V;
     if (!commands)
         return;

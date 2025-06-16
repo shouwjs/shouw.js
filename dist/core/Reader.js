@@ -32,10 +32,13 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Reader = void 0;
 const fs = __importStar(require("node:fs"));
-const chalk = __importStar(require("chalk"));
+const chalk_1 = __importDefault(require("chalk"));
 class Reader {
     filePath;
     fileContent = '';
@@ -57,10 +60,10 @@ class Reader {
         const blockCommentStart = code.indexOf('//**');
         const blockCommentEnd = code.indexOf('**//');
         if (blockCommentStart !== -1 && (blockCommentEnd === -1 || blockCommentEnd < blockCommentStart)) {
-            throw new SyntaxError(generateError(`Unclosed block comment (//** ... ${chalk.red('> **// <')})`, this.filePath, code.trim().slice(blockCommentStart, blockCommentStart + 50)));
+            throw new SyntaxError(generateError(`Unclosed block comment (//** ... ${chalk_1.default.red('> **// <')})`, this.filePath, code.trim().slice(blockCommentStart, blockCommentStart + 50)));
         }
         if (blockCommentEnd !== -1 && blockCommentStart === -1) {
-            throw new SyntaxError(generateError(`Unopened block comment (${chalk.red('> //** <')} ... **//)`, this.filePath, code.trim().slice(blockCommentEnd - 25, blockCommentEnd + 25)));
+            throw new SyntaxError(generateError(`Unopened block comment (${chalk_1.default.red('> //** <')} ... **//)`, this.filePath, code.trim().slice(blockCommentEnd - 25, blockCommentEnd + 25)));
         }
         return code
             .replace(/\/\/\*\*([\s\S]*?)\*\*\/\//g, '')
@@ -103,9 +106,9 @@ class Reader {
 }
 exports.Reader = Reader;
 function generateError(message, file, code) {
-    return `${message}${file ? ` in ${chalk.yellow(file)}\n\n` : ''}${code ? `${highlightError(code)}\n` : ''}`;
+    return `${message}${file ? ` in ${chalk_1.default.yellow(file)}\n\n` : ''}${code ? `${highlightError(code)}\n` : ''}`;
 }
 function highlightError(code) {
     const lines = code ? code.trim().split('\n') : [];
-    return chalk.red(lines.map((line) => `> | ${line}`).join('\n'));
+    return chalk_1.default.red(lines.map((line) => `> | ${line}`).join('\n'));
 }

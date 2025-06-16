@@ -24,7 +24,8 @@
             "suspicious": {
                 "noExplicitAny": "off",
                 "noAssignInExpressions": "off",
-                "noDoubleEquals": "off"
+                "noDoubleEquals": "off",
+                "noControlCharactersInRegex": "off"
             },
             "complexity": {
                 "noStaticOnlyClass": "off",

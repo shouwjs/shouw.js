@@ -16,6 +16,7 @@ interface ShouwClientOptions extends ClientOptions {
     debug?: boolean;
     extensions?: any[];
     suppressAllErrors?: boolean;
+    shouwLogs?: boolean;
     disableFunctions?: string[];
     [key: string | number | symbol | `${any}`]: any;
 }
@@ -87,7 +88,7 @@ interface FunctionData extends Objects {
     name: string;
     description?: string;
     brackets?: boolean;
-    escapeArgs?: boolean;
+    escapeArguments?: boolean;
     params?: {
         name: string;
         description?: string;
@@ -100,7 +101,7 @@ interface FunctionData extends Objects {
 interface CustomFunctionData {
     code: string | ((int: Interpreter, args: any[], data: TemporarilyData) => FunctionResultData | Promise<FunctionResultData>);
     type: 'shouw.js' | 'discord.js' | 'djs';
-    escapeArgs?: boolean;
+    escapeArguments?: boolean;
     brackets?: boolean;
     params?: FunctionData['params'];
     name: string;
@@ -435,7 +436,6 @@ declare enum ParamType {
 }
 declare class Functions {
     #private;
-    readonly escapeArgs: boolean;
     constructor(data: FunctionData);
     code(_ctx: Interpreter, _args: Array<any>, _data: TemporarilyData): Promise<FunctionResultData> | FunctionResultData;
     get name(): string;
@@ -516,6 +516,7 @@ declare function filterObject<T extends object>(object: T): T | undefined;
 declare function filterArray<T>(arr: T[]): T[] | undefined;
 
 declare class Constants {
+    static Version: string;
     static Errors: {
         build: (options: string | {
             message: string;
@@ -610,4 +611,33 @@ declare class Util extends Constants {
     static getEmoji(ctx: Interpreter, _emojiInput: string, onlyId?: boolean): Promise<any>;
 }
 
-export { BaseClient, CacheManager, CheckCondition, Collective, type CommandData, type CommandsEventMap, CommandsManager, type ComponentTypes, Constants, Context, CustomEvent, CustomFunction, type CustomFunctionData, CustomParser, type ExtraOptionsData, type Flags, type FunctionData, type FunctionResultData, Functions, FunctionsManager, type HelpersData, IF, type Interaction, type InteractionReplyData, type InteractionWithMessage, Interpreter, type InterpreterOptions, type InterpreterResult, type MessageReplyData, type Objects, ParamType, Parser, Reader, type SelectMenuTypes, type SendData, type SendableChannel, ShouwClient, type ShouwClientOptions, type TemporarilyData, Time, Util, Variables, filterArray, filterObject, sleep, wait };
+interface ConsoleDisplayLine {
+    text: string;
+    color: string;
+}
+interface ConsoleDisplayCommand {
+    name: string;
+    command?: string;
+    loaded: boolean;
+    error?: Error;
+}
+declare class ConsoleDisplay {
+    private readonly readyInfo;
+    private readonly commandStatusTable;
+    private frameColor;
+    constructor();
+    static displayConsole(title: string, theme: string, lines: ConsoleDisplayLine[]): undefined;
+    static commandList(theme: string, commands: ConsoleDisplayCommand[]): undefined;
+    private command;
+    private info;
+    private setTheme;
+    private stripAnsi;
+    private padCell;
+    private getColumnWidths;
+    private drawTable;
+    private drawBlock;
+    private printInfo;
+    private printCommandStatus;
+}
+
+export { BaseClient, CacheManager, CheckCondition, Collective, type CommandData, type CommandsEventMap, CommandsManager, type ComponentTypes, ConsoleDisplay, Constants, Context, CustomEvent, CustomFunction, type CustomFunctionData, CustomParser, type ExtraOptionsData, type Flags, type FunctionData, type FunctionResultData, Functions, FunctionsManager, type HelpersData, IF, type Interaction, type InteractionReplyData, type InteractionWithMessage, Interpreter, type InterpreterOptions, type InterpreterResult, type MessageReplyData, type Objects, ParamType, Parser, Reader, type SelectMenuTypes, type SendData, type SendableChannel, ShouwClient, type ShouwClientOptions, type TemporarilyData, Time, Util, Variables, filterArray, filterObject, sleep, wait };

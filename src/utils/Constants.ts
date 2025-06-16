@@ -15,6 +15,12 @@ import type { Functions, CustomFunction } from '../index.js';
  * @class Constants
  */
 export class Constants {
+    /**
+     * The version of the packsge
+     * @type {string}
+     */
+    static Version: string = require('../../package.json').version;
+
     static Errors = {
         build: (options: string | { message: string; solution?: string }, functionName?: string) => {
             const { message, solution } = typeof options === 'string' ? { message: options } : options;

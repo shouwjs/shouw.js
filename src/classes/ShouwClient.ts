@@ -1,6 +1,6 @@
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import { cyan, blue, yellow, red } from 'chalk';
+import { cyan, blue, yellow, red, gray } from 'chalk';
 import type { ClientEvents, ClientOptions } from 'discord.js';
 import {
     Reader,
@@ -9,6 +9,7 @@ import {
     Variables,
     CacheManager,
     CustomEvent,
+    ConsoleDisplay,
     type CommandData
 } from '../index.js';
 import { BaseClient } from './BaseClient.js';
@@ -20,6 +21,7 @@ export interface ShouwClientOptions extends ClientOptions {
     debug?: boolean;
     extensions?: any[];
     suppressAllErrors?: boolean;
+    shouwLogs?: boolean;
     disableFunctions?: string[];
     [key: string | number | symbol | `${any}`]: any;
 }
@@ -94,6 +96,7 @@ export class ShouwClient extends BaseClient {
 
     constructor(options: ShouwClientOptions) {
         super(options);
+        options.shouwLogs = options.shouwLogs ?? true;
         this.shouwOptions = options;
         this.prefix = Array.isArray(options.prefix) ? options.prefix : [options.prefix];
         this.functions = new FunctionsManager(this);
@@ -150,37 +153,75 @@ export class ShouwClient extends BaseClient {
      */
     public loadCommands(dir: string, _logging = false): ShouwClient {
         const files = fs.readdirSync(dir);
+        const loadedCommands: Array<{ name: string; command?: string; loaded: boolean; error?: Error }> = [];
+
         for (const file of files) {
             const filePath = path.join(dir, file);
-            if (!fs.statSync(filePath).isDirectory()) {
-                if (file.endsWith('.js') || file.endsWith('.cjs') || file.endsWith('.json') || file.endsWith('.mjs')) {
-                    let commands = require(path.join(process.cwd(), filePath));
-                    commands = commands ? (commands?.default ?? commands) : [];
-                    commands = Array.isArray(commands) ? commands : [commands];
-                    for (const command of commands) {
-                        if (typeof command !== 'object' || !command || !command.code) continue;
-                        this.command({
-                            ...command,
-                            file: filePath
-                        } as CommandData);
-                        this.debug(`Loaded command ${cyan(command.name)} from ${cyan(file)}`, 'DEBUG');
+            try {
+                if (!fs.statSync(filePath).isDirectory()) {
+                    if (
+                        file.endsWith('.js') ||
+                        file.endsWith('.cjs') ||
+                        file.endsWith('.json') ||
+                        file.endsWith('.mjs')
+                    ) {
+                        let commands = require(path.join(process.cwd(), filePath));
+                        commands = commands ? (commands?.default ?? commands) : [];
+                        commands = Array.isArray(commands) ? commands : [commands];
+                        for (const command of commands) {
+                            if (typeof command !== 'object' || !command || !command.code) continue;
+                            command.type = command.type ?? 'messageCreate';
+
+                            this.command({
+                                ...command,
+                                file: filePath
+                            } as CommandData);
+
+                            const debugName = `${gray(filePath.split(path.sep).slice(-2).join(path.sep))} (${cyan(command.type ?? 'unknown')})`;
+                            loadedCommands.push({
+                                name: debugName,
+                                command: `${command.name ?? command.channel}`,
+                                loaded: true
+                            });
+                            this.debug(`Loaded command ${cyan(command.name)} from ${cyan(file)}`, 'DEBUG');
+                        }
+                    } else if (file.endsWith('.shouw') || file.endsWith('.shw') || file.endsWith('.sho')) {
+                        const commands = Reader.run(filePath);
+                        for (const command of commands) {
+                            if (typeof command !== 'object' || !command || !command.code) continue;
+                            command.type = command.type ?? 'messageCreate';
+
+                            this.command({
+                                ...command,
+                                file: filePath
+                            } as CommandData);
+
+                            const debugName = `${gray(filePath.split(path.sep).slice(-2).join(path.sep))}  (${cyan(command.type ?? 'unknown')})`;
+                            loadedCommands.push({
+                                name: debugName,
+                                command: `${command.name ?? command.channel}`,
+                                loaded: true
+                            });
+                            this.debug(`Loaded command ${cyan(command.name)} from ${cyan(file)}`, 'DEBUG');
+                        }
+                    } else {
+                        const debugName = `${gray(filePath.split(path.sep).slice(-2).join(path.sep))}`;
+                        loadedCommands.push({
+                            name: debugName,
+                            loaded: false,
+                            error: new Error('Not a valid file type')
+                        });
+                        this.debug(`Skipping ${red(file)} because it's not a valid file type`, 'ERROR');
                     }
-                } else if (file.endsWith('.shouw') || file.endsWith('.shw') || file.endsWith('.sho')) {
-                    const commands = Reader.run(filePath);
-                    for (const command of commands) {
-                        if (typeof command !== 'object' || !command || !command.code) continue;
-                        this.command({
-                            ...command,
-                            file: filePath
-                        } as CommandData);
-                        this.debug(`Loaded command ${cyan(command.name)} from ${cyan(file)}`, 'DEBUG');
-                    }
-                } else {
-                    this.debug(`Skipping ${red(file)} because it's not a valid file type`, 'ERROR');
                 }
+            } catch (err: any) {
+                const debugName = `${gray(filePath.split(path.sep).slice(-2).join(path.sep))}`;
+                loadedCommands.push({ name: debugName, loaded: false, error: err });
+                this.debug(`Error loading command ${red(file)}: ${err.stack}`, 'ERROR');
             }
         }
 
+        if (this.shouwOptions.shouwLogs) ConsoleDisplay.commandList('white', loadedCommands);
         return this;
     }
 

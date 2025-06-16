@@ -299,12 +299,12 @@ class Interpreter extends Container_js_1.Container {
         if (this.client.shouwOptions.suppressAllErrors === true)
             return this.success(void 0, true);
         try {
-            if (!this.context?.channel)
+            if (!this.getSendableChannel() || !this.context?.channel)
                 throw new Error('No channel to send error message');
             if (this.suppressErrors.suppress === true) {
                 if (!this.suppressErrors.message)
                     return { result: void 0, error: true };
-                await this.context?.send(this.suppressErrors.message);
+                await this.getSendableChannel()?.send(this.suppressErrors.message);
                 return this.success(void 0, true);
             }
             this.message = await this.context?.send(index_js_1.Constants.Errors.build(options, functionName));
@@ -315,7 +315,7 @@ class Interpreter extends Container_js_1.Container {
         return this.success(void 0, true);
     }
     async switchArg(input, type, functionData) {
-        const arg = functionData.escapeArgs ? input.trim().unescape() : input.trim();
+        const arg = functionData.escapeArguments ? input.trim().unescape() : input.trim();
         if (!arg || arg === '')
             return void 0;
         let parsed;

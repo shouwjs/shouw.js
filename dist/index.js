@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Constants = exports.Util = exports.filterObject = exports.filterArray = exports.wait = exports.sleep = exports.Collective = exports.ParamType = exports.CustomParser = exports.Parser = exports.Reader = exports.Time = exports.IF = exports.CheckCondition = exports.CustomFunction = exports.Functions = exports.Context = exports.Interpreter = exports.CustomEvent = exports.CacheManager = exports.Variables = exports.FunctionsManager = exports.CommandsManager = exports.BaseClient = exports.ShouwClient = void 0;
+exports.ConsoleDisplay = exports.Constants = exports.Util = exports.filterObject = exports.filterArray = exports.wait = exports.sleep = exports.Collective = exports.ParamType = exports.CustomParser = exports.Parser = exports.Reader = exports.Time = exports.IF = exports.CheckCondition = exports.CustomFunction = exports.Functions = exports.Context = exports.Interpreter = exports.CustomEvent = exports.CacheManager = exports.Variables = exports.FunctionsManager = exports.CommandsManager = exports.BaseClient = exports.ShouwClient = void 0;
 const index_js_1 = require("./classes/index.js");
 Object.defineProperty(exports, "ShouwClient", { enumerable: true, get: function () { return index_js_1.ShouwClient; } });
 Object.defineProperty(exports, "BaseClient", { enumerable: true, get: function () { return index_js_1.BaseClient; } });
@@ -29,3 +29,4 @@ Object.defineProperty(exports, "filterArray", { enumerable: true, get: function 
 Object.defineProperty(exports, "filterObject", { enumerable: true, get: function () { return index_js_3.filterObject; } });
 Object.defineProperty(exports, "Util", { enumerable: true, get: function () { return index_js_3.Util; } });
 Object.defineProperty(exports, "Constants", { enumerable: true, get: function () { return index_js_3.Constants; } });
+Object.defineProperty(exports, "ConsoleDisplay", { enumerable: true, get: function () { return index_js_3.ConsoleDisplay; } });

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Constants = exports.Util = exports.filterObject = exports.filterArray = exports.wait = exports.sleep = exports.Collective = void 0;
+exports.ConsoleDisplay = exports.Constants = exports.Util = exports.filterObject = exports.filterArray = exports.wait = exports.sleep = exports.Collective = void 0;
 const Collective_js_1 = require("./Collective.js");
 Object.defineProperty(exports, "Collective", { enumerable: true, get: function () { return Collective_js_1.Collective; } });
 const Functions_js_1 = require("./Functions.js");
@@ -12,3 +12,5 @@ const Util_js_1 = require("./Util.js");
 Object.defineProperty(exports, "Util", { enumerable: true, get: function () { return Util_js_1.Util; } });
 const Constants_js_1 = require("./Constants.js");
 Object.defineProperty(exports, "Constants", { enumerable: true, get: function () { return Constants_js_1.Constants; } });
+const Console_js_1 = require("./Console.js");
+Object.defineProperty(exports, "ConsoleDisplay", { enumerable: true, get: function () { return Console_js_1.ConsoleDisplay; } });

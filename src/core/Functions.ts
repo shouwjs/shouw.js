@@ -49,7 +49,7 @@ export class Functions {
     /**
      * Whether the function escapes the arguments
      */
-    readonly escapeArgs: boolean = false;
+    readonly #escapeArgs: boolean = false;
 
     /**
      * The parameters of the function
@@ -67,7 +67,7 @@ export class Functions {
         this.#brackets = data.brackets ?? false;
         this.#description = data.description ?? 'No description provided for this function.';
         this.#params = data.params ?? [];
-        this.escapeArgs = data.escapeArgs ?? false;
+        this.#escapeArgs = data.escapeArguments ?? false;
     }
 
     /**
@@ -119,7 +119,7 @@ export class Functions {
      * @return {boolean} - Whether the function escapes the arguments
      */
     public get escapeArguments(): boolean {
-        return this.escapeArgs;
+        return this.#escapeArgs;
     }
 
     /**
@@ -226,7 +226,7 @@ export class CustomFunction extends Functions {
         super({
             name: data.name,
             brackets: data.brackets ?? false,
-            escapeArgs: data.escapeArgs ?? false,
+            escapeArguments: data.escapeArguments ?? false,
             params: data.params?.map((x) => {
                 return {
                     name: x.name,

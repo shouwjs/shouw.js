@@ -13,3 +13,5 @@ export {
 export { Util } from './Util.js';
 
 export { Constants } from './Constants.js';
+
+export { ConsoleDisplay } from './Console.js';

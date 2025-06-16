@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Constants = void 0;
 const discord_js_1 = require("discord.js");
 class Constants {
+    static Version = require('../../package.json').version;
     static Errors = {
         build: (options, functionName) => {
             const { message, solution } = typeof options === 'string' ? { message: options } : options;

@@ -1,5 +1,5 @@
 import * as fs from 'node:fs';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import type { CommandData } from '../index.js';
 
 /**
