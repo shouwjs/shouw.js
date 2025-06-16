@@ -5,8 +5,9 @@ class Ping extends index_js_1.Functions {
     constructor() {
         super({
             name: '$ping',
-            description: 'Ping the bot',
-            brackets: false
+            description: 'This function will return the ping of the bot.',
+            brackets: false,
+            example
         });
     }
     code(ctx) {
@@ -14,3 +15,6 @@ class Ping extends index_js_1.Functions {
     }
 }
 exports.default = Ping;
+const example = `
+$ping // returns the ping of the bot
+`;

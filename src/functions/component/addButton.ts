@@ -4,8 +4,10 @@ export default class AddButton extends Functions {
     constructor() {
         super({
             name: '$addButton',
-            description: 'Add a button to the message',
+            description: 'This function will add a button to the message',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'row',
@@ -41,7 +43,8 @@ export default class AddButton extends Functions {
                     name: 'emoji',
                     description: 'The emoji of the button',
                     required: false,
-                    type: ParamType.String
+                    type: ParamType.String,
+                    rest: true
                 }
             ]
         });
@@ -61,10 +64,10 @@ export default class AddButton extends Functions {
         row = (Number.isNaN(row) ? 1 : row) - 1;
         if (!ctx.getComponents()) ctx.setComponents([]);
         if (!ctx.getComponent(row)) ctx.pushComponent(new ctx.discord.ActionRowBuilder(), row);
-        if (emoji) emoji = (await ctx.util.getEmoji(ctx, emoji.unescape(), true)) ?? emoji.unescape();
+        if (emoji) emoji = (await ctx.util.getEmoji(ctx, emoji, true)) ?? emoji;
 
         let style = ctx.discord.ButtonStyle.Primary;
-        switch (styleStr.unescape().toLowerCase()) {
+        switch (styleStr.toLowerCase()) {
             case 'primary':
             case '1':
                 style = ctx.discord.ButtonStyle.Primary;
@@ -93,16 +96,21 @@ export default class AddButton extends Functions {
 
         const button = new ctx.discord.ButtonBuilder();
         if (ctx.discord.ButtonStyle.Premium === style) {
-            button.setStyle(style).setDisabled(disabled).setSKUId(customId.unescape());
+            button.setStyle(style).setDisabled(disabled).setSKUId(customId);
         } else {
-            button.setLabel(label.unescape()).setStyle(style).setDisabled(disabled);
+            button.setLabel(label).setStyle(style).setDisabled(disabled);
 
             if (emoji) button.setEmoji(emoji);
-            if (ctx.discord.ButtonStyle.Link === style) button.setURL(customId.unescape());
-            else button.setCustomId(customId.unescape());
+            if (ctx.discord.ButtonStyle.Link === style) button.setURL(customId);
+            else button.setCustomId(customId);
         }
 
         ctx.getComponent(row).addComponents(button);
         return this.success();
     }
 }
+
+const example = `
+$addButton[1;Click me!;Primary;customId;false]
+$addButton[1;Don't Click Me!;Secondary;customId;true;😊]
+`;

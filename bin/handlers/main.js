@@ -3,6 +3,11 @@ const { VersionCommand } = require('./version.js');
 const { HelpCommand } = require('./help.js');
 const { InitCommand } = require('./init.js');
 
+/**
+ * This function is used to handle the main command.
+ *
+ * @returns {Promise<void>} - Nothing.
+ */
 async function main() {
     try {
         const _args = process.argv.slice(2);

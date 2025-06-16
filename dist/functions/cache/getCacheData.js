@@ -5,8 +5,10 @@ class GetCacheData extends index_js_1.Functions {
     constructor() {
         super({
             name: '$getCacheData',
-            description: 'Gets a cache data',
+            description: 'This function will return the cache data with the given name and key',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'name',
@@ -16,17 +18,25 @@ class GetCacheData extends index_js_1.Functions {
                 },
                 {
                     name: 'key',
-                    description: 'The key of the cache',
+                    description: 'The key of the cache data to get',
                     required: true,
-                    type: index_js_1.ParamType.String
+                    type: index_js_1.ParamType.String,
+                    rest: true
                 }
             ]
         });
     }
     async code(ctx, [name, key]) {
-        if (!ctx.hasCache(name.unescape()))
-            return await ctx.error(index_js_1.Constants.Errors.cacheNotFound(name), this.name);
-        return this.success(ctx.getCacheData(name.unescape(), key.unescape()));
+        if (!ctx.hasCache(name))
+            return await ctx.error(ctx.constants.Errors.cacheNotFound(name), this.name);
+        return this.success(ctx.getCacheData(name, key));
     }
 }
 exports.default = GetCacheData;
+const example = `
+$createCache[test]
+$setCacheData[test;key;value]
+$getCacheData[test;key] // returns value
+
+$getCacheData[test;key2] // returns nothing 
+`;

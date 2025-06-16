@@ -4,12 +4,14 @@ export default class CreateCache extends Functions {
     constructor() {
         super({
             name: '$createCache',
-            description: 'Creates a new cache data',
+            description: 'This function will create a new cache with the given name',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'name',
-                    description: 'The name of the cache',
+                    description: 'The name of the cache to create',
                     required: true,
                     type: ParamType.String,
                     rest: true
@@ -19,7 +21,12 @@ export default class CreateCache extends Functions {
     }
 
     code(ctx: Interpreter, [input]: [string]) {
-        if (!ctx.hasCache(input.unescape())) ctx.createCache(input.unescape());
+        if (!ctx.hasCache(input)) ctx.createCache(input);
         return this.success();
     }
 }
+
+const example = `
+$createCache[test] // creates a new cache with the name test
+$createCache[test2] // creates a new cache with the name test2
+`;

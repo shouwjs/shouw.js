@@ -4,8 +4,10 @@ export default class Ternary extends Functions {
     constructor() {
         super({
             name: '$ternary',
-            description: 'Check a condition wether true or false and return the result',
+            description: 'This function will check a condition wether true or false and return the result',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'condition',
@@ -14,13 +16,13 @@ export default class Ternary extends Functions {
                     type: ParamType.String
                 },
                 {
-                    name: 'true result',
+                    name: 'trueResult',
                     description: 'The result if the condition is true',
                     required: true,
                     type: ParamType.String
                 },
                 {
-                    name: 'false result',
+                    name: 'falseResult',
                     description: 'The result if the condition is false',
                     required: false,
                     type: ParamType.String,
@@ -31,8 +33,11 @@ export default class Ternary extends Functions {
     }
 
     code(ctx: Interpreter, [condition, trueResult, falseResult]: [string, string, string?]) {
-        return this.success(
-            ctx.condition(condition.unescape()) ? trueResult.unescape() : (falseResult?.unescape() ?? '')
-        );
+        return this.success(ctx.condition(condition) ? trueResult : (falseResult ?? ''));
     }
 }
+
+const example = `
+$ternary[true;This will run;This will not run] // returns This will run
+$ternary[false;This will not run;This will run] // returns This will run
+`;

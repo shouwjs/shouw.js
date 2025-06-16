@@ -4,8 +4,10 @@ export default class Log extends Functions {
     constructor() {
         super({
             name: '$log',
-            description: 'Logs the input to the console.',
+            description: 'This function will log the input to the console.',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'input',
@@ -23,3 +25,7 @@ export default class Log extends Functions {
         return this.success();
     }
 }
+
+const example = `
+$log[Hello World!] // logs "Hello World!" to the console
+`;

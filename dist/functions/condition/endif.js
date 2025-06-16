@@ -5,12 +5,18 @@ class Endif extends index_js_1.Functions {
     constructor() {
         super({
             name: '$endif',
-            description: 'Ends of the if statement',
-            brackets: false
+            description: 'This function ends an if statement',
+            brackets: false,
+            example
         });
     }
     async code(ctx) {
-        return await ctx.error(index_js_1.Constants.Errors.outsideIfStatement, this.name);
+        return await ctx.error(ctx.constants.Errors.outsideIfStatement, this.name);
     }
 }
 exports.default = Endif;
+const example = `
+$if[true]
+    This will run
+$endif
+`;

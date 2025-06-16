@@ -5,8 +5,10 @@ export default class DjsEval extends Functions {
     constructor() {
         super({
             name: '$djsEval',
-            description: 'Evaluates a discord.js code.',
+            description: 'This function will evaluate javascript code.',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'input',
@@ -25,10 +27,16 @@ export default class DjsEval extends Functions {
 
         try {
             // biome-ignore lint: security/detect-eval-with-expression
-            const result = eval(input.unescape());
+            const result = eval(input);
             return returnResult ? this.success(inspect(result, { depth: 0 })) : this.success();
         } catch (err: any) {
             return await ctx.error(err, this.name);
         }
     }
 }
+
+const example = `
+$djsEval[console.log("Hello World!")] // logs "Hello World!" to the console
+
+$djsEval[console.log("Hello World!");true] // logs "Hello World!" to the console and returns it
+`;

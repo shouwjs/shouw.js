@@ -4,8 +4,9 @@ export default class SendMessage extends Functions {
     constructor() {
         super({
             name: '$sendMessage',
-            description: 'Sending a message into the current channel',
+            description: 'This function will send a message to the current channel',
             brackets: true,
+            example,
             params: [
                 {
                     name: 'content',
@@ -29,3 +30,8 @@ export default class SendMessage extends Functions {
         return this.success(returnId ? msg?.id : '');
     }
 }
+
+const example = `
+$sendMessage[Hello World!]
+$sendMessage[Hello World!;true] // returns the message id
+`;

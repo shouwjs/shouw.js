@@ -120,7 +120,7 @@ This is a command code 1
 })
   
 Goodbye!
-This is a command block 2
+This is a command code 2
 ```
 
 These decorators are parsed by Shouw.js internally, no compilation needed.

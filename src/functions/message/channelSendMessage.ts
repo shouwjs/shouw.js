@@ -1,11 +1,12 @@
-import { ParamType, type SendableChannel, Functions, type Interpreter, Constants } from '../../index.js';
+import { ParamType, type SendableChannel, Functions, type Interpreter } from '../../index.js';
 
 export default class ChannelSendMessage extends Functions {
     constructor() {
         super({
             name: '$channelSendMessage',
-            description: 'Sending a message into the spesific channel',
+            description: 'This function will send a message to a specified channel',
             brackets: true,
+            example,
             params: [
                 {
                     name: 'channelId',
@@ -33,8 +34,13 @@ export default class ChannelSendMessage extends Functions {
         const parser = await ctx.helpers.parser(ctx, content);
         const channel = (await ctx.util.getChannel(ctx, channelId)) as any as SendableChannel;
 
-        if (!channel) return await ctx.error(Constants.Errors.channelNotFound(channelId), this.name);
+        if (!channel) return await ctx.error(ctx.constants.Errors.channelNotFound(channelId), this.name);
         const msg = await channel.send(parser);
         return this.success(returnId ? msg?.id : '');
     }
 }
+
+const example = `
+$channelSendMessage[123456789012345678;Hello World!]
+$channelSendMessage[123456789012345678;Hello World!;true] // returns the message id
+`;

@@ -5,12 +5,14 @@ class CreateCache extends index_js_1.Functions {
     constructor() {
         super({
             name: '$createCache',
-            description: 'Creates a new cache data',
+            description: 'This function will create a new cache with the given name',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'name',
-                    description: 'The name of the cache',
+                    description: 'The name of the cache to create',
                     required: true,
                     type: index_js_1.ParamType.String,
                     rest: true
@@ -19,9 +21,13 @@ class CreateCache extends index_js_1.Functions {
         });
     }
     code(ctx, [input]) {
-        if (!ctx.hasCache(input.unescape()))
-            ctx.createCache(input.unescape());
+        if (!ctx.hasCache(input))
+            ctx.createCache(input);
         return this.success();
     }
 }
 exports.default = CreateCache;
+const example = `
+$createCache[test] // creates a new cache with the name test
+$createCache[test2] // creates a new cache with the name test2
+`;

@@ -8,6 +8,8 @@ class Exec extends index_js_1.Functions {
             name: '$exec',
             description: 'Executes a command in the terminal.',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'input',
@@ -21,7 +23,7 @@ class Exec extends index_js_1.Functions {
     }
     code(_ctx, [input]) {
         try {
-            return this.success((0, node_child_process_1.execSync)(input.unescape()).toString());
+            return this.success((0, node_child_process_1.execSync)(input).toString());
         }
         catch (err) {
             return this.success(err);
@@ -29,3 +31,7 @@ class Exec extends index_js_1.Functions {
     }
 }
 exports.default = Exec;
+const example = `
+$exec[echo Hello World!] // returns "Hello World!"
+$exec[npm i shouw.js] // installs shouw.js
+`;

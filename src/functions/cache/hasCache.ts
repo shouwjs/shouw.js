@@ -4,12 +4,14 @@ export default class HasCache extends Functions {
     constructor() {
         super({
             name: '$hasCache',
-            description: 'Check if a cache exists',
+            description: 'This function will return true if the cache with the given name exists',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'name',
-                    description: 'The name of the cache',
+                    description: 'The name of the cache to check',
                     required: true,
                     type: ParamType.String,
                     rest: true
@@ -19,6 +21,12 @@ export default class HasCache extends Functions {
     }
 
     code(ctx: Interpreter, [input]: [string]) {
-        return this.success(ctx.hasCache(input.unescape()));
+        return this.success(ctx.hasCache(input));
     }
 }
+
+const example = `
+$createCache[test]
+$hasCache[test] // returns true
+$hasCache[test2] // returns false
+`;

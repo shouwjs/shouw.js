@@ -1,5 +1,10 @@
 const { log, versions } = require('./utils.js');
 
+/**
+ * This function is used to display the version information.
+ *
+ * @returns {void} - Nothing.
+ */
 exports.VersionCommand = () => {
     console.log('='.repeat(process.stdout.columns));
     console.log('\n');

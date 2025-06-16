@@ -6,8 +6,10 @@ class DjsEval extends index_js_1.Functions {
     constructor() {
         super({
             name: '$djsEval',
-            description: 'Evaluates a discord.js code.',
+            description: 'This function will evaluate javascript code.',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'input',
@@ -23,7 +25,7 @@ class DjsEval extends index_js_1.Functions {
         const returnResult = arr.length >= 2 ? (arr.pop() === 'true') : false;
         const input = arr.join(';');
         try {
-            const result = eval(input.unescape());
+            const result = eval(input);
             return returnResult ? this.success((0, node_util_1.inspect)(result, { depth: 0 })) : this.success();
         }
         catch (err) {
@@ -32,3 +34,8 @@ class DjsEval extends index_js_1.Functions {
     }
 }
 exports.default = DjsEval;
+const example = `
+$djsEval[console.log("Hello World!")] // logs "Hello World!" to the console
+
+$djsEval[console.log("Hello World!");true] // logs "Hello World!" to the console and returns it
+`;

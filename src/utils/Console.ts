@@ -84,12 +84,12 @@ export class ConsoleDisplay {
      */
     private command(name: string, command?: string, loaded = true, error?: any): undefined {
         this.commandStatusTable.push([
-            name,
             error
                 ? chalk.red(error.message)
                 : loaded
                   ? `${chalk.green('Loaded')} ${command ? command : ''}`
-                  : `${chalk.red('Failed')} ${command ? command : ''}`
+                  : `${chalk.red('Failed to load')} ${command ? command : ''}`,
+            name
         ]);
     }
 
@@ -243,6 +243,6 @@ export class ConsoleDisplay {
      * @return {void} - Nothing
      */
     private printCommandStatus(): undefined {
-        if (this.commandStatusTable.length) this.drawTable(['Command Information', 'Status'], this.commandStatusTable);
+        if (this.commandStatusTable.length) this.drawTable(['Status', 'Command Information'], this.commandStatusTable);
     }
 }

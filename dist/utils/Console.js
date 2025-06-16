@@ -32,12 +32,12 @@ class ConsoleDisplay {
     }
     command(name, command, loaded = true, error) {
         this.commandStatusTable.push([
-            name,
             error
                 ? chalk_1.default.red(error.message)
                 : loaded
                     ? `${chalk_1.default.green('Loaded')} ${command ? command : ''}`
-                    : `${chalk_1.default.red('Failed')} ${command ? command : ''}`
+                    : `${chalk_1.default.red('Failed to load')} ${command ? command : ''}`,
+            name
         ]);
     }
     info(line) {
@@ -120,7 +120,7 @@ class ConsoleDisplay {
     }
     printCommandStatus() {
         if (this.commandStatusTable.length)
-            this.drawTable(['Command Information', 'Status'], this.commandStatusTable);
+            this.drawTable(['Status', 'Command Information'], this.commandStatusTable);
     }
 }
 exports.ConsoleDisplay = ConsoleDisplay;

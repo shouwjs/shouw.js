@@ -4,8 +4,9 @@ export default class CheckCondition extends Functions {
     constructor() {
         super({
             name: '$checkCondition',
-            description: 'Check a condition wether true or false',
+            description: 'This function checks if a condition is true or false',
             brackets: true,
+            example,
             params: [
                 {
                     name: 'condition',
@@ -22,3 +23,11 @@ export default class CheckCondition extends Functions {
         return this.success(condition && condition !== '' ? ctx.condition(condition) : false);
     }
 }
+
+const example = `
+$checkCondition[true] // returns true
+$checkCondition[false] // returns false
+
+$checkCondition[uwu==uwu] // returns true
+$checkCondition[(uwu!=meow)&&(uwu!=owo)] // returns true
+`;

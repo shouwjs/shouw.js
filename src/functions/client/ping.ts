@@ -4,8 +4,9 @@ export default class Ping extends Functions {
     constructor() {
         super({
             name: '$ping',
-            description: 'Ping the bot',
-            brackets: false
+            description: 'This function will return the ping of the bot.',
+            brackets: false,
+            example
         });
     }
 
@@ -13,3 +14,7 @@ export default class Ping extends Functions {
         return this.success(ctx.client.ws.ping);
     }
 }
+
+const example = `
+$ping // returns the ping of the bot
+`;

@@ -5,8 +5,10 @@ class TextSplit extends index_js_1.Functions {
     constructor() {
         super({
             name: '$textSplit',
-            description: 'Split a string into an array of strings.',
+            description: 'This function will split a string into an array of strings.',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'input',
@@ -25,8 +27,14 @@ class TextSplit extends index_js_1.Functions {
         });
     }
     code(ctx, [input, separator]) {
-        ctx.setSplits(input.split(separator.unescape()));
+        ctx.setSplits(input.split(separator));
         return this.success();
     }
 }
 exports.default = TextSplit;
+const example = `
+$textSplit[Hello World!; ]
+
+$splitText[1] // returns "Hello"
+$splitText[2] // returns "World!"
+`;

@@ -4,17 +4,19 @@ export default class AddField extends Functions {
     constructor() {
         super({
             name: '$addField',
-            description: 'Adds an embed field',
+            description: 'This function will add a field to the embed',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
-                    name: 'field title',
+                    name: 'title',
                     description: 'The field title for the embed',
                     required: false,
                     type: ParamType.String
                 },
                 {
-                    name: 'field content',
+                    name: 'content',
                     description: 'The field content for the embed',
                     required: true,
                     type: ParamType.String
@@ -41,11 +43,18 @@ export default class AddField extends Functions {
         if (!ctx.getEmbed(index)) ctx.pushEmbed(new ctx.discord.EmbedBuilder(), index);
 
         ctx.getEmbed(index).addFields({
-            name: (title ?? '\u200B').unescape(),
-            value: content.unescape(),
+            name: title ?? '\u200B',
+            value: content,
             inline: inline ?? false
         });
 
         return this.success();
     }
 }
+
+const example = `
+$addField[Title;Content;true]
+$addField[Title;Content;true;2] // adds the field to the second embed
+
+$addField[;Content;true] // adds the field with a blank title
+`;

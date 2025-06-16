@@ -7,6 +7,8 @@ export default class Exec extends Functions {
             name: '$exec',
             description: 'Executes a command in the terminal.',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'input',
@@ -21,9 +23,14 @@ export default class Exec extends Functions {
 
     code(_ctx: Interpreter, [input]: [string]) {
         try {
-            return this.success(execSync(input.unescape()).toString());
+            return this.success(execSync(input).toString());
         } catch (err) {
             return this.success(err);
         }
     }
 }
+
+const example = `
+$exec[echo Hello World!] // returns "Hello World!"
+$exec[npm i shouw.js] // installs shouw.js
+`;

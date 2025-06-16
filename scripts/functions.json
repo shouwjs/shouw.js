@@ -1,0 +1,958 @@
+[
+    {
+        "name": "$addButton",
+        "description": "This function will add a button to the message",
+        "all": "$addButton[row;label;style;customId;disabled?;...emoji]",
+        "example": "\n$addButton[1;Click me!;Primary;customId;false]\n$addButton[1;Don't Click Me!;Secondary;customId;true;😊]\n",
+        "params": [
+            {
+                "name": "row",
+                "type": "Number",
+                "required": true,
+                "description": "The row to add the button to"
+            },
+            {
+                "name": "label",
+                "type": "String",
+                "required": true,
+                "description": "The label of the button"
+            },
+            {
+                "name": "style",
+                "type": "String",
+                "required": true,
+                "description": "The style of the button"
+            },
+            {
+                "name": "customId",
+                "type": "String",
+                "required": true,
+                "description": "The custom id of the button"
+            },
+            {
+                "name": "disabled",
+                "type": "Boolean",
+                "required": false,
+                "description": "Whether the button is disabled"
+            },
+            {
+                "name": "emoji",
+                "type": "String",
+                "required": false,
+                "description": "The emoji of the button"
+            }
+        ]
+    },
+    {
+        "name": "$createObject",
+        "description": "Creates an object with the given name and value",
+        "all": "$createObject[name;...value]",
+        "example": "\n$createObject[myObject;{\n    \"key\": \"value\"\n}]\n\n$getObjectProperty[myObject;key] // returns \"value\"\n",
+        "params": [
+            {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "The name of the object"
+            },
+            {
+                "name": "value",
+                "type": "Object",
+                "required": true,
+                "description": "The value of the object"
+            }
+        ]
+    },
+    {
+        "name": "$objectHasProperty",
+        "description": "This function will return true if the object has the given property",
+        "all": "$objectHasProperty[name;...property]",
+        "example": "\n$createObject[myObject;{\n    \"key\": \"value\"\n}]\n\n$objectHasProperty[myObject;key] // returns true\n",
+        "params": [
+            {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "The name of the object"
+            },
+            {
+                "name": "property",
+                "type": "String",
+                "required": true,
+                "description": "The property name of the object"
+            }
+        ]
+    },
+    {
+        "name": "$getObjectProperty",
+        "description": "This function will return the property of the object with the given name and property name",
+        "all": "$getObjectProperty[name;...property]",
+        "example": "\n$createObject[myObject;{\n    \"key\": \"value\"\n}]\n\n$getObjectProperty[myObject;key] // returns \"value\"\n",
+        "params": [
+            {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "The name of the object"
+            },
+            {
+                "name": "property",
+                "type": "String",
+                "required": true,
+                "description": "The property name of the object"
+            }
+        ]
+    },
+    {
+        "name": "$getObject",
+        "description": "This function will return the object with the given name",
+        "all": "$getObject[...name]",
+        "example": "\n$createObject[myObject;{\n    \"key\": \"value\"\n}]\n\n$getObject[myObject] // returns { \"key\": \"value\" }\n",
+        "params": [
+            {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "The name of the object"
+            }
+        ]
+    },
+    {
+        "name": "$isObjectExists",
+        "description": "This function will return true if the object with the given name exists",
+        "all": "$isObjectExists[...name]",
+        "example": "\n$createObject[myObject;{\n    \"key\": \"value\"\n}]\n\n$isObjectExists[myObject] // returns true\n",
+        "params": [
+            {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "The name of the object"
+            }
+        ]
+    },
+    {
+        "name": "$setObjectProperty",
+        "description": "This function will set the property of the object with the given name and property name",
+        "all": "$setObjectProperty[name;property;...value]",
+        "example": "\n$createObject[myObject;{\n    \"key\": \"value\"\n}]\n\n$setObjectProperty[myObject;key;newValue] // sets the property key of the object myObject to newValue\n$getObjectProperty[myObject;key] // returns newValue\n",
+        "params": [
+            {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "The name of the object"
+            },
+            {
+                "name": "property",
+                "type": "String",
+                "required": true,
+                "description": "The property name of the object"
+            },
+            {
+                "name": "value",
+                "type": "Any",
+                "required": true,
+                "description": "The value to set"
+            }
+        ]
+    },
+    {
+        "name": "$objectHasOwn",
+        "description": "This function will return true if the object has the given property",
+        "all": "$objectHasOwn[object;...property]",
+        "example": "\n$objectHasOwn[{ \"key\": \"value\" };key] // returns true\n",
+        "params": [
+            {
+                "name": "object",
+                "type": "Object",
+                "required": true,
+                "description": "The object to check"
+            },
+            {
+                "name": "property",
+                "type": "String",
+                "required": true,
+                "description": "The property to check"
+            }
+        ]
+    },
+    {
+        "name": "$sendMessage",
+        "description": "This function will send a message to the current channel",
+        "all": "$sendMessage[content;returnId?]",
+        "example": "\n$sendMessage[Hello World!]\n$sendMessage[Hello World!;true] // returns the message id\n",
+        "params": [
+            {
+                "name": "content",
+                "type": "String",
+                "required": true,
+                "description": "The content of the message"
+            },
+            {
+                "name": "returnId",
+                "type": "Boolean",
+                "required": false,
+                "description": "Return the message id"
+            }
+        ]
+    },
+    {
+        "name": "$useChannel",
+        "description": "This function will set the channel to send messages to",
+        "all": "$useChannel[...channelId]",
+        "example": "\n$useChannel[123456789012345678]\n$sendMessage[Hello World!] // will send the message to the channel with the id 123456789012345678\n",
+        "params": [
+            {
+                "name": "channelId",
+                "type": "String",
+                "required": true,
+                "description": "The channel id to send the message to"
+            }
+        ]
+    },
+    {
+        "name": "$message",
+        "description": "This function will return the message content of the message that triggered the command",
+        "all": "$message[...index]",
+        "example": "\n$message // returns the full message content\n$message[1] // returns the first argument\n$message[2] // returns the second argument\n",
+        "params": [
+            {
+                "name": "index",
+                "type": "Number",
+                "required": false,
+                "description": "The index of the message content arguments"
+            }
+        ]
+    },
+    {
+        "name": "$channelSendMessage",
+        "description": "This function will send a message to a specified channel",
+        "all": "$channelSendMessage[channelId;content;returnId?]",
+        "example": "\n$channelSendMessage[123456789012345678;Hello World!]\n$channelSendMessage[123456789012345678;Hello World!;true] // returns the message id\n",
+        "params": [
+            {
+                "name": "channelId",
+                "type": "String",
+                "required": true,
+                "description": "The channel id to send the message to"
+            },
+            {
+                "name": "content",
+                "type": "String",
+                "required": true,
+                "description": "The content of the message"
+            },
+            {
+                "name": "returnId",
+                "type": "Boolean",
+                "required": false,
+                "description": "Return the message id"
+            }
+        ]
+    },
+    {
+        "name": "$djsEval",
+        "description": "This function will evaluate javascript code.",
+        "all": "$djsEval[input]",
+        "example": "\n$djsEval[console.log(\"Hello World!\")] // logs \"Hello World!\" to the console\n\n$djsEval[console.log(\"Hello World!\");true] // logs \"Hello World!\" to the console and returns it\n",
+        "params": [
+            {
+                "name": "input",
+                "type": "String",
+                "required": true,
+                "description": "The code to execute."
+            }
+        ]
+    },
+    {
+        "name": "$eval",
+        "description": "This function will evaluate shouw.js code.",
+        "all": "$eval[code;sendMessage?;returnId?;returnResult?;returnError?;returnData?]",
+        "example": "\n$eval[Hello World!] // returns \"Hello World!\"\n$eval[$message] // returns the message content\n",
+        "params": [
+            {
+                "name": "code",
+                "type": "String",
+                "required": true,
+                "description": "The code to evaluate"
+            },
+            {
+                "name": "sendMessage",
+                "type": "Boolean",
+                "required": false,
+                "description": "Whether to send the result as a message"
+            },
+            {
+                "name": "returnId",
+                "type": "Boolean",
+                "required": false,
+                "description": "Whether to return the id of the message"
+            },
+            {
+                "name": "returnResult",
+                "type": "Boolean",
+                "required": false,
+                "description": "Whether to return the result of the execution"
+            },
+            {
+                "name": "returnError",
+                "type": "Boolean",
+                "required": false,
+                "description": "Whether to return the error status of the execution"
+            },
+            {
+                "name": "returnData",
+                "type": "Boolean",
+                "required": false,
+                "description": "Whether to return the temporary data"
+            }
+        ]
+    },
+    {
+        "name": "$exec",
+        "description": "Executes a command in the terminal.",
+        "all": "$exec[...input]",
+        "example": "\n$exec[echo Hello World!] // returns \"Hello World!\"\n$exec[npm i shouw.js] // installs shouw.js\n",
+        "params": [
+            {
+                "name": "input",
+                "type": "String",
+                "required": true,
+                "description": "The command to execute."
+            }
+        ]
+    },
+    {
+        "name": "$log",
+        "description": "This function will log the input to the console.",
+        "all": "$log[...input]",
+        "example": "\n$log[Hello World!] // logs \"Hello World!\" to the console\n",
+        "params": [
+            {
+                "name": "input",
+                "type": "String",
+                "required": true,
+                "description": "The input to log."
+            }
+        ]
+    },
+    {
+        "name": "$suppressErrors",
+        "description": "This function will suppress errors and not send them to the channel the command was sent in.",
+        "all": "$suppressErrors[...message]",
+        "example": "\n$suppressErrors // suppresses errors\n$suppressErrors[This is an error message] // suppresses errors and sends \"This is an error message\" when an error occurs\n",
+        "params": [
+            {
+                "name": "message",
+                "type": "String",
+                "required": false,
+                "description": "The message to send when the error is suppressed."
+            }
+        ]
+    },
+    {
+        "name": "$splitText",
+        "description": "This function will return the split of the text with the given index.",
+        "all": "$splitText[...index]",
+        "example": "\n$textSplit[Hello World!; ]\n\n$splitText[1] // returns \"Hello\"\n$splitText[2] // returns \"World!\"\n",
+        "params": [
+            {
+                "name": "index",
+                "type": "Number",
+                "required": true,
+                "description": "The index of the split to return."
+            }
+        ]
+    },
+    {
+        "name": "$textSplit",
+        "description": "This function will split a string into an array of strings.",
+        "all": "$textSplit[input;...separator]",
+        "example": "\n$textSplit[Hello World!; ]\n\n$splitText[1] // returns \"Hello\"\n$splitText[2] // returns \"World!\"\n",
+        "params": [
+            {
+                "name": "input",
+                "type": "String",
+                "required": true,
+                "description": "The input to split."
+            },
+            {
+                "name": "separator",
+                "type": "String",
+                "required": true,
+                "description": "The separator to split by."
+            }
+        ]
+    },
+    {
+        "name": "$let",
+        "description": "This will store temporary variables which can be retrieved by $get",
+        "all": "$let[varname;...value]",
+        "example": "\n$let[varname;value] // Stores a temporary variable with the name 'varname' and the value 'value'\n$get[varname] // Returns the value of the temporary variable with the name 'varname'\n",
+        "params": [
+            {
+                "name": "varname",
+                "type": "String",
+                "required": true,
+                "description": "Name of the temporary variable"
+            },
+            {
+                "name": "value",
+                "type": "String",
+                "required": true,
+                "description": "Value of the temporary variable you want to save"
+            }
+        ]
+    },
+    {
+        "name": "$const",
+        "description": "This function will store constant temporary variables which can be retrieved by $get",
+        "all": "$const[varname;...value]",
+        "example": "\n$const[varname;value] // Stores a constant temporary variable with the name 'varname' and the value 'value'\n$let[varname;value] // return error, because varname is already a constant variable\n\n$get[varname] // Returns the value of the constant temporary variable with the name 'varname'\n",
+        "params": [
+            {
+                "name": "varname",
+                "type": "String",
+                "required": true,
+                "description": "Name of the temporary variable"
+            },
+            {
+                "name": "value",
+                "type": "String",
+                "required": true,
+                "description": "Value of the temporary variable you want to save"
+            }
+        ]
+    },
+    {
+        "name": "$get",
+        "description": "This will retrieve temporary variables stored ny $let or $const",
+        "all": "$get[...varname]",
+        "example": "\n$let[varname;value] // Stores a temporary variable with the name 'varname' and the value 'value'\n$get[varname] // Returns the value of the temporary variable with the name 'varname'\n",
+        "params": [
+            {
+                "name": "varname",
+                "type": "String",
+                "required": true,
+                "description": "Temporary variable you want to retrieve"
+            }
+        ]
+    },
+    {
+        "name": "$wait",
+        "description": "This function will wait for the given time.",
+        "all": "$wait[...time]",
+        "example": "\n$wait[1s] // Wait for 1 second\n$wait[1m] // Wait for 1 minute\n$wait[10m] // Wait for 10 minutes\n",
+        "params": [
+            {
+                "name": "time",
+                "type": "String",
+                "required": true,
+                "description": "The time to wait for."
+            }
+        ]
+    },
+    {
+        "name": "$author",
+        "description": "This function will set the author of the embed",
+        "all": "$author[name;iconURL?;index?]",
+        "example": "\n$author[Author Name] // sets the author without an icon\n\n$author[Author Name;https://example.com/icon.png]\n$author[Author Name;https://example.com/icon.png;2] // sets the author of the second embed\n",
+        "params": [
+            {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "The author name for the embed"
+            },
+            {
+                "name": "iconURL",
+                "type": "URL",
+                "required": false,
+                "description": "The author icon URL for the embed"
+            },
+            {
+                "name": "index",
+                "type": "Number",
+                "required": false,
+                "description": "The index to add this data to"
+            }
+        ]
+    },
+    {
+        "name": "$color",
+        "description": "This function will set the color of the embed",
+        "all": "$color[color;index?]",
+        "example": "\n$color[#ff0000] // sets the color to red\n$color[#ff0000;2] // sets the color of the second embed\n",
+        "params": [
+            {
+                "name": "color",
+                "type": "Color",
+                "required": true,
+                "description": "The color for the embed"
+            },
+            {
+                "name": "index",
+                "type": "Number",
+                "required": false,
+                "description": "The index to add this data to"
+            }
+        ]
+    },
+    {
+        "name": "$description",
+        "description": "This function will set the description of the embed",
+        "all": "$description[content;index?]",
+        "example": "\n$description[This is a description]\n$description[This is a description;2] // sets the description of the second embed\n",
+        "params": [
+            {
+                "name": "content",
+                "type": "String",
+                "required": true,
+                "description": "The description for the embed"
+            },
+            {
+                "name": "index",
+                "type": "Number",
+                "required": false,
+                "description": "The index to add this data to"
+            }
+        ]
+    },
+    {
+        "name": "$footer",
+        "description": "This function will set the footer of the embed",
+        "all": "$footer[text;iconURL?;index?]",
+        "example": "\n$footer[Footer Text] // sets the footer without an icon\n\n$footer[Footer Text;https://example.com/icon.png]\n$footer[Footer Text;https://example.com/icon.png;2] // sets the footer of the second embed\n",
+        "params": [
+            {
+                "name": "text",
+                "type": "String",
+                "required": true,
+                "description": "The footer text for the embed"
+            },
+            {
+                "name": "iconURL",
+                "type": "URL",
+                "required": false,
+                "description": "The footer icon URL for the embed"
+            },
+            {
+                "name": "index",
+                "type": "Number",
+                "required": false,
+                "description": "The index to add this data to"
+            }
+        ]
+    },
+    {
+        "name": "$image",
+        "description": "This function will set the image of the embed",
+        "all": "$image[imageURL;index?]",
+        "example": "\n$image[https://example.com/image.png]\n$image[https://example.com/image.png;2] // sets the image of the second embed\n",
+        "params": [
+            {
+                "name": "imageURL",
+                "type": "URL",
+                "required": true,
+                "description": "The image URL for the embed"
+            },
+            {
+                "name": "index",
+                "type": "Number",
+                "required": false,
+                "description": "The index to add this data to"
+            }
+        ]
+    },
+    {
+        "name": "$thumbnail",
+        "description": "This function will set the thumbnail of the embed",
+        "all": "$thumbnail[thumbnailURL;index?]",
+        "example": "\n$thumbnail[https://example.com/thumbnail.png]\n$thumbnail[https://example.com/thumbnail.png;2] // sets the thumbnail of the second embed\n",
+        "params": [
+            {
+                "name": "thumbnailURL",
+                "type": "URL",
+                "required": true,
+                "description": "The thumbnail URL for the embed"
+            },
+            {
+                "name": "index",
+                "type": "Number",
+                "required": false,
+                "description": "The index to add this data to"
+            }
+        ]
+    },
+    {
+        "name": "$title",
+        "description": "This function will set the title of the embed",
+        "all": "$title[title;url?;index?]",
+        "example": "\n$title[Title]\n$title[Title;https://example.com] // sets the title with a URL\n$title[Title;https://example.com;2] // sets the title of the second embed\n",
+        "params": [
+            {
+                "name": "title",
+                "type": "String",
+                "required": true,
+                "description": "The title for the embed"
+            },
+            {
+                "name": "url",
+                "type": "URL",
+                "required": false,
+                "description": "The URL for the title"
+            },
+            {
+                "name": "index",
+                "type": "Number",
+                "required": false,
+                "description": "The index to add this data to"
+            }
+        ]
+    },
+    {
+        "name": "$addField",
+        "description": "This function will add a field to the embed",
+        "all": "$addField[title?;content;inline?;index?]",
+        "example": "\n$addField[Title;Content;true]\n$addField[Title;Content;true;2] // adds the field to the second embed\n\n$addField[;Content;true] // adds the field with a blank title\n",
+        "params": [
+            {
+                "name": "title",
+                "type": "String",
+                "required": false,
+                "description": "The field title for the embed"
+            },
+            {
+                "name": "content",
+                "type": "String",
+                "required": true,
+                "description": "The field content for the embed"
+            },
+            {
+                "name": "inline",
+                "type": "Boolean",
+                "required": false,
+                "description": "Whether the field should be inline"
+            },
+            {
+                "name": "index",
+                "type": "Number",
+                "required": false,
+                "description": "The index to add this data to"
+            }
+        ]
+    },
+    {
+        "name": "$addTimestamp",
+        "description": "This function will add a timestamp to the embed",
+        "all": "$addTimestamp[timestamp?;index?]",
+        "example": "\n$addTimestamp // adds the current timestamp\n$addTimestamp[1625097600000] // adds the timestamp with custom date\n",
+        "params": [
+            {
+                "name": "timestamp",
+                "type": "Number",
+                "required": false,
+                "description": "The timestamp number for the embed"
+            },
+            {
+                "name": "index",
+                "type": "Number",
+                "required": false,
+                "description": "The index to add this data to"
+            }
+        ]
+    },
+    {
+        "name": "$checkCondition",
+        "description": "This function checks if a condition is true or false",
+        "all": "$checkCondition[...condition]",
+        "example": "\n$checkCondition[true] // returns true\n$checkCondition[false] // returns false\n\n$checkCondition[uwu==uwu] // returns true\n$checkCondition[(uwu!=meow)&&(uwu!=owo)] // returns true\n",
+        "params": [
+            {
+                "name": "condition",
+                "type": "String",
+                "required": true,
+                "description": "The condition you want to check"
+            }
+        ]
+    },
+    {
+        "name": "$elseIf",
+        "description": "This function checks if a condition is true or false",
+        "all": "$elseIf[...condition]",
+        "example": "\n$if[false]\n    This will not run\n$elseIf[true]\n    This will run\n$endIf\n",
+        "params": [
+            {
+                "name": "condition",
+                "type": "String",
+                "required": true,
+                "description": "The condition to check"
+            }
+        ]
+    },
+    {
+        "name": "$if",
+        "description": "This function checks if a condition is true or false",
+        "all": "$if[...condition]",
+        "example": "\n$if[true]\n    This will run\n$elseIf[false]\n    This will not run\n$else\n    This will not run\n$endIf\n",
+        "params": [
+            {
+                "name": "condition",
+                "type": "String",
+                "required": true,
+                "description": "The condition you want to check"
+            }
+        ]
+    },
+    {
+        "name": "$endif",
+        "description": "This function ends an if statement",
+        "all": "$endif",
+        "example": "\n$if[true]\n    This will run\n$endif\n",
+        "params": []
+    },
+    {
+        "name": "$onlyIf",
+        "description": "This function checks if a condition is true or false",
+        "all": "$onlyIf[condition;...errorMessage]",
+        "example": "\n$onlyIf[true;This will run]\n$onlyIf[false;This will not run]\n\n// Code after $onlyIf will only run if the condition is true\n",
+        "params": [
+            {
+                "name": "condition",
+                "type": "String",
+                "required": true,
+                "description": "The condition you want to check"
+            },
+            {
+                "name": "errorMessage",
+                "type": "String",
+                "required": false,
+                "description": "The error message you want to send if the condition is false"
+            }
+        ]
+    },
+    {
+        "name": "$ternary",
+        "description": "This function will check a condition wether true or false and return the result",
+        "all": "$ternary[condition;trueResult;...falseResult]",
+        "example": "\n$ternary[true;This will run;This will not run] // returns This will run\n$ternary[false;This will not run;This will run] // returns This will run\n",
+        "params": [
+            {
+                "name": "condition",
+                "type": "String",
+                "required": true,
+                "description": "The condition you want to check"
+            },
+            {
+                "name": "trueResult",
+                "type": "String",
+                "required": true,
+                "description": "The result if the condition is true"
+            },
+            {
+                "name": "falseResult",
+                "type": "String",
+                "required": false,
+                "description": "The result if the condition is false"
+            }
+        ]
+    },
+    {
+        "name": "$channelId",
+        "description": "This function will return the ID of the channel.",
+        "all": "$channelId[...name]",
+        "example": "\n$channelId // Returns the ID of the current channel\n$channelId[channel-name] // Returns the ID of the channel with the name 'channel-name'\n",
+        "params": [
+            {
+                "name": "name",
+                "type": "String",
+                "required": false,
+                "description": "The name of the channel"
+            }
+        ]
+    },
+    {
+        "name": "$voiceId",
+        "description": "This function will return the voice channel id of the user",
+        "all": "$voiceId[userId?;...guildId]",
+        "example": "\n$voiceId // Returns the voice channel id of the user\n$voiceId[19388293829922] // Returns the voice channel id of the user with the id '19388293829922'\n",
+        "params": [
+            {
+                "name": "userId",
+                "type": "String",
+                "required": false,
+                "description": "The user to get the voice channel id from"
+            },
+            {
+                "name": "guildId",
+                "type": "String",
+                "required": false,
+                "description": "The guild to get the voice channel id from"
+            }
+        ]
+    },
+    {
+        "name": "$createCache",
+        "description": "This function will create a new cache with the given name",
+        "all": "$createCache[...name]",
+        "example": "\n$createCache[test] // creates a new cache with the name test\n$createCache[test2] // creates a new cache with the name test2\n",
+        "params": [
+            {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "The name of the cache to create"
+            }
+        ]
+    },
+    {
+        "name": "$hasCache",
+        "description": "This function will return true if the cache with the given name exists",
+        "all": "$hasCache[...name]",
+        "example": "\n$createCache[test]\n$hasCache[test] // returns true\n$hasCache[test2] // returns false\n",
+        "params": [
+            {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "The name of the cache to check"
+            }
+        ]
+    },
+    {
+        "name": "$hasCacheData",
+        "description": "This function will return true if the cache data with the given name and key exists",
+        "all": "$hasCacheData[name;...key]",
+        "example": "\n$createCache[test]\n$setCacheData[test;key;value]\n$hasCacheData[test;key] // returns true\n\n$hasCacheData[test;key2] // returns false\n",
+        "params": [
+            {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "The name of the cache"
+            },
+            {
+                "name": "key",
+                "type": "String",
+                "required": true,
+                "description": "The key of the cache data to check"
+            }
+        ]
+    },
+    {
+        "name": "$deleteCache",
+        "description": "This function will delete the cache with the given name",
+        "all": "$deleteCache[...name]",
+        "example": "\n$createCache[test]\n$deleteCache[test] // deletes the cache with the name test\n\n$deleteCache[test2] // returns error, cache not found\n",
+        "params": [
+            {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "The name of the cache to delete"
+            }
+        ]
+    },
+    {
+        "name": "$setCacheData",
+        "description": "This function will set the cache data with the given name and key",
+        "all": "$setCacheData[name;key;...value]",
+        "example": "\n$createCache[test]\n$setCacheData[test;key;value]\n// sets the cache data with the name test and key key to value value\n",
+        "params": [
+            {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "The name of the cache"
+            },
+            {
+                "name": "key",
+                "type": "String",
+                "required": true,
+                "description": "The key of the cache data to set"
+            },
+            {
+                "name": "value",
+                "type": "String",
+                "required": true,
+                "description": "The value of the cache data to set"
+            }
+        ]
+    },
+    {
+        "name": "$getCacheData",
+        "description": "This function will return the cache data with the given name and key",
+        "all": "$getCacheData[name;...key]",
+        "example": "\n$createCache[test]\n$setCacheData[test;key;value]\n$getCacheData[test;key] // returns value\n\n$getCacheData[test;key2] // returns nothing \n",
+        "params": [
+            {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "The name of the cache"
+            },
+            {
+                "name": "key",
+                "type": "String",
+                "required": true,
+                "description": "The key of the cache data to get"
+            }
+        ]
+    },
+    {
+        "name": "$cacheDataSize",
+        "description": "This function returns the size of the cache data",
+        "all": "$cacheDataSize[...name]",
+        "example": "\n$createCache[test]\n$setCacheData[test;key;value]\n$cacheDataSize[test]  // returns 1\n\n$cacheDataSize[test2] // returns error, cache not found\n",
+        "params": [
+            {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "The name of the cache data to get the size of"
+            }
+        ]
+    },
+    {
+        "name": "$deleteCacheData",
+        "description": "This function will delete the cache data with the given name and key",
+        "all": "$deleteCacheData[name;...key]",
+        "example": "\n$createCache[test]\n$setCacheData[test;key;value]\n$deleteCacheData[test;key] // deletes the cache data with the name test and key key\n\n$deleteCacheData[test;key2] // returns error, cache data not found\n",
+        "params": [
+            {
+                "name": "name",
+                "type": "String",
+                "required": true,
+                "description": "The name of the cache"
+            },
+            {
+                "name": "key",
+                "type": "String",
+                "required": true,
+                "description": "The key of the cache data to delete"
+            }
+        ]
+    },
+    {
+        "name": "$clientToken",
+        "description": "This function will return the bot token.",
+        "all": "$clientToken[...spoiler]",
+        "example": "\n$clientToken // returns the bot token\n$clientToken[true] // returns the bot token with spoiler\n",
+        "params": [
+            {
+                "name": "spoiler",
+                "type": "Boolean",
+                "required": false,
+                "description": "Whether to spoiler the token or not."
+            }
+        ]
+    },
+    {
+        "name": "$ping",
+        "description": "This function will return the ping of the bot.",
+        "all": "$ping",
+        "example": "\n$ping // returns the ping of the bot\n",
+        "params": []
+    }
+]

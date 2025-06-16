@@ -5,11 +5,13 @@ class Thumbnail extends index_js_1.Functions {
     constructor() {
         super({
             name: '$thumbnail',
-            description: 'Adds an embed thumbnail',
+            description: 'This function will set the thumbnail of the embed',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
-                    name: 'thumbnail url',
+                    name: 'thumbnailURL',
                     description: 'The thumbnail URL for the embed',
                     required: true,
                     type: index_js_1.ParamType.URL
@@ -29,8 +31,12 @@ class Thumbnail extends index_js_1.Functions {
             ctx.setEmbeds([]);
         if (!ctx.getEmbed(index))
             ctx.pushEmbed(new ctx.discord.EmbedBuilder(), index);
-        ctx.getEmbed(index).setThumbnail(text.unescape());
+        ctx.getEmbed(index).setThumbnail(text);
         return this.success();
     }
 }
 exports.default = Thumbnail;
+const example = `
+$thumbnail[https://example.com/thumbnail.png]
+$thumbnail[https://example.com/thumbnail.png;2] // sets the thumbnail of the second embed
+`;

@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const index_js_1 = require("../../index.js");
-class IsObjectExists extends index_js_1.Functions {
+class GetObject extends index_js_1.Functions {
     constructor() {
         super({
-            name: '$isObjectExists',
-            description: 'This function will return true if the object with the given name exists',
+            name: '$getObject',
+            description: 'This function will return the object with the given name',
             brackets: true,
             escapeArguments: true,
             example,
@@ -20,15 +20,17 @@ class IsObjectExists extends index_js_1.Functions {
             ]
         });
     }
-    code(ctx, [name]) {
-        return this.success(ctx.hasObject(name));
+    async code(ctx, [name]) {
+        if (!ctx.hasObject(name))
+            return await ctx.error(ctx.constants.Errors.objectNotFound(name), this.name);
+        return this.success(JSON.stringify(ctx.getObject(name)));
     }
 }
-exports.default = IsObjectExists;
+exports.default = GetObject;
 const example = `
 $createObject[myObject;{
     "key": "value"
 }]
 
-$isObjectExists[myObject] // returns true
+$getObject[myObject] // returns { "key": "value" }
 `;

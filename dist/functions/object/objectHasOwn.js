@@ -5,8 +5,10 @@ class ObjectHasOwn extends index_js_1.Functions {
     constructor() {
         super({
             name: '$objectHasOwn',
-            description: 'Check if an object has a property',
+            description: 'This function will return true if the object has the given property',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'object',
@@ -18,13 +20,17 @@ class ObjectHasOwn extends index_js_1.Functions {
                     name: 'property',
                     description: 'The property to check',
                     required: true,
-                    type: index_js_1.ParamType.String
+                    type: index_js_1.ParamType.String,
+                    rest: true
                 }
             ]
         });
     }
     async code(_ctx, [object, property]) {
-        return this.success(Object.hasOwn(object, property.unescape()));
+        return this.success(Object.hasOwn(object, property));
     }
 }
 exports.default = ObjectHasOwn;
+const example = `
+$objectHasOwn[{ "key": "value" };key] // returns true
+`;

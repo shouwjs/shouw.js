@@ -5,11 +5,13 @@ class Image extends index_js_1.Functions {
     constructor() {
         super({
             name: '$image',
-            description: 'Adds an embed image',
+            description: 'This function will set the image of the embed',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
-                    name: 'image url',
+                    name: 'imageURL',
                     description: 'The image URL for the embed',
                     required: true,
                     type: index_js_1.ParamType.URL
@@ -29,8 +31,12 @@ class Image extends index_js_1.Functions {
             ctx.setEmbeds([]);
         if (!ctx.getEmbed(index))
             ctx.pushEmbed(new ctx.discord.EmbedBuilder(), index);
-        ctx.getEmbed(index).setImage(text.unescape());
+        ctx.getEmbed(index).setImage(text);
         return this.success();
     }
 }
 exports.default = Image;
+const example = `
+$image[https://example.com/image.png]
+$image[https://example.com/image.png;2] // sets the image of the second embed
+`;

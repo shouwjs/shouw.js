@@ -18,6 +18,7 @@ export interface FunctionData extends Objects {
     description?: string;
     brackets?: boolean;
     escapeArguments?: boolean;
+    example?: string;
     params?: {
         name: string;
         description?: string;
@@ -34,6 +35,8 @@ export interface CustomFunctionData {
         | ((int: Interpreter, args: any[], data: TemporarilyData) => FunctionResultData | Promise<FunctionResultData>);
     type: 'shouw.js' | 'discord.js' | 'djs';
     escapeArguments?: boolean;
+    description?: string;
+    example?: string;
     brackets?: boolean;
     params?: FunctionData['params'];
     name: string;

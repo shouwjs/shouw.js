@@ -5,8 +5,11 @@ const chalk = require('chalk');
 const readline = require('node:readline');
 const { execSync } = require('node:child_process');
 
-// === Main Command === //
-
+/**
+ * This function is used to initialize a new Shouw.js project.
+ *
+ * @returns {Promise<void>} - Nothing.
+ */
 exports.InitCommand = async () => {
     const line = '='.repeat(process.stdout.columns);
     console.log(line);
@@ -66,8 +69,12 @@ exports.InitCommand = async () => {
     console.log(line);
 };
 
-// === Helper Functions === //
-
+/**
+ * This function is used to ask a question to the user.
+ *
+ * @param {string} query - The question to ask.
+ * @returns {Promise<string>} - The answer to the question.
+ */
 async function question(query) {
     const rl = readline.createInterface({
         input: process.stdin,
@@ -79,34 +86,68 @@ async function question(query) {
     return answer.trim();
 }
 
+/**
+ * This function is used to get the project name.
+ *
+ * @returns {Promise<string>} - The project name.
+ */
 async function getName() {
     const name = await question('Enter your project name');
     if (!name) return 'shouw.js';
     return name.toLowerCase().replace(/ |\//g, '-');
 }
 
+/**
+ * This function is used to get the project description.
+ *
+ * @returns {Promise<string>} - The project description.
+ */
 async function getDescription() {
     const desc = await question('Enter your project description');
     if (!desc) return "A simple string package that helps you interact with Discord's API easily.";
     return desc;
 }
 
+/**
+ * This function is used to get the bot token.
+ *
+ * @returns {Promise<string>} - The bot token.
+ */
 async function getToken() {
     const token = await question('Enter your bot token');
     if (!token) return 'YOUR_TOKEN_HERE';
     return token;
 }
 
+/**
+ * This function is used to ask if the user wants to use the music extension.
+ *
+ * @returns {Promise<boolean>} - True if the user wants to use the music extension, false otherwise.
+ */
 async function withMusic() {
     const input = await question('Do you want to use music extension? (y/n)');
     if (input === '--exit') return '--exit';
     return input.toLowerCase() === 'y';
 }
 
+/**
+ * This function is used to format the question.
+ *
+ * @param {string} query - The question to format.
+ * @returns {string} - The formatted question.
+ */
 function formatQuestion(query) {
     return `${chalk.bold(`[${chalk.blue('?!')}]`)} :: ${query}: `;
 }
 
+/**
+ * This function is used to get the package.json file.
+ *
+ * @param {string} name - The project name.
+ * @param {string} description - The project description.
+ * @param {boolean} music - True if the user wants to use the music extension, false otherwise.
+ * @returns {string} - The package.json file.
+ */
 function getPackageJson(name, description, music) {
     const dependencies = {
         'shouw.js': 'github:shouwjs/shouw.js'
@@ -134,6 +175,14 @@ function getPackageJson(name, description, music) {
         4
     );
 }
+
+/**
+ * This function is used to get the index.js file.
+ *
+ * @param {boolean} music - True if the user wants to use the music extension, false otherwise.
+ * @param {string} token - The bot token.
+ * @returns {string} - The index.js file.
+ */
 
 function getIndexJs(music, token) {
     return `const { ShouwClient } = require('shouw.js');${
@@ -173,6 +222,11 @@ client.loadCommands('./commands');
 `;
 }
 
+/**
+ * This function is used to get the commands.
+ *
+ * @returns {string[]} - The commands.
+ */
 function getCommands() {
     return [
         `module.exports = {

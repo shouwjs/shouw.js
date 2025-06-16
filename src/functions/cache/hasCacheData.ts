@@ -4,8 +4,10 @@ export default class HasCacheData extends Functions {
     constructor() {
         super({
             name: '$hasCacheData',
-            description: 'Check if a cache data exists',
+            description: 'This function will return true if the cache data with the given name and key exists',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'name',
@@ -15,15 +17,24 @@ export default class HasCacheData extends Functions {
                 },
                 {
                     name: 'key',
-                    description: 'The key of the cache',
+                    description: 'The key of the cache data to check',
                     required: true,
-                    type: ParamType.String
+                    type: ParamType.String,
+                    rest: true
                 }
             ]
         });
     }
 
     code(ctx: Interpreter, [name, key]: [string, string]) {
-        return this.success(ctx.hasCacheData(name.unescape(), key.unescape()));
+        return this.success(ctx.hasCacheData(name, key));
     }
 }
+
+const example = `
+$createCache[test]
+$setCacheData[test;key;value]
+$hasCacheData[test;key] // returns true
+
+$hasCacheData[test;key2] // returns false
+`;

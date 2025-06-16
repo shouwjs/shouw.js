@@ -5,14 +5,17 @@ class Wait extends index_js_1.Functions {
     constructor() {
         super({
             name: '$wait',
-            description: 'Waits for a given amount of time.',
+            description: 'This function will wait for the given time.',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'time',
                     description: 'The time to wait for.',
                     required: true,
-                    type: index_js_1.ParamType.String
+                    type: index_js_1.ParamType.String,
+                    rest: true
                 }
             ]
         });
@@ -24,3 +27,8 @@ class Wait extends index_js_1.Functions {
     }
 }
 exports.default = Wait;
+const example = `
+$wait[1s] // Wait for 1 second
+$wait[1m] // Wait for 1 minute
+$wait[10m] // Wait for 10 minutes
+`;

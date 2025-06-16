@@ -22,7 +22,7 @@ class Constants {
             solution: 'Make sure to add all required argument to the function.'
         }),
         invalidArgumentType: (func, type, parsed) => ({
-            message: `Invalid argument type for ${func}, Expected "${type}", got "${typeof parsed}"`,
+            message: `Invalid argument type for ${func}, Expected "${type.toLowerCase()}", got "${typeof parsed}"`,
             solution: 'Ensure the argument type is correct and matches the expected type.'
         }),
         constantVariable: (varname) => ({

@@ -5,8 +5,10 @@ class SetObjectProperty extends index_js_1.Functions {
     constructor() {
         super({
             name: '$setObjectProperty',
-            description: 'Set an object property',
+            description: 'This function will set the property of the object with the given name and property name',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'name',
@@ -31,17 +33,25 @@ class SetObjectProperty extends index_js_1.Functions {
         });
     }
     async code(ctx, [name, property, value]) {
-        if (!ctx.hasObject(name.unescape()))
-            return await ctx.error(index_js_1.Constants.Errors.objectNotFound(name), this.name);
-        let v = value.unescape();
+        if (!ctx.hasObject(name))
+            return await ctx.error(ctx.constants.Errors.objectNotFound(name), this.name);
+        let v = value;
         try {
-            v = JSON.parse(value.unescape());
+            v = JSON.parse(value);
         }
         catch {
             v = value;
         }
-        ctx.setObjectProperty(name.unescape(), property.unescape(), v);
+        ctx.setObjectProperty(name, property, v);
         return this.success();
     }
 }
 exports.default = SetObjectProperty;
+const example = `
+$createObject[myObject;{
+    "key": "value"
+}]
+
+$setObjectProperty[myObject;key;newValue] // sets the property key of the object myObject to newValue
+$getObjectProperty[myObject;key] // returns newValue
+`;

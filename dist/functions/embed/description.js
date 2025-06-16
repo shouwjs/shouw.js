@@ -5,11 +5,13 @@ class Description extends index_js_1.Functions {
     constructor() {
         super({
             name: '$description',
-            description: 'Adds an embed description',
+            description: 'This function will set the description of the embed',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
-                    name: 'description',
+                    name: 'content',
                     description: 'The description for the embed',
                     required: true,
                     type: index_js_1.ParamType.String
@@ -29,8 +31,12 @@ class Description extends index_js_1.Functions {
             ctx.setEmbeds([]);
         if (!ctx.getEmbed(index))
             ctx.pushEmbed(new ctx.discord.EmbedBuilder(), index);
-        ctx.getEmbed(index).setDescription(text.unescape());
+        ctx.getEmbed(index).setDescription(text);
         return this.success();
     }
 }
 exports.default = Description;
+const example = `
+$description[This is a description]
+$description[This is a description;2] // sets the description of the second embed
+`;

@@ -5,14 +5,17 @@ class ClientToken extends index_js_1.Functions {
     constructor() {
         super({
             name: '$clientToken',
-            description: 'Returns the token of the client.',
+            description: 'This function will return the bot token.',
             brackets: false,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'spoiler',
-                    description: 'Whether to spoiler the token.',
+                    description: 'Whether to spoiler the token or not.',
                     type: index_js_1.ParamType.Boolean,
-                    required: false
+                    required: false,
+                    rest: true
                 }
             ]
         });
@@ -22,3 +25,7 @@ class ClientToken extends index_js_1.Functions {
     }
 }
 exports.default = ClientToken;
+const example = `
+$clientToken // returns the bot token
+$clientToken[true] // returns the bot token with spoiler
+`;

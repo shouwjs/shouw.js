@@ -183,7 +183,12 @@ export class Interpreter extends Container {
 
                 if (this.isError) break;
                 processedArgs.push(result);
-                return processedArgs;
+                return functionData.escapeArguments
+                    ? processedArgs.map((v: any) => {
+                          if (typeof v === 'string') return v.unescape();
+                          return v;
+                      })
+                    : processedArgs;
             }
 
             const input = (args[i] ?? '') as string;
@@ -217,7 +222,12 @@ export class Interpreter extends Container {
             processedArgs.push(processed);
         }
 
-        return processedArgs;
+        return functionData.escapeArguments
+            ? processedArgs.map((v: any) => {
+                  if (typeof v === 'string') return v.unescape();
+                  return v;
+              })
+            : processedArgs;
     }
 
     /**
@@ -424,8 +434,7 @@ export class Interpreter extends Container {
      * @return {any} - The switched argument
      * @private
      */
-    private async switchArg(input: string, type: ParamType, functionData: Functions | CustomFunction): Promise<any> {
-        const arg: string = functionData.escapeArguments ? input.trim().unescape() : input.trim();
+    private async switchArg(arg: string, type: ParamType, functionData: Functions | CustomFunction): Promise<any> {
         if (!arg || arg === '') return void 0;
         let parsed: any;
 

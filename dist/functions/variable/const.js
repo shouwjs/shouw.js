@@ -5,8 +5,10 @@ class Const extends index_js_1.Functions {
     constructor() {
         super({
             name: '$const',
-            description: 'Will store constant temporary variables which can be retrieved by $get',
+            description: 'This function will store constant temporary variables which can be retrieved by $get',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'varname',
@@ -25,12 +27,18 @@ class Const extends index_js_1.Functions {
         });
     }
     async code(ctx, [varname, value]) {
-        if (ctx.hasVariable(varname.unescape()))
-            ctx.deleteVariable(varname.unescape());
-        if (ctx.hasConstantVariable(varname.unescape()))
-            return await ctx.error(index_js_1.Constants.Errors.constantVariable(varname.unescape()), this.name);
-        ctx.setConstantVariable(varname.unescape(), value.unescape());
+        if (ctx.hasVariable(varname))
+            ctx.deleteVariable(varname);
+        if (ctx.hasConstantVariable(varname))
+            return await ctx.error(ctx.constants.Errors.constantVariable(varname), this.name);
+        ctx.setConstantVariable(varname, value);
         return this.success();
     }
 }
 exports.default = Const;
+const example = `
+$const[varname;value] // Stores a constant temporary variable with the name 'varname' and the value 'value'
+$let[varname;value] // return error, because varname is already a constant variable
+
+$get[varname] // Returns the value of the constant temporary variable with the name 'varname'
+`;

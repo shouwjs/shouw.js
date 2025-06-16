@@ -1,11 +1,13 @@
-import { ParamType, Functions, type Interpreter, Constants } from '../../index.js';
+import { ParamType, Functions, type Interpreter } from '../../index.js';
 
 export default class GetObjectProperty extends Functions {
     constructor() {
         super({
             name: '$getObjectProperty',
-            description: 'Get a property from an object',
+            description: 'This function will return the property of the object with the given name and property name',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'name',
@@ -25,11 +27,19 @@ export default class GetObjectProperty extends Functions {
     }
 
     async code(ctx: Interpreter, [name, property]: [string, string]) {
-        if (!ctx.hasObject(name.unescape())) return await ctx.error(Constants.Errors.objectNotFound(name), this.name);
+        if (!ctx.hasObject(name)) return await ctx.error(ctx.constants.Errors.objectNotFound(name), this.name);
 
-        let v = ctx.getObjectProperty(name.unescape(), property.unescape());
+        let v = ctx.getObjectProperty(name, property);
         if (typeof v === 'object') v = JSON.stringify(v);
 
         return this.success(v);
     }
 }
+
+const example = `
+$createObject[myObject;{
+    "key": "value"
+}]
+
+$getObjectProperty[myObject;key] // returns "value"
+`;

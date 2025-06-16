@@ -52,6 +52,11 @@ export class Functions {
     readonly #escapeArgs: boolean = false;
 
     /**
+     * The usage example of the function
+     */
+    readonly #example?: string;
+
+    /**
      * The parameters of the function
      */
     readonly #params?: {
@@ -68,6 +73,7 @@ export class Functions {
         this.#description = data.description ?? 'No description provided for this function.';
         this.#params = data.params ?? [];
         this.#escapeArgs = data.escapeArguments ?? false;
+        this.#example = data.example ?? 'No example provided for this function.';
     }
 
     /**
@@ -114,6 +120,15 @@ export class Functions {
     }
 
     /**
+     * The usage example of the function
+     *
+     * @return {string | undefined} - The usage example of the function
+     */
+    public get example(): string | undefined {
+        return this.#example;
+    }
+
+    /**
      * Get whether the function escapes the arguments
      *
      * @return {boolean} - Whether the function escapes the arguments
@@ -154,7 +169,16 @@ export class Functions {
      * @return {string} - The name of the function with parameters
      */
     public get withParams(): string {
-        return `${this.name}[${this.params?.map((x) => x.name).join(';')}]`;
+        return `${this.name}${
+            this.brackets || this.paramsLength > 0
+                ? `[${this.params
+                      ?.map((x) => {
+                          if (x.rest) return `...${x.name}`;
+                          return `${x.name}${x.required ? '' : '?'}`;
+                      })
+                      .join(';')}]`
+                : ''
+        }`;
     }
 
     /**

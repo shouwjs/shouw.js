@@ -4,13 +4,15 @@ export default class AddTimestamp extends Functions {
     constructor() {
         super({
             name: '$addTimestamp',
-            description: 'Adds an embed timestamp',
+            description: 'This function will add a timestamp to the embed',
             brackets: false,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'timestamp',
                     description: 'The timestamp number for the embed',
-                    required: true,
+                    required: false,
                     type: ParamType.Number
                 },
                 {
@@ -33,3 +35,8 @@ export default class AddTimestamp extends Functions {
         return this.success();
     }
 }
+
+const example = `
+$addTimestamp // adds the current timestamp
+$addTimestamp[1625097600000] // adds the timestamp with custom date
+`;

@@ -5,8 +5,10 @@ class GetObjectProperty extends index_js_1.Functions {
     constructor() {
         super({
             name: '$getObjectProperty',
-            description: 'Get a property from an object',
+            description: 'This function will return the property of the object with the given name and property name',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'name',
@@ -25,12 +27,19 @@ class GetObjectProperty extends index_js_1.Functions {
         });
     }
     async code(ctx, [name, property]) {
-        if (!ctx.hasObject(name.unescape()))
-            return await ctx.error(index_js_1.Constants.Errors.objectNotFound(name), this.name);
-        let v = ctx.getObjectProperty(name.unescape(), property.unescape());
+        if (!ctx.hasObject(name))
+            return await ctx.error(ctx.constants.Errors.objectNotFound(name), this.name);
+        let v = ctx.getObjectProperty(name, property);
         if (typeof v === 'object')
             v = JSON.stringify(v);
         return this.success(v);
     }
 }
 exports.default = GetObjectProperty;
+const example = `
+$createObject[myObject;{
+    "key": "value"
+}]
+
+$getObjectProperty[myObject;key] // returns "value"
+`;

@@ -5,9 +5,9 @@ class OnlyIf extends index_js_1.Functions {
     constructor() {
         super({
             name: '$onlyIf',
-            description: 'Check a condition wether true or false',
+            description: 'This function checks if a condition is true or false',
             brackets: true,
-            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'condition',
@@ -16,7 +16,7 @@ class OnlyIf extends index_js_1.Functions {
                     type: index_js_1.ParamType.String
                 },
                 {
-                    name: 'error message',
+                    name: 'errorMessage',
                     description: 'The error message you want to send if the condition is false',
                     required: false,
                     type: index_js_1.ParamType.String,
@@ -26,7 +26,7 @@ class OnlyIf extends index_js_1.Functions {
         });
     }
     async code(ctx, [condition, message]) {
-        if (ctx.condition(condition))
+        if (ctx.condition(condition.unescape()))
             return this.success();
         if (!message)
             return this.error();
@@ -36,3 +36,9 @@ class OnlyIf extends index_js_1.Functions {
     }
 }
 exports.default = OnlyIf;
+const example = `
+$onlyIf[true;This will run]
+$onlyIf[false;This will not run]
+
+// Code after $onlyIf will only run if the condition is true
+`;

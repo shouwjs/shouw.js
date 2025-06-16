@@ -1,15 +1,17 @@
-import { ParamType, Functions, Constants, type Interpreter } from '../../index.js';
+import { ParamType, Functions, type Interpreter } from '../../index.js';
 
 export default class DeleteCache extends Functions {
     constructor() {
         super({
             name: '$deleteCache',
-            description: 'Deletes a cache data',
+            description: 'This function will delete the cache with the given name',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'name',
-                    description: 'The name of the cache',
+                    description: 'The name of the cache to delete',
                     required: true,
                     type: ParamType.String,
                     rest: true
@@ -19,9 +21,16 @@ export default class DeleteCache extends Functions {
     }
 
     async code(ctx: Interpreter, [input]: [string]) {
-        if (!ctx.hasCache(input.unescape())) return await ctx.error(Constants.Errors.cacheNotFound(input), this.name);
+        if (!ctx.hasCache(input)) return await ctx.error(ctx.constants.Errors.cacheNotFound(input), this.name);
 
-        ctx.deleteCache(input.unescape());
+        ctx.deleteCache(input);
         return this.success();
     }
 }
+
+const example = `
+$createCache[test]
+$deleteCache[test] // deletes the cache with the name test
+
+$deleteCache[test2] // returns error, cache not found
+`;

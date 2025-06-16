@@ -5,14 +5,17 @@ class SplitText extends index_js_1.Functions {
     constructor() {
         super({
             name: '$splitText',
-            description: 'Return the splitted text at the given index.',
+            description: 'This function will return the split of the text with the given index.',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'index',
                     description: 'The index of the split to return.',
                     required: true,
-                    type: index_js_1.ParamType.Number
+                    type: index_js_1.ParamType.Number,
+                    rest: true
                 }
             ]
         });
@@ -22,3 +25,9 @@ class SplitText extends index_js_1.Functions {
     }
 }
 exports.default = SplitText;
+const example = `
+$textSplit[Hello World!; ]
+
+$splitText[1] // returns "Hello"
+$splitText[2] // returns "World!"
+`;

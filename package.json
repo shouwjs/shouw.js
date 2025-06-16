@@ -16,17 +16,6 @@
         "typings": "typings",
         "test": "test"
     },
-    "scripts": {
-        "build": "npm run pretty && npm run build:all",
-        "build:ts": "npx tsgo -p tsconfig.json",
-        "build:types": "npx tsup --config tsup.config.json --dts-only --outDir typings",
-        "build:docs": "npx typedoc --options typedoc.json",
-        "lint": "biome lint src --fix .",
-        "format": "biome format src --write .",
-        "pretty": "npm run format && npm run lint",
-        "build:all": "npm run build:ts && npm run build:types",
-        "dev": "node tests/client"
-    },
     "keywords": ["discord.js", "aoi.js", "shouw.js", "bdfd", "discord", "bot"],
     "author": "Tyowk <tyowk@outlook.com>",
     "license": "Apache-2.0",
@@ -51,5 +40,16 @@
     "engines": {
         "node": ">=20.x",
         "npm": ">=9.x"
+    },
+    "scripts": {
+        "build": "npm run pretty && npm run build:all",
+        "build:ts": "npx tsgo -p tsconfig.json",
+        "build:types": "npx tsup --config scripts/tsup.config.json --dts-only --outDir typings",
+        "build:docs": "npx typedoc --options scripts/typedoc.json",
+        "lint": "biome lint . --fix --config-path scripts/biome.json",
+        "format": "biome format . --write --config-path scripts/biome.json",
+        "pretty": "npm run format && npm run lint",
+        "build:all": "npm run build:ts && npm run build:types",
+        "dev": "node tests/client"
     }
 }

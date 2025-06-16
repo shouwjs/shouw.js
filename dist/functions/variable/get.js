@@ -5,8 +5,10 @@ class Get extends index_js_1.Functions {
     constructor() {
         super({
             name: '$get',
-            description: 'Will retrieve temporary variables stored ny $let',
+            description: 'This will retrieve temporary variables stored ny $let or $const',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'varname',
@@ -19,9 +21,13 @@ class Get extends index_js_1.Functions {
         });
     }
     async code(ctx, [varname]) {
-        if (!ctx.hasVariable(varname.unescape()) && !ctx.hasConstantVariable(varname.unescape()))
-            return await ctx.error(index_js_1.Constants.Errors.variableNotFound(varname), this.name);
-        return this.success(ctx.getVariable(varname.unescape()) ?? ctx.getConstantVariable(varname.unescape()));
+        if (!ctx.hasVariable(varname) && !ctx.hasConstantVariable(varname))
+            return await ctx.error(ctx.constants.Errors.variableNotFound(varname), this.name);
+        return this.success(ctx.getVariable(varname) ?? ctx.getConstantVariable(varname));
     }
 }
 exports.default = Get;
+const example = `
+$let[varname;value] // Stores a temporary variable with the name 'varname' and the value 'value'
+$get[varname] // Returns the value of the temporary variable with the name 'varname'
+`;

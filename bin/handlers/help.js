@@ -1,6 +1,12 @@
 const { log } = require('./utils.js');
 const chalk = require('chalk');
 
+/**
+ * This function is used to display the help information.
+ *
+ * @param {string[]} args - The arguments passed to the command.
+ * @returns {void} - Nothing.
+ */
 exports.HelpCommand = (args) => {
     const line = '='.repeat(process.stdout.columns || 80);
     console.log(line);

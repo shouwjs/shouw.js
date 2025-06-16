@@ -5,8 +5,9 @@ export default class Eval extends Functions {
     constructor() {
         super({
             name: '$eval',
-            description: 'Evaluation shouw.js code',
+            description: 'This function will evaluate shouw.js code.',
             brackets: true,
+            example,
             params: [
                 {
                     name: 'code',
@@ -80,3 +81,8 @@ export default class Eval extends Functions {
         );
     }
 }
+
+const example = `
+$eval[Hello World!] // returns "Hello World!"
+$eval[$message] // returns the message content
+`;

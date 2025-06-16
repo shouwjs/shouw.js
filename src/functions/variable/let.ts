@@ -1,11 +1,13 @@
-import { ParamType, Functions, type Interpreter, Constants } from '../../index.js';
+import { ParamType, Functions, type Interpreter } from '../../index.js';
 
 export default class Let extends Functions {
     constructor() {
         super({
             name: '$let',
-            description: 'Will store temporary variables which can be retrieved by $let',
+            description: 'This will store temporary variables which can be retrieved by $get',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'varname',
@@ -26,9 +28,14 @@ export default class Let extends Functions {
 
     async code(ctx: Interpreter, [varname, value]: [string, string]) {
         if (ctx.hasConstantVariable(varname))
-            return await ctx.error(Constants.Errors.constantVariable(varname), this.name);
+            return await ctx.error(ctx.constants.Errors.constantVariable(varname), this.name);
 
         ctx.setVariable(varname, value);
         return this.success();
     }
 }
+
+const example = `
+$let[varname;value] // Stores a temporary variable with the name 'varname' and the value 'value'
+$get[varname] // Returns the value of the temporary variable with the name 'varname'
+`;

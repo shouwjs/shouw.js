@@ -5,8 +5,10 @@ class Ternary extends index_js_1.Functions {
     constructor() {
         super({
             name: '$ternary',
-            description: 'Check a condition wether true or false and return the result',
+            description: 'This function will check a condition wether true or false and return the result',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'condition',
@@ -15,13 +17,13 @@ class Ternary extends index_js_1.Functions {
                     type: index_js_1.ParamType.String
                 },
                 {
-                    name: 'true result',
+                    name: 'trueResult',
                     description: 'The result if the condition is true',
                     required: true,
                     type: index_js_1.ParamType.String
                 },
                 {
-                    name: 'false result',
+                    name: 'falseResult',
                     description: 'The result if the condition is false',
                     required: false,
                     type: index_js_1.ParamType.String,
@@ -31,7 +33,11 @@ class Ternary extends index_js_1.Functions {
         });
     }
     code(ctx, [condition, trueResult, falseResult]) {
-        return this.success(ctx.condition(condition.unescape()) ? trueResult.unescape() : (falseResult?.unescape() ?? ''));
+        return this.success(ctx.condition(condition) ? trueResult : (falseResult ?? ''));
     }
 }
 exports.default = Ternary;
+const example = `
+$ternary[true;This will run;This will not run] // returns This will run
+$ternary[false;This will not run;This will run] // returns This will run
+`;

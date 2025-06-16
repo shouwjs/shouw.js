@@ -1,11 +1,13 @@
-import { ParamType, Functions, type Interpreter, Constants } from '../../index.js';
+import { ParamType, Functions, type Interpreter } from '../../index.js';
 
 export default class SetObjectProperty extends Functions {
     constructor() {
         super({
             name: '$setObjectProperty',
-            description: 'Set an object property',
+            description: 'This function will set the property of the object with the given name and property name',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'name',
@@ -31,16 +33,25 @@ export default class SetObjectProperty extends Functions {
     }
 
     async code(ctx: Interpreter, [name, property, value]: [string, string, string]) {
-        if (!ctx.hasObject(name.unescape())) return await ctx.error(Constants.Errors.objectNotFound(name), this.name);
+        if (!ctx.hasObject(name)) return await ctx.error(ctx.constants.Errors.objectNotFound(name), this.name);
 
-        let v = value.unescape();
+        let v = value;
         try {
-            v = JSON.parse(value.unescape());
+            v = JSON.parse(value);
         } catch {
             v = value;
         }
 
-        ctx.setObjectProperty(name.unescape(), property.unescape(), v);
+        ctx.setObjectProperty(name, property, v);
         return this.success();
     }
 }
+
+const example = `
+$createObject[myObject;{
+    "key": "value"
+}]
+
+$setObjectProperty[myObject;key;newValue] // sets the property key of the object myObject to newValue
+$getObjectProperty[myObject;key] // returns newValue
+`;

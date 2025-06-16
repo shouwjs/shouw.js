@@ -4,8 +4,9 @@ export default class SuppressErrors extends Functions {
     constructor() {
         super({
             name: '$suppressErrors',
-            description: 'Suppress errors and not send them to the channel the command was sent in.',
+            description: 'This function will suppress errors and not send them to the channel the command was sent in.',
             brackets: false,
+            example,
             params: [
                 {
                     name: 'message',
@@ -29,3 +30,8 @@ export default class SuppressErrors extends Functions {
         return this.success();
     }
 }
+
+const example = `
+$suppressErrors // suppresses errors
+$suppressErrors[This is an error message] // suppresses errors and sends "This is an error message" when an error occurs
+`;

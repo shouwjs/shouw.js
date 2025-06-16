@@ -5,8 +5,10 @@ class Title extends index_js_1.Functions {
     constructor() {
         super({
             name: '$title',
-            description: 'Adds an embed title',
+            description: 'This function will set the title of the embed',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'title',
@@ -35,10 +37,15 @@ class Title extends index_js_1.Functions {
             ctx.setEmbeds([]);
         if (!ctx.getEmbed(index))
             ctx.pushEmbed(new ctx.discord.EmbedBuilder(), index);
-        ctx.getEmbed(index).setTitle(text.unescape());
+        ctx.getEmbed(index).setTitle(text);
         if (url && url !== '')
-            ctx.getEmbed(index).setURL(url?.unescape() ?? null);
+            ctx.getEmbed(index).setURL(url ?? null);
         return this.success();
     }
 }
 exports.default = Title;
+const example = `
+$title[Title]
+$title[Title;https://example.com] // sets the title with a URL
+$title[Title;https://example.com;2] // sets the title of the second embed
+`;

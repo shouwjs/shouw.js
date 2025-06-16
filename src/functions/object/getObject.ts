@@ -1,10 +1,10 @@
 import { ParamType, Functions, type Interpreter } from '../../index.js';
 
-export default class ObjectHasProperty extends Functions {
+export default class GetObject extends Functions {
     constructor() {
         super({
-            name: '$objectHasProperty',
-            description: 'This function will return true if the object has the given property',
+            name: '$getObject',
+            description: 'This function will return the object with the given name',
             brackets: true,
             escapeArguments: true,
             example,
@@ -13,12 +13,6 @@ export default class ObjectHasProperty extends Functions {
                     name: 'name',
                     description: 'The name of the object',
                     required: true,
-                    type: ParamType.String
-                },
-                {
-                    name: 'property',
-                    description: 'The property name of the object',
-                    required: true,
                     type: ParamType.String,
                     rest: true
                 }
@@ -26,11 +20,10 @@ export default class ObjectHasProperty extends Functions {
         });
     }
 
-    async code(ctx: Interpreter, [name, property]: [string, string]) {
+    async code(ctx: Interpreter, [name]: [string]) {
         if (!ctx.hasObject(name)) return await ctx.error(ctx.constants.Errors.objectNotFound(name), this.name);
 
-        const object = ctx.getObject(name);
-        return this.success(Object.hasOwn(object ?? {}, property));
+        return this.success(JSON.stringify(ctx.getObject(name)));
     }
 }
 
@@ -39,5 +32,5 @@ $createObject[myObject;{
     "key": "value"
 }]
 
-$objectHasProperty[myObject;key] // returns true
+$getObject[myObject] // returns { "key": "value" }
 `;

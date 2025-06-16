@@ -4,8 +4,9 @@ export default class Color extends Functions {
     constructor() {
         super({
             name: '$color',
-            description: 'Adds an embed color',
+            description: 'This function will set the color of the embed',
             brackets: true,
+            example,
             params: [
                 {
                     name: 'color',
@@ -33,3 +34,8 @@ export default class Color extends Functions {
         return this.success();
     }
 }
+
+const example = `
+$color[#ff0000] // sets the color to red
+$color[#ff0000;2] // sets the color of the second embed
+`;

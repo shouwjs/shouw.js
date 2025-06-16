@@ -5,3 +5,11 @@
 ```javascript
 $eval[$message;true;true;true;true;true]
 ```
+
+@Command({
+    name: 'djs'
+});
+
+```javascript
+$djsEval[$message;true]
+```

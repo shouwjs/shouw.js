@@ -19,6 +19,7 @@ class Functions {
     #brackets;
     #description;
     #escapeArgs = false;
+    #example;
     #params;
     constructor(data) {
         this.#name = data.name;
@@ -26,6 +27,7 @@ class Functions {
         this.#description = data.description ?? 'No description provided for this function.';
         this.#params = data.params ?? [];
         this.#escapeArgs = data.escapeArguments ?? false;
+        this.#example = data.example ?? 'No example provided for this function.';
     }
     code(_ctx, _args, _data) {
         return { result: void 0 };
@@ -39,6 +41,9 @@ class Functions {
     get description() {
         return this.#description;
     }
+    get example() {
+        return this.#example;
+    }
     get escapeArguments() {
         return this.#escapeArgs;
     }
@@ -49,7 +54,15 @@ class Functions {
         return this.params?.length ?? -1;
     }
     get withParams() {
-        return `${this.name}[${this.params?.map((x) => x.name).join(';')}]`;
+        return `${this.name}${this.brackets || this.paramsLength > 0
+            ? `[${this.params
+                ?.map((x) => {
+                if (x.rest)
+                    return `...${x.name}`;
+                return `${x.name}${x.required ? '' : '?'}`;
+            })
+                .join(';')}]`
+            : ''}`;
     }
     getParam(index) {
         return (this.params?.[index] ?? {

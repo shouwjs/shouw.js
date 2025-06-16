@@ -5,8 +5,9 @@ class ChannelSendMessage extends index_js_1.Functions {
     constructor() {
         super({
             name: '$channelSendMessage',
-            description: 'Sending a message into the spesific channel',
+            description: 'This function will send a message to a specified channel',
             brackets: true,
+            example,
             params: [
                 {
                     name: 'channelId',
@@ -33,9 +34,13 @@ class ChannelSendMessage extends index_js_1.Functions {
         const parser = await ctx.helpers.parser(ctx, content);
         const channel = (await ctx.util.getChannel(ctx, channelId));
         if (!channel)
-            return await ctx.error(index_js_1.Constants.Errors.channelNotFound(channelId), this.name);
+            return await ctx.error(ctx.constants.Errors.channelNotFound(channelId), this.name);
         const msg = await channel.send(parser);
         return this.success(returnId ? msg?.id : '');
     }
 }
 exports.default = ChannelSendMessage;
+const example = `
+$channelSendMessage[123456789012345678;Hello World!]
+$channelSendMessage[123456789012345678;Hello World!;true] // returns the message id
+`;

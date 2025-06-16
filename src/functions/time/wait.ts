@@ -4,14 +4,17 @@ export default class Wait extends Functions {
     constructor() {
         super({
             name: '$wait',
-            description: 'Waits for a given amount of time.',
+            description: 'This function will wait for the given time.',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'time',
                     description: 'The time to wait for.',
                     required: true,
-                    type: ParamType.String
+                    type: ParamType.String,
+                    rest: true
                 }
             ]
         });
@@ -23,3 +26,9 @@ export default class Wait extends Functions {
         return this.success();
     }
 }
+
+const example = `
+$wait[1s] // Wait for 1 second
+$wait[1m] // Wait for 1 minute
+$wait[10m] // Wait for 10 minutes
+`;

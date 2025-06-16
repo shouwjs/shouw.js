@@ -5,8 +5,10 @@ class SetCacheData extends index_js_1.Functions {
     constructor() {
         super({
             name: '$setCacheData',
-            description: 'Sets a cache data',
+            description: 'This function will set the cache data with the given name and key',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'name',
@@ -16,24 +18,30 @@ class SetCacheData extends index_js_1.Functions {
                 },
                 {
                     name: 'key',
-                    description: 'The key of the cache',
+                    description: 'The key of the cache data to set',
                     required: true,
                     type: index_js_1.ParamType.String
                 },
                 {
                     name: 'value',
-                    description: 'The value of the cache',
+                    description: 'The value of the cache data to set',
                     required: true,
-                    type: index_js_1.ParamType.String
+                    type: index_js_1.ParamType.String,
+                    rest: true
                 }
             ]
         });
     }
     async code(ctx, [name, key, value]) {
-        if (!ctx.hasCache(name.unescape()))
-            return await ctx.error(index_js_1.Constants.Errors.cacheNotFound(name), this.name);
-        ctx.setCacheData(name.unescape(), key.unescape(), value.unescape());
+        if (!ctx.hasCache(name))
+            return await ctx.error(ctx.constants.Errors.cacheNotFound(name), this.name);
+        ctx.setCacheData(name, key, value);
         return this.success();
     }
 }
 exports.default = SetCacheData;
+const example = `
+$createCache[test]
+$setCacheData[test;key;value]
+// sets the cache data with the name test and key key to value value
+`;

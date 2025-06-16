@@ -5,8 +5,10 @@ class ObjectHasProperty extends index_js_1.Functions {
     constructor() {
         super({
             name: '$objectHasProperty',
-            description: 'Checks if an object has a property',
+            description: 'This function will return true if the object has the given property',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'name',
@@ -18,16 +20,24 @@ class ObjectHasProperty extends index_js_1.Functions {
                     name: 'property',
                     description: 'The property name of the object',
                     required: true,
-                    type: index_js_1.ParamType.String
+                    type: index_js_1.ParamType.String,
+                    rest: true
                 }
             ]
         });
     }
     async code(ctx, [name, property]) {
-        if (!ctx.hasObject(name.unescape()))
-            return await ctx.error(index_js_1.Constants.Errors.objectNotFound(name), this.name);
-        const object = ctx.getObject(name.unescape());
-        return this.success(Object.hasOwn(object ?? {}, property.unescape()));
+        if (!ctx.hasObject(name))
+            return await ctx.error(ctx.constants.Errors.objectNotFound(name), this.name);
+        const object = ctx.getObject(name);
+        return this.success(Object.hasOwn(object ?? {}, property));
     }
 }
 exports.default = ObjectHasProperty;
+const example = `
+$createObject[myObject;{
+    "key": "value"
+}]
+
+$objectHasProperty[myObject;key] // returns true
+`;

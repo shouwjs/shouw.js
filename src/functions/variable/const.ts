@@ -1,11 +1,13 @@
-import { ParamType, Functions, type Interpreter, Constants } from '../../index.js';
+import { ParamType, Functions, type Interpreter } from '../../index.js';
 
 export default class Const extends Functions {
     constructor() {
         super({
             name: '$const',
-            description: 'Will store constant temporary variables which can be retrieved by $get',
+            description: 'This function will store constant temporary variables which can be retrieved by $get',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'varname',
@@ -25,11 +27,18 @@ export default class Const extends Functions {
     }
 
     async code(ctx: Interpreter, [varname, value]: [string, string]) {
-        if (ctx.hasVariable(varname.unescape())) ctx.deleteVariable(varname.unescape());
-        if (ctx.hasConstantVariable(varname.unescape()))
-            return await ctx.error(Constants.Errors.constantVariable(varname.unescape()), this.name);
+        if (ctx.hasVariable(varname)) ctx.deleteVariable(varname);
+        if (ctx.hasConstantVariable(varname))
+            return await ctx.error(ctx.constants.Errors.constantVariable(varname), this.name);
 
-        ctx.setConstantVariable(varname.unescape(), value.unescape());
+        ctx.setConstantVariable(varname, value);
         return this.success();
     }
 }
+
+const example = `
+$const[varname;value] // Stores a constant temporary variable with the name 'varname' and the value 'value'
+$let[varname;value] // return error, because varname is already a constant variable
+
+$get[varname] // Returns the value of the constant temporary variable with the name 'varname'
+`;

@@ -1,5 +1,8 @@
 const { Parser, Util, Time, CustomParser } = require('..');
 
+/**
+ * Parser code to test the parser.
+ */
 const ParserCode = `
 {newEmbed:{title:Hello World!}{description:This is a test embed}{color:Red}{footer:This is a footer}{timestamp:1698888888}}
 {actionRow:{button:Click me!:1:customId:false:♥️}}
@@ -10,6 +13,9 @@ const ParserCode = `
 {reply:123456789012345678:true}
 `;
 
+/**
+ * This function is used to test the parser.
+ */
 async function main() {
     const ctx = {
         util: Util,
@@ -22,6 +28,9 @@ async function main() {
     console.log('='.repeat(process.stdout.columns));
     console.log('\n');
 
+    /**
+     * Parse the parser code.
+     */
     const data = await Parser(ctx, ParserCode);
     console.log(data);
 
@@ -29,6 +38,9 @@ async function main() {
     console.log('='.repeat(process.stdout.columns));
     console.log('\n');
 
+    /**
+     * Parse the parser code with custom parser.
+     */
     const data2 = CustomParser('test', '{test:Hello World!}{test:Hello World 2!}', 'normal', true);
     console.log(data2);
 

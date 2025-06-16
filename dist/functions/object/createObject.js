@@ -5,8 +5,10 @@ class CreateObject extends index_js_1.Functions {
     constructor() {
         super({
             name: '$createObject',
-            description: 'Create an object',
+            description: 'Creates an object with the given name and value',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'name',
@@ -25,8 +27,15 @@ class CreateObject extends index_js_1.Functions {
         });
     }
     code(ctx, [name, value]) {
-        ctx.setObject(name.unescape(), value);
+        ctx.setObject(name, value);
         return this.success();
     }
 }
 exports.default = CreateObject;
+const example = `
+$createObject[myObject;{
+    "key": "value"
+}]
+
+$getObjectProperty[myObject;key] // returns "value"
+`;

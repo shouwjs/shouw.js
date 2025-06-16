@@ -155,7 +155,13 @@ class Interpreter extends Container_js_1.Container {
                 if (this.isError)
                     break;
                 processedArgs.push(result);
-                return processedArgs;
+                return functionData.escapeArguments
+                    ? processedArgs.map((v) => {
+                        if (typeof v === 'string')
+                            return v.unescape();
+                        return v;
+                    })
+                    : processedArgs;
             }
             const input = (args[i] ?? '');
             const arg = await this.switchArg(input, param.type ?? index_js_1.ParamType.String, functionData);
@@ -183,7 +189,13 @@ class Interpreter extends Container_js_1.Container {
                 break;
             processedArgs.push(processed);
         }
-        return processedArgs;
+        return functionData.escapeArguments
+            ? processedArgs.map((v) => {
+                if (typeof v === 'string')
+                    return v.unescape();
+                return v;
+            })
+            : processedArgs;
     }
     unpack(func, code, index) {
         const funcStart = code.toLowerCase().indexOf(func.toLowerCase(), index ?? void 0);
@@ -314,8 +326,7 @@ class Interpreter extends Container_js_1.Container {
         }
         return this.success(void 0, true);
     }
-    async switchArg(input, type, functionData) {
-        const arg = functionData.escapeArguments ? input.trim().unescape() : input.trim();
+    async switchArg(arg, type, functionData) {
         if (!arg || arg === '')
             return void 0;
         let parsed;

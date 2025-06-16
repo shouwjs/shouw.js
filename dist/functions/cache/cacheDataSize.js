@@ -5,22 +5,32 @@ class CacheDataSize extends index_js_1.Functions {
     constructor() {
         super({
             name: '$cacheDataSize',
-            description: 'Check the size of a cache data',
+            description: 'This function returns the size of the cache data',
             brackets: true,
+            escapeArguments: true,
+            example,
             params: [
                 {
                     name: 'name',
-                    description: 'The name of the cache',
+                    description: 'The name of the cache data to get the size of',
                     required: true,
-                    type: index_js_1.ParamType.String
+                    type: index_js_1.ParamType.String,
+                    rest: true
                 }
             ]
         });
     }
     async code(ctx, [name]) {
-        if (!ctx.hasCache(name.unescape()))
-            return await ctx.error(index_js_1.Constants.Errors.cacheNotFound(name.unescape()), this.name);
-        return this.success(ctx.getCacheSize(name.unescape()));
+        if (!ctx.hasCache(name))
+            return await ctx.error(ctx.constants.Errors.cacheNotFound(name), this.name);
+        return this.success(ctx.getCacheSize(name));
     }
 }
 exports.default = CacheDataSize;
+const example = `
+$createCache[test]
+$setCacheData[test;key;value]
+$cacheDataSize[test]  // returns 1
+
+$cacheDataSize[test2] // returns error, cache not found
+`;

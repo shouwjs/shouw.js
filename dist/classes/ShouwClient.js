@@ -95,6 +95,18 @@ class ShouwClient extends BaseClient_js_1.BaseClient {
                         let commands = require(path.join(process.cwd(), filePath));
                         commands = commands ? (commands?.default ?? commands) : [];
                         commands = Array.isArray(commands) ? commands : [commands];
+                        if ((commands.length === 1 &&
+                            typeof commands[0] === 'object' &&
+                            Object.keys(commands[0]).length === 0) ||
+                            commands.length === 0 ||
+                            !commands) {
+                            loadedCommands.push({
+                                name: `${(0, chalk_1.gray)(filePath.split(path.sep).slice(-2).join(path.sep))}`,
+                                loaded: false,
+                                error: new Error('No exported command')
+                            });
+                            continue;
+                        }
                         for (const command of commands) {
                             if (typeof command !== 'object' || !command || !command.code)
                                 continue;
@@ -114,6 +126,14 @@ class ShouwClient extends BaseClient_js_1.BaseClient {
                     }
                     else if (file.endsWith('.shouw') || file.endsWith('.shw') || file.endsWith('.sho')) {
                         const commands = index_js_1.Reader.run(filePath);
+                        if (!Array.isArray(commands) || commands.length === 0) {
+                            loadedCommands.push({
+                                name: `${(0, chalk_1.gray)(filePath.split(path.sep).slice(-2).join(path.sep))}`,
+                                loaded: false,
+                                error: new Error('No exported command')
+                            });
+                            continue;
+                        }
                         for (const command of commands) {
                             if (typeof command !== 'object' || !command || !command.code)
                                 continue;
