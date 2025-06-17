@@ -11,10 +11,14 @@ for (const event of Object.values(discord_js_1.Events)) {
 class CommandsManager {
     client;
     events;
+    static types = [...Object.values(discord_js_1.Events)];
     interactionCreate;
     constructor(client, events = []) {
         this.client = client;
         this.loadEvents(events);
+    }
+    isValidType(event) {
+        return CommandsManager.types.includes(event);
     }
     loadEvents(events) {
         if (!Array.isArray(events))

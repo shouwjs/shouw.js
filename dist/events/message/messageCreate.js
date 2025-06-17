@@ -3,24 +3,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Events;
 const index_js_1 = require("../../index.js");
 async function Events(message, client) {
-    if (message.author.bot)
+    if (message.author.bot && !client.shouwOptions.respondToBots)
+        return;
+    if (!message.inGuild() && client.shouwOptions.guildOnly)
         return;
     const commands = client.commands?.messageCreate?.V;
-    if (!commands)
+    if (!commands || !commands.length)
         return;
-    const prefixes = client.prefix
-        .map(async (prefix) => {
+    AlwaysExecute(message, client, commands);
+    const prefixes = await Promise.all(client.prefix.map(async (prefix) => {
+        if (!prefix)
+            return void 0;
         if (!prefix.match(/\$/g) || prefix === '$')
             return prefix;
-        return await INIT({
-            name: 'prefix',
-            type: 'parsing',
-            code: prefix
-        }, message, message.content?.split(/ +/g) ?? [], client);
-    })
-        .filter(Boolean);
-    for (const RawPrefix of prefixes) {
-        const prefix = await RawPrefix;
+        return await INIT({ code: prefix }, message, message.content?.split(/ +/g) ?? [], client);
+    }));
+    for (const prefix of prefixes.filter((p) => p && p !== '')) {
         if (!prefix)
             continue;
         if (!message.content || !message.content.startsWith(prefix))
@@ -33,7 +31,10 @@ async function Events(message, client) {
         if (!command || !command.code)
             break;
         await INIT(command, message, args, client);
+        break;
     }
+}
+async function AlwaysExecute(message, client, commands) {
     const alwaysExecute = commands.filter((v) => !Array.isArray(v.name) ? v.name?.toLowerCase() === '$alwaysexecute' : false);
     if (Array.isArray(alwaysExecute) && alwaysExecute.length > 0) {
         for (const command of alwaysExecute) {

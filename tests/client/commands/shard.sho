@@ -1,0 +1,6 @@
+@Command({
+	name: 'ready',
+	type: 'shardReady'
+});
+
+$log[Shard ready!]

@@ -9,7 +9,7 @@ class BaseClient extends discord_js_1.Client {
         if (Array.isArray(partials))
             partials = partials.map((p) => discord_js_1.Partials[p] | p);
         if (!token || typeof token !== 'string')
-            throw new Error('Please provide a valid discord bot token!');
+            throw new Error('Invalid bot token! Please provide a valid discord bot token!');
         if (!options.allowedMentions)
             options.allowedMentions = { parse: ['users', 'roles', 'everyone'], repliedUser: true };
         super({ intents: intents ?? [], partials: partials ?? [], ...options });

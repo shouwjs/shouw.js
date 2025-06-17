@@ -25,7 +25,7 @@ class DjsEval extends index_js_1.Functions {
         const returnResult = arr.length >= 2 ? (arr.pop() === 'true') : false;
         const input = arr.join(';');
         try {
-            const result = eval(input);
+            const result = await eval(input);
             return returnResult ? this.success((0, node_util_1.inspect)(result, { depth: 0 })) : this.success();
         }
         catch (err) {

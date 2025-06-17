@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ConsoleDisplay = exports.Constants = exports.Util = exports.filterObject = exports.filterArray = exports.wait = exports.sleep = exports.Collective = exports.ParamType = exports.CustomParser = exports.Parser = exports.Reader = exports.Time = exports.IF = exports.CheckCondition = exports.CustomFunction = exports.Functions = exports.Context = exports.Interpreter = exports.CustomEvent = exports.CacheManager = exports.Variables = exports.FunctionsManager = exports.CommandsManager = exports.BaseClient = exports.ShouwClient = void 0;
+exports.ConsoleDisplay = exports.Constants = exports.Util = exports.filterObject = exports.filterArray = exports.wait = exports.sleep = exports.Collective = exports.ParamType = exports.CustomParser = exports.Parser = exports.Reader = exports.Time = exports.IF = exports.CheckCondition = exports.CustomFunction = exports.Functions = exports.Context = exports.Interpreter = exports.CustomEvent = exports.CacheManager = exports.Variables = exports.FunctionsManager = exports.CommandsManager = exports.ShardingManager = exports.BaseClient = exports.ShouwClient = void 0;
 const index_js_1 = require("./classes/index.js");
 Object.defineProperty(exports, "ShouwClient", { enumerable: true, get: function () { return index_js_1.ShouwClient; } });
 Object.defineProperty(exports, "BaseClient", { enumerable: true, get: function () { return index_js_1.BaseClient; } });
+Object.defineProperty(exports, "ShardingManager", { enumerable: true, get: function () { return index_js_1.ShardingManager; } });
 Object.defineProperty(exports, "CommandsManager", { enumerable: true, get: function () { return index_js_1.CommandsManager; } });
 Object.defineProperty(exports, "FunctionsManager", { enumerable: true, get: function () { return index_js_1.FunctionsManager; } });
 Object.defineProperty(exports, "Variables", { enumerable: true, get: function () { return index_js_1.Variables; } });

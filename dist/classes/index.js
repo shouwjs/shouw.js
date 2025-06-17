@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CustomEvent = exports.CacheManager = exports.Variables = exports.FunctionsManager = exports.CommandsManager = exports.BaseClient = exports.ShouwClient = void 0;
+exports.ShardingManager = exports.CustomEvent = exports.CacheManager = exports.Variables = exports.FunctionsManager = exports.CommandsManager = exports.BaseClient = exports.ShouwClient = void 0;
 const ShouwClient_js_1 = require("./ShouwClient.js");
 Object.defineProperty(exports, "ShouwClient", { enumerable: true, get: function () { return ShouwClient_js_1.ShouwClient; } });
 const BaseClient_js_1 = require("./BaseClient.js");
@@ -15,3 +15,5 @@ const CacheManager_js_1 = require("./CacheManager.js");
 Object.defineProperty(exports, "CacheManager", { enumerable: true, get: function () { return CacheManager_js_1.CacheManager; } });
 const CustomEvent_js_1 = require("./CustomEvent.js");
 Object.defineProperty(exports, "CustomEvent", { enumerable: true, get: function () { return CustomEvent_js_1.CustomEvent; } });
+const Sharding_js_1 = require("./Sharding.js");
+Object.defineProperty(exports, "ShardingManager", { enumerable: true, get: function () { return Sharding_js_1.ShardingManager; } });

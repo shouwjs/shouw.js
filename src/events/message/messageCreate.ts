@@ -9,36 +9,29 @@ import { type ShouwClient, Interpreter, type CommandData } from '../../index.js'
  * @return {Promise<void>}
  */
 export default async function Events(message: Message, client: ShouwClient): Promise<void> {
-    if (message.author.bot) return;
+    if (message.author.bot && !client.shouwOptions.respondToBots) return;
+    if (!message.inGuild() && client.shouwOptions.guildOnly) return;
     const commands = client.commands?.messageCreate?.V;
-    if (!commands) return;
+    if (!commands || !commands.length) return;
+    AlwaysExecute(message, client, commands);
 
     /**
      * Prefixes
-     * @type {Promise<string | undefined>[]}
+     * @type {(string | undefined)[]}
      */
-    const prefixes: Promise<string | undefined>[] = client.prefix
-        .map(async (prefix) => {
+    const prefixes: (string | undefined)[] = await Promise.all(
+        client.prefix.map(async (prefix: string | undefined) => {
+            if (!prefix) return void 0;
             if (!prefix.match(/\$/g) || prefix === '$') return prefix;
-            return await INIT(
-                {
-                    name: 'prefix',
-                    type: 'parsing',
-                    code: prefix
-                },
-                message,
-                message.content?.split(/ +/g) ?? [],
-                client
-            );
+            return await INIT({ code: prefix }, message, message.content?.split(/ +/g) ?? [], client);
         })
-        .filter(Boolean);
+    );
 
     /**
      * Run the commands
      * @type {Promise<void>[]}
      */
-    for (const RawPrefix of prefixes) {
-        const prefix = await RawPrefix;
+    for (const prefix of prefixes.filter((p) => p && p !== '')) {
         if (!prefix) continue;
         if (!message.content || !message.content.startsWith(prefix)) continue;
         const args = message.content?.slice(prefix.length).split(/ +/g) ?? [];
@@ -50,12 +43,19 @@ export default async function Events(message: Message, client: ShouwClient): Pro
         if (!command || !command.code) break;
 
         await INIT(command, message, args, client);
+        break;
     }
+}
 
-    /**
-     * Always Execute Commands
-     * @type {CommandData[]}
-     */
+/**
+ * Always Execute Command
+ *
+ * @param {Message} message - The message
+ * @param {ShouwClient} client - The client
+ * @param {CommandData[]} commands - The commands to execute
+ * @return {Promise<void>}
+ */
+async function AlwaysExecute(message: Message<boolean>, client: ShouwClient, commands: CommandData[]): Promise<void> {
     const alwaysExecute: CommandData[] = commands.filter((v: CommandData) =>
         !Array.isArray(v.name) ? v.name?.toLowerCase() === '$alwaysexecute' : false
     );

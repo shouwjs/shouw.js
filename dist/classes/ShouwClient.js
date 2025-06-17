@@ -52,6 +52,10 @@ class ShouwClient extends BaseClient_js_1.BaseClient {
     constructor(options) {
         super(options);
         options.shouwLogs = options.shouwLogs ?? true;
+        options.respondToBots = options.respondToBots ?? false;
+        options.guildOnly = options.guildOnly ?? false;
+        options.suppressAllErrors = options.suppressAllErrors ?? false;
+        options.debug = options.debug ?? false;
         this.shouwOptions = options;
         this.prefix = Array.isArray(options.prefix) ? options.prefix : [options.prefix];
         this.functions = new index_js_1.FunctionsManager(this);
@@ -81,7 +85,7 @@ class ShouwClient extends BaseClient_js_1.BaseClient {
         command.set(command.size, data);
         return this;
     }
-    loadCommands(dir, _logging = false) {
+    loadCommands(dir, _logging = true) {
         const files = fs.readdirSync(dir);
         const loadedCommands = [];
         for (const file of files) {
@@ -111,6 +115,16 @@ class ShouwClient extends BaseClient_js_1.BaseClient {
                             if (typeof command !== 'object' || !command || !command.code)
                                 continue;
                             command.type = command.type ?? 'messageCreate';
+                            if (!this.commands.isValidType(command.type)) {
+                                loadedCommands.push({
+                                    name: `${(0, chalk_1.gray)(filePath.split(path.sep).slice(-2).join(path.sep))} (${(0, chalk_1.cyan)(command.type ?? 'unknown')})`,
+                                    command: `${command.name ?? command.channel}`,
+                                    loaded: false,
+                                    error: new Error('Invalid event type')
+                                });
+                                this.debug(`Skipping ${(0, chalk_1.red)(file)} because it's not a valid event type`, 'ERROR');
+                                continue;
+                            }
                             this.command({
                                 ...command,
                                 file: filePath
@@ -138,6 +152,16 @@ class ShouwClient extends BaseClient_js_1.BaseClient {
                             if (typeof command !== 'object' || !command || !command.code)
                                 continue;
                             command.type = command.type ?? 'messageCreate';
+                            if (!this.commands.isValidType(command.type)) {
+                                loadedCommands.push({
+                                    name: `${(0, chalk_1.gray)(filePath.split(path.sep).slice(-2).join(path.sep))} (${(0, chalk_1.cyan)(command.type ?? 'unknown')})`,
+                                    command: `${command.name ?? command.channel}`,
+                                    loaded: false,
+                                    error: new Error('Invalid event type')
+                                });
+                                this.debug(`Skipping ${(0, chalk_1.red)(file)} because it's not a valid event type`, 'ERROR');
+                                continue;
+                            }
                             this.command({
                                 ...command,
                                 file: filePath
@@ -168,7 +192,7 @@ class ShouwClient extends BaseClient_js_1.BaseClient {
                 this.debug(`Error loading command ${(0, chalk_1.red)(file)}: ${err.stack}`, 'ERROR');
             }
         }
-        if (this.shouwOptions.shouwLogs)
+        if (this.shouwOptions.shouwLogs && _logging)
             index_js_1.ConsoleDisplay.commandList('white', loadedCommands);
         return this;
     }

@@ -18,7 +18,7 @@ class Util extends Constants_js_1.Constants {
             foundChannel = ctx.client.channels.cache.find((c) => c.name?.toLowerCase() === channelInput.toLowerCase() || c.id === channelInput);
         }
         if (foundChannel)
-            return foundChannel;
+            return Array.isArray(foundChannel) ? foundChannel[0] : foundChannel;
         return (await ctx.client.channels.fetch(channelInput, { force: true }).catch(() => void 0)) ?? void 0;
     }
     static async getGuild(ctx, guildInput) {
@@ -36,7 +36,7 @@ class Util extends Constants_js_1.Constants {
             foundGuild = ctx.client.guilds.cache.find((g) => g.name?.toLowerCase() === guildInput.toLowerCase() || g.id === guildInput);
         }
         if (foundGuild)
-            return foundGuild;
+            return Array.isArray(foundGuild) ? foundGuild[0] : foundGuild;
         return (await ctx.client.guilds.fetch(guildInput).catch(() => void 0)) ?? void 0;
     }
     static async getMember(ctx, guildInput, memberInput) {
@@ -66,7 +66,7 @@ class Util extends Constants_js_1.Constants {
                 m.nickname?.toLowerCase() === memberInput.toLowerCase());
         }
         if (foundMember)
-            return foundMember;
+            return Array.isArray(foundMember) ? foundMember[0] : foundMember;
         return (await guild.members.fetch(memberInput).catch(() => void 0)) ?? void 0;
     }
     static async getRole(ctx, guildInput, roleInput) {
@@ -90,7 +90,7 @@ class Util extends Constants_js_1.Constants {
             foundRole = guild.roles.cache.find((r) => r.name?.toLowerCase() === roleInput.toLowerCase() || r.id === roleInput);
         }
         if (foundRole)
-            return foundRole;
+            return Array.isArray(foundRole) ? foundRole[0] : foundRole;
         return (await guild.roles.fetch(roleInput, { force: true }).catch(() => void 0)) ?? void 0;
     }
     static async getUser(ctx, userInput) {
@@ -112,7 +112,7 @@ class Util extends Constants_js_1.Constants {
                 u.displayName?.toLowerCase() === userInput.toLowerCase());
         }
         if (foundUser)
-            return foundUser;
+            return Array.isArray(foundUser) ? foundUser[0] : foundUser;
         return (await ctx.client.users.fetch(userInput, { force: true }).catch(() => void 0)) ?? void 0;
     }
     static async getMessage(ctx, channelInput, messageInput) {
@@ -136,7 +136,7 @@ class Util extends Constants_js_1.Constants {
             foundMessage = channel.messages?.cache.get(messageInput);
         }
         if (foundMessage)
-            return foundMessage;
+            return Array.isArray(foundMessage) ? foundMessage[0] : foundMessage;
         return (await channel.messages?.fetch(messageInput).catch(() => void 0)) ?? void 0;
     }
     static isUnicodeEmoji(str) {
@@ -175,7 +175,7 @@ class Util extends Constants_js_1.Constants {
             foundEmoji = (onlyId ? emoji?.id : emoji) ?? void 0;
         }
         if (foundEmoji)
-            return foundEmoji;
+            return Array.isArray(foundEmoji) ? foundEmoji[0] : foundEmoji;
         if (ctx.client.application?.emojis) {
             if (!ctx.client.application.emojis.cache.size) {
                 await ctx.client.application.emojis.fetch();
@@ -184,7 +184,13 @@ class Util extends Constants_js_1.Constants {
                 e.id === emojiInput ||
                 e.toString() === emojiInput);
             if (appEmoji)
-                return onlyId ? appEmoji.id : appEmoji;
+                return onlyId
+                    ? Array.isArray(appEmoji)
+                        ? appEmoji[0]?.id
+                        : appEmoji.id
+                    : Array.isArray(appEmoji)
+                        ? appEmoji[0]
+                        : appEmoji;
         }
         return;
     }

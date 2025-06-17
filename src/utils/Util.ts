@@ -35,7 +35,7 @@ export class Util extends Constants {
             );
         }
 
-        if (foundChannel) return foundChannel;
+        if (foundChannel) return Array.isArray(foundChannel) ? foundChannel[0] : foundChannel;
         return (await ctx.client.channels.fetch(channelInput, { force: true }).catch(() => void 0)) ?? void 0;
     }
 
@@ -66,7 +66,7 @@ export class Util extends Constants {
             );
         }
 
-        if (foundGuild) return foundGuild;
+        if (foundGuild) return Array.isArray(foundGuild) ? foundGuild[0] : foundGuild;
         return (await ctx.client.guilds.fetch(guildInput).catch(() => void 0)) ?? void 0;
     }
 
@@ -114,7 +114,7 @@ export class Util extends Constants {
             );
         }
 
-        if (foundMember) return foundMember;
+        if (foundMember) return Array.isArray(foundMember) ? foundMember[0] : foundMember;
         return (await guild.members.fetch(memberInput).catch(() => void 0)) ?? void 0;
     }
 
@@ -150,7 +150,7 @@ export class Util extends Constants {
             );
         }
 
-        if (foundRole) return foundRole;
+        if (foundRole) return Array.isArray(foundRole) ? foundRole[0] : foundRole;
         return (await guild.roles.fetch(roleInput, { force: true }).catch(() => void 0)) ?? void 0;
     }
 
@@ -187,7 +187,7 @@ export class Util extends Constants {
             );
         }
 
-        if (foundUser) return foundUser;
+        if (foundUser) return Array.isArray(foundUser) ? foundUser[0] : foundUser;
         return (await ctx.client.users.fetch(userInput, { force: true }).catch(() => void 0)) ?? void 0;
     }
 
@@ -223,7 +223,7 @@ export class Util extends Constants {
             foundMessage = (channel as any).messages?.cache.get(messageInput);
         }
 
-        if (foundMessage) return foundMessage;
+        if (foundMessage) return Array.isArray(foundMessage) ? foundMessage[0] : foundMessage;
         return (await (channel as any).messages?.fetch(messageInput).catch(() => void 0)) ?? void 0;
     }
 
@@ -286,7 +286,7 @@ export class Util extends Constants {
             foundEmoji = (onlyId ? emoji?.id : emoji) ?? void 0;
         }
 
-        if (foundEmoji) return foundEmoji;
+        if (foundEmoji) return Array.isArray(foundEmoji) ? foundEmoji[0] : foundEmoji;
         if (ctx.client.application?.emojis) {
             if (!ctx.client.application.emojis.cache.size) {
                 await ctx.client.application.emojis.fetch();
@@ -299,7 +299,14 @@ export class Util extends Constants {
                     e.toString() === emojiInput
             );
 
-            if (appEmoji) return onlyId ? appEmoji.id : appEmoji;
+            if (appEmoji)
+                return onlyId
+                    ? Array.isArray(appEmoji)
+                        ? appEmoji[0]?.id
+                        : appEmoji.id
+                    : Array.isArray(appEmoji)
+                      ? appEmoji[0]
+                      : appEmoji;
         }
 
         return;

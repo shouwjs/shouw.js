@@ -27,7 +27,7 @@ export default class DjsEval extends Functions {
 
         try {
             // biome-ignore lint: security/detect-eval-with-expression
-            const result = eval(input);
+            const result = await eval(input);
             return returnResult ? this.success(inspect(result, { depth: 0 })) : this.success();
         } catch (err: any) {
             return await ctx.error(err, this.name);

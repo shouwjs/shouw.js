@@ -49,6 +49,11 @@ export class CommandsManager implements CommandsEventMap {
     public events?: string[];
 
     /**
+     * The events types
+     */
+    public static types: string[] = [...Object.values(DiscordEvents)];
+
+    /**
      * The commands event map
      */
     [key: string | number | symbol | `${any}`]: CommandsEventMap | any;
@@ -66,6 +71,16 @@ export class CommandsManager implements CommandsEventMap {
     constructor(client: ShouwClient, events: string[] = []) {
         this.client = client;
         this.loadEvents(events);
+    }
+
+    /**
+     * Check if the event is a valid type
+     *
+     * @param {string} event - The event to check
+     * @return {boolean} - Whether the event is a valid type
+     */
+    public isValidType(event: string) {
+        return CommandsManager.types.includes(event);
     }
 
     /**

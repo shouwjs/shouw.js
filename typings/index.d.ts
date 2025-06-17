@@ -1,6 +1,7 @@
 import * as Discord from 'discord.js';
-import { Client, ClientOptions, ClientEvents, Channel, CategoryChannel, PartialGroupDMChannel, PartialDMChannel, ForumChannel, MediaChannel, User, GuildMember, Guild, Message, ChatInputCommandInteraction, MessageComponentInteraction, ModalSubmitInteraction, ContextMenuCommandInteraction, MessagePayload, MessageReplyOptions, MessageCreateOptions, OmitPartialGroupDMChannel, InteractionReplyOptions, InteractionCallbackResponse, InteractionEditReplyOptions, InteractionResponse, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ChannelType, MessageFlags, Role } from 'discord.js';
+import { Client, ClientOptions, ClientEvents, ShardingManager as ShardingManager$1, MultipleShardSpawnOptions, Shard, Channel, CategoryChannel, PartialGroupDMChannel, PartialDMChannel, ForumChannel, MediaChannel, User, GuildMember, Guild, Message, ChatInputCommandInteraction, MessageComponentInteraction, ModalSubmitInteraction, ContextMenuCommandInteraction, MessagePayload, MessageReplyOptions, MessageCreateOptions, OmitPartialGroupDMChannel, InteractionReplyOptions, InteractionCallbackResponse, InteractionEditReplyOptions, InteractionResponse, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ChannelType, MessageFlags, Role } from 'discord.js';
 import EventEmitter from 'node:events';
+import chalk from 'chalk';
 
 interface Objects {
     [key: string | symbol | number | `${any}`]: unknown;
@@ -18,6 +19,8 @@ interface ShouwClientOptions extends ClientOptions {
     suppressAllErrors?: boolean;
     shouwLogs?: boolean;
     disableFunctions?: string[];
+    respondToBots?: boolean;
+    guildOnly?: boolean;
     [key: string | number | symbol | `${any}`]: any;
 }
 declare class ShouwClient extends BaseClient {
@@ -57,6 +60,7 @@ declare const EventsMap: Record<string, string>;
 declare class CommandsManager implements CommandsEventMap {
     readonly client: ShouwClient;
     events?: string[];
+    static types: string[];
     [key: string | number | symbol | `${any}`]: CommandsEventMap | any;
     interactionCreate?: {
         slash: Collective<number, CommandData>;
@@ -65,6 +69,7 @@ declare class CommandsManager implements CommandsEventMap {
         modal: Collective<number, CommandData>;
     };
     constructor(client: ShouwClient, events?: string[]);
+    isValidType(event: string): boolean;
     private loadEvents;
     private getEventPath;
 }
@@ -181,6 +186,23 @@ declare class CustomEvent extends EventEmitter {
     get listenedEvents(): Collective<string, CustomEventData>;
     command(data: CustomEventData): CustomEvent;
     listen(name: string): CustomEvent;
+}
+
+interface ShardingOptions {
+    file: string;
+    token: string;
+    totalShards?: number | 'auto';
+    shardList?: number[] | 'auto';
+    mode?: 'process' | 'worker';
+    respawn?: boolean;
+    silent?: boolean;
+    shardArgs?: string[];
+    execArgv?: string[];
+    spawnOptions?: MultipleShardSpawnOptions;
+}
+declare class ShardingManager extends ShardingManager$1 {
+    constructor(options: ShardingOptions);
+    onShardCreate(eventFunction: (shard: Shard, chalk: chalk.Chalk) => any | Promise<any>): ShardingManager;
 }
 
 type Flags = Discord.BitFieldResolvable<'SuppressEmbeds' | 'SuppressNotifications' | 'IsComponentsV2', Discord.MessageFlags.SuppressEmbeds | Discord.MessageFlags.SuppressNotifications | Discord.MessageFlags.IsComponentsV2> | undefined;
@@ -644,4 +666,4 @@ declare class ConsoleDisplay {
     private printCommandStatus;
 }
 
-export { BaseClient, CacheManager, CheckCondition, Collective, type CommandData, type CommandsEventMap, CommandsManager, type ComponentTypes, ConsoleDisplay, Constants, Context, CustomEvent, CustomFunction, type CustomFunctionData, CustomParser, type ExtraOptionsData, type Flags, type FunctionData, type FunctionResultData, Functions, FunctionsManager, type HelpersData, IF, type Interaction, type InteractionReplyData, type InteractionWithMessage, Interpreter, type InterpreterOptions, type InterpreterResult, type MessageReplyData, type Objects, ParamType, Parser, Reader, type SelectMenuTypes, type SendData, type SendableChannel, ShouwClient, type ShouwClientOptions, type TemporarilyData, Time, Util, Variables, filterArray, filterObject, sleep, wait };
+export { BaseClient, CacheManager, CheckCondition, Collective, type CommandData, type CommandsEventMap, CommandsManager, type ComponentTypes, ConsoleDisplay, Constants, Context, CustomEvent, CustomFunction, type CustomFunctionData, CustomParser, type ExtraOptionsData, type Flags, type FunctionData, type FunctionResultData, Functions, FunctionsManager, type HelpersData, IF, type Interaction, type InteractionReplyData, type InteractionWithMessage, Interpreter, type InterpreterOptions, type InterpreterResult, type MessageReplyData, type Objects, ParamType, Parser, Reader, type SelectMenuTypes, type SendData, type SendableChannel, ShardingManager, type ShardingOptions, ShouwClient, type ShouwClientOptions, type TemporarilyData, Time, Util, Variables, filterArray, filterObject, sleep, wait };

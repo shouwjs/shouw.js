@@ -25,43 +25,15 @@ export default async function Events(client: ShouwClient): Promise<void> {
 
         if (command.channel?.includes('$') && command.channel !== '$') {
             channel = client.channels.cache.get(
-                (
-                    await Interpreter.run(
-                        {
-                            name: 'channel',
-                            type: 'parsing',
-                            code: command.channel
-                        },
-                        {
-                            client
-                        },
-                        {
-                            sendMessage: false,
-                            returnId: false,
-                            returnResult: true,
-                            returnError: false,
-                            returnData: false
-                        }
-                    )
-                )?.result ?? ''
+                (await Interpreter.run({ code: command.channel }, { client }, { sendMessage: false }))?.result ?? ''
             );
             guild = (channel as any)?.guild;
         }
 
-        await Interpreter.run(
-            command,
-            {
-                client,
-                guild,
-                channel
-            },
-            {
-                sendMessage: true,
-                returnId: false,
-                returnResult: false,
-                returnError: false,
-                returnData: false
-            }
-        );
+        await Interpreter.run(command, {
+            client,
+            guild,
+            channel
+        });
     }
 }

@@ -18,7 +18,8 @@ export class BaseClient extends Client<true> {
             intents = intents.map((i: string | unknown) => Intents[i as string] | (i as Intents));
         if (Array.isArray(partials))
             partials = partials.map((p: string | unknown) => Partials[p as string] | (p as Partials));
-        if (!token || typeof token !== 'string') throw new Error('Please provide a valid discord bot token!');
+        if (!token || typeof token !== 'string')
+            throw new Error('Invalid bot token! Please provide a valid discord bot token!');
         if (!options.allowedMentions)
             options.allowedMentions = { parse: ['users', 'roles', 'everyone'], repliedUser: true };
 

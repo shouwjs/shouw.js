@@ -23,6 +23,8 @@ export interface ShouwClientOptions extends ClientOptions {
     suppressAllErrors?: boolean;
     shouwLogs?: boolean;
     disableFunctions?: string[];
+    respondToBots?: boolean;
+    guildOnly?: boolean;
     [key: string | number | symbol | `${any}`]: any;
 }
 
@@ -97,6 +99,11 @@ export class ShouwClient extends BaseClient {
     constructor(options: ShouwClientOptions) {
         super(options);
         options.shouwLogs = options.shouwLogs ?? true;
+        options.respondToBots = options.respondToBots ?? false;
+        options.guildOnly = options.guildOnly ?? false;
+        options.suppressAllErrors = options.suppressAllErrors ?? false;
+        options.debug = options.debug ?? false;
+
         this.shouwOptions = options;
         this.prefix = Array.isArray(options.prefix) ? options.prefix : [options.prefix];
         this.functions = new FunctionsManager(this);
@@ -151,7 +158,7 @@ export class ShouwClient extends BaseClient {
      * @return {ShouwClient} - The main client instance
      * @example <ShouwClient>.loadCommands('commands');
      */
-    public loadCommands(dir: string, _logging = false): ShouwClient {
+    public loadCommands(dir: string, _logging = true): ShouwClient {
         const files = fs.readdirSync(dir);
         const loadedCommands: Array<{ name: string; command?: string; loaded: boolean; error?: Error }> = [];
 
@@ -187,6 +194,17 @@ export class ShouwClient extends BaseClient {
                         for (const command of commands) {
                             if (typeof command !== 'object' || !command || !command.code) continue;
                             command.type = command.type ?? 'messageCreate';
+                            if (!this.commands.isValidType(command.type)) {
+                                loadedCommands.push({
+                                    name: `${gray(filePath.split(path.sep).slice(-2).join(path.sep))} (${cyan(command.type ?? 'unknown')})`,
+                                    command: `${command.name ?? command.channel}`,
+                                    loaded: false,
+                                    error: new Error('Invalid event type')
+                                });
+
+                                this.debug(`Skipping ${red(file)} because it's not a valid event type`, 'ERROR');
+                                continue;
+                            }
 
                             this.command({
                                 ...command,
@@ -216,6 +234,17 @@ export class ShouwClient extends BaseClient {
                         for (const command of commands) {
                             if (typeof command !== 'object' || !command || !command.code) continue;
                             command.type = command.type ?? 'messageCreate';
+                            if (!this.commands.isValidType(command.type)) {
+                                loadedCommands.push({
+                                    name: `${gray(filePath.split(path.sep).slice(-2).join(path.sep))} (${cyan(command.type ?? 'unknown')})`,
+                                    command: `${command.name ?? command.channel}`,
+                                    loaded: false,
+                                    error: new Error('Invalid event type')
+                                });
+
+                                this.debug(`Skipping ${red(file)} because it's not a valid event type`, 'ERROR');
+                                continue;
+                            }
 
                             this.command({
                                 ...command,
@@ -247,7 +276,7 @@ export class ShouwClient extends BaseClient {
             }
         }
 
-        if (this.shouwOptions.shouwLogs) ConsoleDisplay.commandList('white', loadedCommands);
+        if (this.shouwOptions.shouwLogs && _logging) ConsoleDisplay.commandList('white', loadedCommands);
         return this;
     }
 

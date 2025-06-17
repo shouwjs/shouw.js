@@ -10,7 +10,15 @@ const client = new ShouwClient({
     token: process.env.TOKEN,
     prefix: '+',
     intents: ['Guilds', 'GuildMessages', 'MessageContent'],
-    events: ['messageCreate', 'interactionCreate'],
+    events: [
+        'messageCreate',
+        'interactionCreate',
+        'shardReady',
+        'shardDisconnect',
+        'shardError',
+        'shardResume',
+        'shardReconnecting'
+    ],
     disableFunctions: ['$clientToken']
 });
 
@@ -20,7 +28,7 @@ const client = new ShouwClient({
 client.command({
     type: 'ready',
     code: (ctx) => {
-        ctx.client.debug(`Logged in as ${ctx.client.user.tag}!`);
+        ctx.client.debug(`Logged in as ${ctx.client.user.tag}!`, void 0, true);
     }
 });
 
