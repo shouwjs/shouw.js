@@ -99,23 +99,26 @@ export class FunctionsManager extends Collective<string, Functions | CustomFunct
     /**
      * Create a new function
      *
-     * @param {FunctionData} data - The function data
+     * @param {CustomFunctionData[]} datas - The function data
      * @return {FunctionsManager} - The functions manager class
      */
-    public createFunction(data: CustomFunctionData): FunctionsManager {
-        if (!data.name || !data.code || !Array.isArray(data.params)) {
-            this.client.debug('Failed to creating function: Missing required function data', 'ERROR');
-            return this;
+    public createFunction(...datas: CustomFunctionData[]): FunctionsManager {
+        for (const data of datas) {
+            if (!data.name || !data.code || !Array.isArray(data.params)) {
+                this.client.debug('Failed to creating function: Missing required function data', 'ERROR');
+                continue;
+            }
+
+            data.name = data.name.startsWith('$') ? data.name : `$${data.name}`;
+            if (this.has(data.name)) this.delete(data.name);
+            data.type = !['shouw.js', 'discord.js', 'djs'].includes(data.type) ? 'shouw.js' : data.type;
+
+            const func = new CustomFunction(data);
+            this.create(func.name, func);
+
+            this.client.debug(`Function created: ${cyan(func.name)}`);
         }
 
-        data.name = data.name.startsWith('$') ? data.name : `$${data.name}`;
-        if (this.has(data.name)) this.delete(data.name);
-        data.type = !['shouw.js', 'discord.js', 'djs'].includes(data.type) ? 'shouw.js' : data.type;
-
-        const func = new CustomFunction(data);
-        this.create(func.name, func);
-
-        this.client.debug(`Function created: ${cyan(func.name)}`);
         return this;
     }
 }

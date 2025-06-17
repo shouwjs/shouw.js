@@ -78,6 +78,20 @@ class Constants {
             solution: 'Ensure that every $if has a corresponding $endif'
         }
     };
+    static ActivityType = {
+        playing: discord_js_1.ActivityType.Playing,
+        streaming: discord_js_1.ActivityType.Streaming,
+        listening: discord_js_1.ActivityType.Listening,
+        watching: discord_js_1.ActivityType.Watching,
+        competing: discord_js_1.ActivityType.Competing,
+        custom: discord_js_1.ActivityType.Custom,
+        [discord_js_1.ActivityType.Playing]: 'playing',
+        [discord_js_1.ActivityType.Streaming]: 'streaming',
+        [discord_js_1.ActivityType.Listening]: 'listening',
+        [discord_js_1.ActivityType.Watching]: 'watching',
+        [discord_js_1.ActivityType.Competing]: 'competing',
+        [discord_js_1.ActivityType.Custom]: 'custom'
+    };
     static InteractionType = {
         [discord_js_1.InteractionType.Ping]: 'ping',
         [discord_js_1.InteractionType.ApplicationCommand]: 'slash',

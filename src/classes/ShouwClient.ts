@@ -127,26 +127,29 @@ export class ShouwClient extends BaseClient {
      *     code: 'Pong! $pingms'
      * })
      */
-    public command(data: CommandData): ShouwClient {
-        if (
-            typeof data !== 'object' ||
-            !data ||
-            !data.code ||
-            (typeof data.code !== 'string' && typeof data.code !== 'function')
-        )
-            return this;
-        if (data.type === 'interactionCreate') {
-            if (!this.commands.interactionCreate) return this;
-            this.commands.interactionCreate[data.prototype ?? 'slash'].set(
-                this.commands.interactionCreate[data.prototype ?? 'slash']?.size,
-                data
-            );
-            return this;
+    public command(...datas: CommandData[]): ShouwClient {
+        for (const data of datas) {
+            if (
+                typeof data !== 'object' ||
+                !data ||
+                !data.code ||
+                (typeof data.code !== 'string' && typeof data.code !== 'function')
+            )
+                continue;
+            if (data.type === 'interactionCreate') {
+                if (!this.commands.interactionCreate) continue;
+                this.commands.interactionCreate[data.prototype ?? 'slash'].set(
+                    this.commands.interactionCreate[data.prototype ?? 'slash']?.size,
+                    data
+                );
+                continue;
+            }
+
+            const command = this.commands[data?.type ?? 'messageCreate'];
+            if (!command) continue;
+            command.set(command.size, data);
         }
 
-        const command = this.commands[data?.type ?? 'messageCreate'];
-        if (!command) return this;
-        command.set(command.size, data);
         return this;
     }
 
@@ -158,7 +161,7 @@ export class ShouwClient extends BaseClient {
      * @return {ShouwClient} - The main client instance
      * @example <ShouwClient>.loadCommands('commands');
      */
-    public loadCommands(dir: string, _logging = true): ShouwClient {
+    public loadCommands(dir: string, logging = true): ShouwClient {
         const files = fs.readdirSync(dir);
         const loadedCommands: Array<{ name: string; command?: string; loaded: boolean; error?: Error }> = [];
 
@@ -276,7 +279,7 @@ export class ShouwClient extends BaseClient {
             }
         }
 
-        if (this.shouwOptions.shouwLogs && _logging) ConsoleDisplay.commandList('white', loadedCommands);
+        if (this.shouwOptions.shouwLogs && logging) ConsoleDisplay.commandList('white', loadedCommands);
         return this;
     }
 

@@ -67,25 +67,27 @@ class ShouwClient extends BaseClient_js_1.BaseClient {
         this._disableFunctions(options.disableFunctions);
         this._loadExtensions(options.extensions);
     }
-    command(data) {
-        if (typeof data !== 'object' ||
-            !data ||
-            !data.code ||
-            (typeof data.code !== 'string' && typeof data.code !== 'function'))
-            return this;
-        if (data.type === 'interactionCreate') {
-            if (!this.commands.interactionCreate)
-                return this;
-            this.commands.interactionCreate[data.prototype ?? 'slash'].set(this.commands.interactionCreate[data.prototype ?? 'slash']?.size, data);
-            return this;
+    command(...datas) {
+        for (const data of datas) {
+            if (typeof data !== 'object' ||
+                !data ||
+                !data.code ||
+                (typeof data.code !== 'string' && typeof data.code !== 'function'))
+                continue;
+            if (data.type === 'interactionCreate') {
+                if (!this.commands.interactionCreate)
+                    continue;
+                this.commands.interactionCreate[data.prototype ?? 'slash'].set(this.commands.interactionCreate[data.prototype ?? 'slash']?.size, data);
+                continue;
+            }
+            const command = this.commands[data?.type ?? 'messageCreate'];
+            if (!command)
+                continue;
+            command.set(command.size, data);
         }
-        const command = this.commands[data?.type ?? 'messageCreate'];
-        if (!command)
-            return this;
-        command.set(command.size, data);
         return this;
     }
-    loadCommands(dir, _logging = true) {
+    loadCommands(dir, logging = true) {
         const files = fs.readdirSync(dir);
         const loadedCommands = [];
         for (const file of files) {
@@ -192,7 +194,7 @@ class ShouwClient extends BaseClient_js_1.BaseClient {
                 this.debug(`Error loading command ${(0, chalk_1.red)(file)}: ${err.stack}`, 'ERROR');
             }
         }
-        if (this.shouwOptions.shouwLogs && _logging)
+        if (this.shouwOptions.shouwLogs && logging)
             index_js_1.ConsoleDisplay.commandList('white', loadedCommands);
         return this;
     }

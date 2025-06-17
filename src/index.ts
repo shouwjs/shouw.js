@@ -12,6 +12,7 @@ export {
     CacheManager,
     CustomEvent,
     type Objects,
+    type ClientStatus,
     type ShardingOptions,
     type CommandData,
     type CommandsEventMap,

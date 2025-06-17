@@ -18,18 +18,22 @@ class CustomEvent extends node_events_1.default {
     get listenedEvents() {
         return this.#listenedEvents;
     }
-    command(data) {
-        if (typeof data !== 'object' || !data || !data.code || !data.listen)
-            return this;
-        this.#listenedEvents.set(data.listen, data);
+    command(...datas) {
+        for (const data of datas) {
+            if (typeof data !== 'object' || !data || !data.code || !data.listen)
+                continue;
+            this.#listenedEvents.set(data.listen, data);
+        }
         return this;
     }
-    listen(name) {
-        if (!this.#listenedEvents.has(name))
-            return this;
-        super.on(name, async (...args) => {
-            await Executer(name, this.client, ...args);
-        });
+    listen(...names) {
+        for (const name of names) {
+            if (!this.#listenedEvents.has(name))
+                continue;
+            super.on(name, async (...args) => {
+                await Executer(name, this.client, ...args);
+            });
+        }
         return this;
     }
 }

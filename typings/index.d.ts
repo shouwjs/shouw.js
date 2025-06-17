@@ -1,13 +1,52 @@
 import * as Discord from 'discord.js';
-import { Client, ClientOptions, ClientEvents, ShardingManager as ShardingManager$1, MultipleShardSpawnOptions, Shard, Channel, CategoryChannel, PartialGroupDMChannel, PartialDMChannel, ForumChannel, MediaChannel, User, GuildMember, Guild, Message, ChatInputCommandInteraction, MessageComponentInteraction, ModalSubmitInteraction, ContextMenuCommandInteraction, MessagePayload, MessageReplyOptions, MessageCreateOptions, OmitPartialGroupDMChannel, InteractionReplyOptions, InteractionCallbackResponse, InteractionEditReplyOptions, InteractionResponse, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ChannelType, MessageFlags, Role } from 'discord.js';
+import { Client, PresenceStatusData, ActivityType, ClientOptions, ClientEvents, ShardingManager as ShardingManager$1, MultipleShardSpawnOptions, Shard, Channel, CategoryChannel, PartialGroupDMChannel, PartialDMChannel, ForumChannel, MediaChannel, User, GuildMember, Guild, Message, ChatInputCommandInteraction, MessageComponentInteraction, ModalSubmitInteraction, ContextMenuCommandInteraction, MessagePayload, MessageReplyOptions, MessageCreateOptions, OmitPartialGroupDMChannel, InteractionReplyOptions, InteractionCallbackResponse, InteractionEditReplyOptions, InteractionResponse, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ChannelType, MessageFlags, Role } from 'discord.js';
 import EventEmitter from 'node:events';
 import chalk from 'chalk';
+
+declare class Collective<K, V> extends Map<K, V> {
+    create(key: K, value: V): Collective<K, V>;
+    filter(fn: (value: V, index: number, array: V[]) => boolean): V[];
+    filterKeys(fn: (value: K, index: number, array: K[]) => boolean): K[];
+    find(fn: (value: V, index: number, array: V[]) => boolean): V | undefined;
+    findKey(fn: (value: K, index: number, array: K[]) => boolean): K | undefined;
+    some(fn: (value: V, index: number, array: V[]) => boolean): boolean;
+    someKeys(fn: (value: K, index: number, array: K[]) => boolean): boolean;
+    every(fn: (value: V, index: number, array: V[]) => boolean): boolean;
+    everyKeys(fn: (value: K, index: number, array: K[]) => boolean): boolean;
+    has(key: K): boolean;
+    get K(): Array<K>;
+    get V(): Array<V>;
+}
 
 interface Objects {
     [key: string | symbol | number | `${any}`]: unknown;
 }
+interface ClientStatus {
+    text?: string;
+    name?: string;
+    status?: 'online' | 'dnd' | 'idle' | 'invisible';
+    type: 'playing' | 'streaming' | 'listening' | 'watching' | 'competing' | 'custom';
+    url?: string;
+    afk?: boolean;
+    shardId?: number;
+    time?: number;
+}
+interface PresenceData {
+    time?: number;
+    afk: boolean;
+    status: PresenceStatusData;
+    shardId: number;
+    activities: {
+        name: string;
+        type: ActivityType;
+        url?: string;
+    }[];
+}
 declare class BaseClient extends Client<true> {
+    #private;
     constructor({ token, intents, partials, ...options }: ShouwClientOptions);
+    get statuses(): Collective<number, PresenceData>;
+    status(...datas: ClientStatus[]): BaseClient;
 }
 
 interface ShouwClientOptions extends ClientOptions {
@@ -34,8 +73,8 @@ declare class ShouwClient extends BaseClient {
     readonly prefix: Array<string>;
     readonly shouwOptions: ShouwClientOptions;
     constructor(options: ShouwClientOptions);
-    command(data: CommandData): ShouwClient;
-    loadCommands(dir: string, _logging?: boolean): ShouwClient;
+    command(...datas: CommandData[]): ShouwClient;
+    loadCommands(dir: string, logging?: boolean): ShouwClient;
     variables(variables: Record<string, any>, table?: string): ShouwClient;
     private _loadExtensions;
     private _disableFunctions;
@@ -74,21 +113,6 @@ declare class CommandsManager implements CommandsEventMap {
     private getEventPath;
 }
 
-declare class Collective<K, V> extends Map<K, V> {
-    create(key: K, value: V): Collective<K, V>;
-    filter(fn: (value: V, index: number, array: V[]) => boolean): V[];
-    filterKeys(fn: (value: K, index: number, array: K[]) => boolean): K[];
-    find(fn: (value: V, index: number, array: V[]) => boolean): V | undefined;
-    findKey(fn: (value: K, index: number, array: K[]) => boolean): K | undefined;
-    some(fn: (value: V, index: number, array: V[]) => boolean): boolean;
-    someKeys(fn: (value: K, index: number, array: K[]) => boolean): boolean;
-    every(fn: (value: V, index: number, array: V[]) => boolean): boolean;
-    everyKeys(fn: (value: K, index: number, array: K[]) => boolean): boolean;
-    has(key: K): boolean;
-    get K(): Array<K>;
-    get V(): Array<V>;
-}
-
 interface FunctionData extends Objects {
     name: string;
     description?: string;
@@ -118,7 +142,7 @@ declare class FunctionsManager extends Collective<string, Functions | CustomFunc
     readonly client: ShouwClient;
     constructor(client: ShouwClient);
     load(basePath: string, debug: boolean): Promise<undefined>;
-    createFunction(data: CustomFunctionData): FunctionsManager;
+    createFunction(...datas: CustomFunctionData[]): FunctionsManager;
 }
 
 declare class Variables {
@@ -184,8 +208,8 @@ declare class CustomEvent extends EventEmitter {
     readonly client: ShouwClient;
     constructor(client: ShouwClient);
     get listenedEvents(): Collective<string, CustomEventData>;
-    command(data: CustomEventData): CustomEvent;
-    listen(name: string): CustomEvent;
+    command(...datas: CustomEventData[]): CustomEvent;
+    listen(...names: string[]): CustomEvent;
 }
 
 interface ShardingOptions {
@@ -617,6 +641,7 @@ declare class Constants {
             solution: string;
         };
     };
+    static ActivityType: Record<string, number> | Record<number, string>;
     static InteractionType: Record<number, string>;
     static ComponentType: Record<number, string>;
     static SlashType: Record<string, number>;
@@ -666,4 +691,4 @@ declare class ConsoleDisplay {
     private printCommandStatus;
 }
 
-export { BaseClient, CacheManager, CheckCondition, Collective, type CommandData, type CommandsEventMap, CommandsManager, type ComponentTypes, ConsoleDisplay, Constants, Context, CustomEvent, CustomFunction, type CustomFunctionData, CustomParser, type ExtraOptionsData, type Flags, type FunctionData, type FunctionResultData, Functions, FunctionsManager, type HelpersData, IF, type Interaction, type InteractionReplyData, type InteractionWithMessage, Interpreter, type InterpreterOptions, type InterpreterResult, type MessageReplyData, type Objects, ParamType, Parser, Reader, type SelectMenuTypes, type SendData, type SendableChannel, ShardingManager, type ShardingOptions, ShouwClient, type ShouwClientOptions, type TemporarilyData, Time, Util, Variables, filterArray, filterObject, sleep, wait };
+export { BaseClient, CacheManager, CheckCondition, type ClientStatus, Collective, type CommandData, type CommandsEventMap, CommandsManager, type ComponentTypes, ConsoleDisplay, Constants, Context, CustomEvent, CustomFunction, type CustomFunctionData, CustomParser, type ExtraOptionsData, type Flags, type FunctionData, type FunctionResultData, Functions, FunctionsManager, type HelpersData, IF, type Interaction, type InteractionReplyData, type InteractionWithMessage, Interpreter, type InterpreterOptions, type InterpreterResult, type MessageReplyData, type Objects, ParamType, Parser, Reader, type SelectMenuTypes, type SendData, type SendableChannel, ShardingManager, type ShardingOptions, ShouwClient, type ShouwClientOptions, type TemporarilyData, Time, Util, Variables, filterArray, filterObject, sleep, wait };

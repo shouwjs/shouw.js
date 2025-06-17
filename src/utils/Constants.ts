@@ -5,7 +5,8 @@ import {
     ApplicationIntegrationType,
     InteractionContextType,
     InteractionType,
-    ComponentType
+    ComponentType,
+    ActivityType
 } from 'discord.js';
 import type { Functions, CustomFunction } from '../index.js';
 
@@ -94,6 +95,25 @@ export class Constants {
             message: 'Invalid $if usage. Malformed or missing $endif',
             solution: 'Ensure that every $if has a corresponding $endif'
         }
+    };
+
+    /**
+     * Activity Types (https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-types)
+     * @type {Record<string, number> | Record<number, string>}
+     */
+    static ActivityType: Record<string, number> | Record<number, string> = {
+        playing: ActivityType.Playing,
+        streaming: ActivityType.Streaming,
+        listening: ActivityType.Listening,
+        watching: ActivityType.Watching,
+        competing: ActivityType.Competing,
+        custom: ActivityType.Custom,
+        [ActivityType.Playing]: 'playing',
+        [ActivityType.Streaming]: 'streaming',
+        [ActivityType.Listening]: 'listening',
+        [ActivityType.Watching]: 'watching',
+        [ActivityType.Competing]: 'competing',
+        [ActivityType.Custom]: 'custom'
     };
 
     /**

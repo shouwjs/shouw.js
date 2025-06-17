@@ -10,15 +10,7 @@ const client = new ShouwClient({
     token: process.env.TOKEN,
     prefix: '+',
     intents: ['Guilds', 'GuildMessages', 'MessageContent'],
-    events: [
-        'messageCreate',
-        'interactionCreate',
-        'shardReady',
-        'shardDisconnect',
-        'shardError',
-        'shardResume',
-        'shardReconnecting'
-    ],
+    events: ['messageCreate', 'interactionCreate'],
     disableFunctions: ['$clientToken']
 });
 
@@ -31,6 +23,24 @@ client.command({
         ctx.client.debug(`Logged in as ${ctx.client.user.tag}!`, void 0, true);
     }
 });
+
+/**
+ * Set the status of the client.
+ */
+client.status(
+    {
+        name: 'Status 1',
+        type: 'Playing',
+        status: 'idle',
+        time: 12
+    },
+    {
+        name: 'Status 2',
+        type: 'Watching',
+        status: 'dnd',
+        time: 12
+    }
+);
 
 /**
  * Load the commands from the commands directory.

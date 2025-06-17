@@ -53,26 +53,31 @@ export class CustomEvent extends EventEmitter {
     /**
      * Add a command to the listened events.
      *
-     * @param {CustomEventData} data - The command data.
+     * @param {CustomEventData[]} datas - The command data.
      * @returns {CustomEvent} The current instance.
      */
-    public command(data: CustomEventData): CustomEvent {
-        if (typeof data !== 'object' || !data || !data.code || !data.listen) return this;
-        this.#listenedEvents.set(data.listen, data);
+    public command(...datas: CustomEventData[]): CustomEvent {
+        for (const data of datas) {
+            if (typeof data !== 'object' || !data || !data.code || !data.listen) continue;
+            this.#listenedEvents.set(data.listen, data);
+        }
+
         return this;
     }
 
     /**
      * Listen to an event.
      *
-     * @param {string} name - The event name.
+     * @param {string[]} names - The event name.
      * @returns {CustomEvent} The current instance.
      */
-    public listen(name: string): CustomEvent {
-        if (!this.#listenedEvents.has(name)) return this;
-        super.on(name, async (...args: any[]) => {
-            await Executer(name, this.client, ...args);
-        });
+    public listen(...names: string[]): CustomEvent {
+        for (const name of names) {
+            if (!this.#listenedEvents.has(name)) continue;
+            super.on(name, async (...args: any[]) => {
+                await Executer(name, this.client, ...args);
+            });
+        }
 
         return this;
     }

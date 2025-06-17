@@ -1,8 +1,13 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Events;
 const index_js_1 = require("../../index.js");
+const clientStatus_js_1 = __importDefault(require("./clientStatus.js"));
 async function Events(client) {
+    (0, clientStatus_js_1.default)(client);
     if (client.shouwOptions.shouwLogs) {
         index_js_1.ConsoleDisplay.displayConsole('Shouw.js', 'white', [
             { text: `Logged in as ${client.user?.tag}`, color: 'green' },

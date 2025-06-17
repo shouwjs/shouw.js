@@ -71,18 +71,20 @@ class FunctionsManager extends Collective_js_1.Collective {
             }
         }
     }
-    createFunction(data) {
-        if (!data.name || !data.code || !Array.isArray(data.params)) {
-            this.client.debug('Failed to creating function: Missing required function data', 'ERROR');
-            return this;
+    createFunction(...datas) {
+        for (const data of datas) {
+            if (!data.name || !data.code || !Array.isArray(data.params)) {
+                this.client.debug('Failed to creating function: Missing required function data', 'ERROR');
+                continue;
+            }
+            data.name = data.name.startsWith('$') ? data.name : `$${data.name}`;
+            if (this.has(data.name))
+                this.delete(data.name);
+            data.type = !['shouw.js', 'discord.js', 'djs'].includes(data.type) ? 'shouw.js' : data.type;
+            const func = new index_js_1.CustomFunction(data);
+            this.create(func.name, func);
+            this.client.debug(`Function created: ${(0, chalk_1.cyan)(func.name)}`);
         }
-        data.name = data.name.startsWith('$') ? data.name : `$${data.name}`;
-        if (this.has(data.name))
-            this.delete(data.name);
-        data.type = !['shouw.js', 'discord.js', 'djs'].includes(data.type) ? 'shouw.js' : data.type;
-        const func = new index_js_1.CustomFunction(data);
-        this.create(func.name, func);
-        this.client.debug(`Function created: ${(0, chalk_1.cyan)(func.name)}`);
         return this;
     }
 }

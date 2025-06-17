@@ -8,6 +8,7 @@ export {
 
 export {
     BaseClient,
+    type ClientStatus,
     type Objects
 } from './BaseClient.js';
 

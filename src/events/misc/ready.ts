@@ -1,5 +1,6 @@
 import { type ShouwClient, Interpreter, ConsoleDisplay, Constants } from '../../index.js';
 import type { Channel, Guild } from 'discord.js';
+import Status from './clientStatus.js';
 
 /**
  * Ready Event
@@ -8,6 +9,7 @@ import type { Channel, Guild } from 'discord.js';
  * @return {Promise<void>}
  */
 export default async function Events(client: ShouwClient): Promise<void> {
+    Status(client);
     if (client.shouwOptions.shouwLogs) {
         ConsoleDisplay.displayConsole('Shouw.js', 'white', [
             { text: `Logged in as ${client.user?.tag}`, color: 'green' },
