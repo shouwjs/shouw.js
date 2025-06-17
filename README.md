@@ -121,6 +121,9 @@ This is a command code 1
   
 Goodbye!
 This is a command code 2
+
+/* Also support comments! */
+// Line and block comments is supported.
 ```
 
 These decorators are parsed by Shouw.js internally, no compilation needed.

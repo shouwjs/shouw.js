@@ -54,13 +54,13 @@ export class Reader {
      * @return {string} - The code without comments
      */
     private removeComments(code = ''): string {
-        const blockCommentStart = code.indexOf('//**');
-        const blockCommentEnd = code.indexOf('**//');
+        const blockCommentStart = code.indexOf('/*');
+        const blockCommentEnd = code.indexOf('*/');
 
         if (blockCommentStart !== -1 && (blockCommentEnd === -1 || blockCommentEnd < blockCommentStart)) {
             throw new SyntaxError(
                 generateError(
-                    `Unclosed block comment (//** ... ${chalk.red('> **// <')})`,
+                    `Unclosed block comment (/* ... ${chalk.red('> */ <')})`,
                     this.filePath,
                     code.trim().slice(blockCommentStart, blockCommentStart + 50)
                 )
@@ -70,7 +70,7 @@ export class Reader {
         if (blockCommentEnd !== -1 && blockCommentStart === -1) {
             throw new SyntaxError(
                 generateError(
-                    `Unopened block comment (${chalk.red('> //** <')} ... **//)`,
+                    `Unopened block comment (${chalk.red('> /* <')} ... */)`,
                     this.filePath,
                     code.trim().slice(blockCommentEnd - 25, blockCommentEnd + 25)
                 )
@@ -78,8 +78,8 @@ export class Reader {
         }
 
         return code
-            .replace(/\/\/\*\*([\s\S]*?)\*\*\/\//g, '')
-            .replace(/\/\/\*(.*)/g, '')
+            .replace(/\/\*[^+]*?\*\//g, '')
+            .replace(/\/\/(.*)/g, '')
             .trim();
     }
 

@@ -57,17 +57,17 @@ class Reader {
         }
     }
     removeComments(code = '') {
-        const blockCommentStart = code.indexOf('//**');
-        const blockCommentEnd = code.indexOf('**//');
+        const blockCommentStart = code.indexOf('/*');
+        const blockCommentEnd = code.indexOf('*/');
         if (blockCommentStart !== -1 && (blockCommentEnd === -1 || blockCommentEnd < blockCommentStart)) {
-            throw new SyntaxError(generateError(`Unclosed block comment (//** ... ${chalk_1.default.red('> **// <')})`, this.filePath, code.trim().slice(blockCommentStart, blockCommentStart + 50)));
+            throw new SyntaxError(generateError(`Unclosed block comment (/* ... ${chalk_1.default.red('> */ <')})`, this.filePath, code.trim().slice(blockCommentStart, blockCommentStart + 50)));
         }
         if (blockCommentEnd !== -1 && blockCommentStart === -1) {
-            throw new SyntaxError(generateError(`Unopened block comment (${chalk_1.default.red('> //** <')} ... **//)`, this.filePath, code.trim().slice(blockCommentEnd - 25, blockCommentEnd + 25)));
+            throw new SyntaxError(generateError(`Unopened block comment (${chalk_1.default.red('> /* <')} ... */)`, this.filePath, code.trim().slice(blockCommentEnd - 25, blockCommentEnd + 25)));
         }
         return code
-            .replace(/\/\/\*\*([\s\S]*?)\*\*\/\//g, '')
-            .replace(/\/\/\*(.*)/g, '')
+            .replace(/\/\*[^+]*?\*\//g, '')
+            .replace(/\/\/(.*)/g, '')
             .trim();
     }
     parse() {

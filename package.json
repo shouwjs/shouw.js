@@ -16,14 +16,7 @@
         "typings": "typings",
         "test": "test"
     },
-    "keywords": [
-        "discord.js",
-        "aoi.js",
-        "shouw.js",
-        "bdfd",
-        "discord",
-        "bot"
-    ],
+    "keywords": ["discord.js", "aoi.js", "shouw.js", "bdfd", "discord", "bot"],
     "author": "Tyowk <tyowk@outlook.com>",
     "license": "Apache-2.0",
     "dependencies": {
@@ -43,15 +36,7 @@
     "bugs": {
         "url": "https://github.com/shouwjs/shouw.js/issues"
     },
-    "files": [
-        "dist",
-        "bin",
-        "typings",
-        "README.md",
-        "LICENSE",
-        "package.json",
-        "CHANGELOG.md"
-    ],
+    "files": ["dist", "bin", "typings", "README.md", "LICENSE", "package.json", "CHANGELOG.md"],
     "engines": {
         "node": ">=20.x",
         "npm": ">=9.x"
