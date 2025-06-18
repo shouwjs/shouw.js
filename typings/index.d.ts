@@ -422,7 +422,7 @@ declare class Interpreter extends Container {
     private replaceExecutionTime;
 }
 
-declare function IF(code: string, ctx: Interpreter): Promise<{
+declare function IF(code: string, ctx: Interpreter, index: number): Promise<{
     code: string;
     error: boolean;
     index: number;

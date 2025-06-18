@@ -54,33 +54,43 @@ export class Reader {
      * @return {string} - The code without comments
      */
     private removeComments(code = ''): string {
-        const blockCommentStart = code.indexOf('/*');
-        const blockCommentEnd = code.indexOf('*/');
+        const start = code.indexOf('/*');
+        const end = code.indexOf('*/');
 
-        if (blockCommentStart !== -1 && (blockCommentEnd === -1 || blockCommentEnd < blockCommentStart)) {
+        if (start !== -1 && (end === -1 || end < start)) {
             throw new SyntaxError(
                 generateError(
                     `Unclosed block comment (/* ... ${chalk.red('> */ <')})`,
                     this.filePath,
-                    code.trim().slice(blockCommentStart, blockCommentStart + 50)
+                    code.trim().slice(start, start + 50)
                 )
             );
         }
 
-        if (blockCommentEnd !== -1 && blockCommentStart === -1) {
-            throw new SyntaxError(
-                generateError(
-                    `Unopened block comment (${chalk.red('> /* <')} ... */)`,
-                    this.filePath,
-                    code.trim().slice(blockCommentEnd - 25, blockCommentEnd + 25)
-                )
-            );
+        let result = '';
+        let i = 0;
+
+        while (i < code.length) {
+            const blockStart = code.indexOf('/*', i);
+            const lineStart = code.indexOf('//', i);
+
+            if (blockStart === -1 && lineStart === -1) {
+                result += code.slice(i);
+                break;
+            }
+
+            if (blockStart !== -1 && (lineStart === -1 || blockStart < lineStart)) {
+                result += code.slice(i, blockStart);
+                const blockEnd = code.indexOf('*/', blockStart + 2);
+                i = blockEnd !== -1 ? blockEnd + 2 : code.length;
+            } else {
+                result += code.slice(i, lineStart);
+                const lineEnd = code.indexOf('\n', lineStart);
+                i = lineEnd !== -1 ? lineEnd : code.length;
+            }
         }
 
-        return code
-            .replace(/\/\*[^+]*?\*\//g, '')
-            .replace(/\/\/(.*)/g, '')
-            .trim();
+        return result.trim();
     }
 
     /**

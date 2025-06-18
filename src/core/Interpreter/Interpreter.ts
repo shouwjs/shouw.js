@@ -13,7 +13,6 @@ import {
     type Functions
 } from '../../index.js';
 import { Container } from './Container.js';
-import { extractTopLevelBlock } from './IF.js';
 import * as Discord from 'discord.js';
 
 /**
@@ -78,28 +77,29 @@ export class Interpreter extends Container {
      * @return {Promise<string>} - The result of the processing
      */
     private async processFunction(input: string): Promise<string> {
-        const code = input.mustEscape().replace(/\$executionTime/gi, () => '#CHAR#executionTime');
-        const functions = this.extractFunctions(code);
+        let currentCode = input.mustEscape().replace(/\$executionTime/gi, () => '#CHAR#executionTime');
+        let functions = this.extractFunctions(currentCode);
         if (!functions.length) return input;
-
         let lastIndex = 0;
-        let currentCode = code;
 
-        for (const func of functions) {
-            if (this.isError) break;
-            const functionData: Functions | CustomFunction | undefined = this.functions.get(func);
-            if (!functionData || !functionData.code) continue;
+        for (let i = 0; i < functions.length; i++) {
+            const func = functions[i];
+            if (!func || this.isError) break;
+
+            const functionData = this.functions.get(func);
+            if (!functionData?.code) continue;
             if (!(functionData instanceof CustomFunction) && typeof functionData.code !== 'function') continue;
 
             const unpacked = this.unpack(func, currentCode, lastIndex);
             if (!unpacked.all) continue;
+
             if (functionData.brackets && !unpacked.brackets)
                 await this.error(Constants.Errors.missingBrackets(func, functionData));
-
             if (this.isError) break;
-            const processedArgs: Array<unknown> = await this.processArgs(unpacked.args, functionData);
 
+            const processedArgs = await this.processArgs(unpacked.args, functionData);
             if (this.isError) break;
+
             if (functionData instanceof CustomFunction && typeof functionData.codeType === 'string') {
                 let code = functionData.stringCode;
                 for (const param of functionData.params ?? []) {
@@ -117,18 +117,20 @@ export class Interpreter extends Container {
             }
 
             if (func.match(/\$if$/i) || func === '$if') {
-                const { code, error, index, length } = await IF(currentCode, this);
+                const { code, error, index } = await IF(currentCode, this, lastIndex);
                 this.setError(error);
                 if (this.isError) break;
 
-                const result = await this.processFunction(code);
-                lastIndex = index + result.length;
-                currentCode = currentCode.slice(0, index) + result + currentCode.slice(index + length);
+                i = -1;
+                functions = this.extractFunctions(code);
+                lastIndex = index;
+                currentCode = code;
                 continue;
             }
 
             try {
                 if (this.isError || typeof functionData.code !== 'function') break;
+
                 const DATA = ((await functionData.code(this, processedArgs, this.Temporarily)) ??
                     {}) as FunctionResultData;
 
@@ -326,19 +328,11 @@ export class Interpreter extends Container {
     /**
      * Extract all functions from the code and return them as an array of strings
      *
-     * @param {string} input - The code to extract functions from
+     * @param {string} code - The code to extract functions from
      * @return {Array<string>} - The extracted functions
      * @private
      */
-    private extractFunctions(input: string, custom = false): Array<string> {
-        const startIndex = input.toLowerCase().indexOf('$if[');
-        let code: string = input;
-        if (startIndex !== -1) {
-            const block = extractTopLevelBlock(input.slice(startIndex), '$if[', '$endif');
-            if (block?.full)
-                code = `${code.slice(0, startIndex)}$if[true]${code.slice(startIndex + block.full.length)}`;
-        }
-
+    private extractFunctions(code: string, custom = false): Array<string> {
         const functions: string[] = [];
         const regex = /\$([^\$\[\];\s]+)/g;
         let depth = 0;

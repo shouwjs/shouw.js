@@ -36,7 +36,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Interpreter = void 0;
 const index_js_1 = require("../../index.js");
 const Container_js_1 = require("./Container.js");
-const IF_js_1 = require("./IF.js");
 const Discord = __importStar(require("discord.js"));
 class Interpreter extends Container_js_1.Container {
     static async run(command, options, extras) {
@@ -66,17 +65,17 @@ class Interpreter extends Container_js_1.Container {
         return this.buildResult();
     }
     async processFunction(input) {
-        const code = input.mustEscape().replace(/\$executionTime/gi, () => '#CHAR#executionTime');
-        const functions = this.extractFunctions(code);
+        let currentCode = input.mustEscape().replace(/\$executionTime/gi, () => '#CHAR#executionTime');
+        let functions = this.extractFunctions(currentCode);
         if (!functions.length)
             return input;
         let lastIndex = 0;
-        let currentCode = code;
-        for (const func of functions) {
-            if (this.isError)
+        for (let i = 0; i < functions.length; i++) {
+            const func = functions[i];
+            if (!func || this.isError)
                 break;
             const functionData = this.functions.get(func);
-            if (!functionData || !functionData.code)
+            if (!functionData?.code)
                 continue;
             if (!(functionData instanceof index_js_1.CustomFunction) && typeof functionData.code !== 'function')
                 continue;
@@ -104,13 +103,14 @@ class Interpreter extends Container_js_1.Container {
                 continue;
             }
             if (func.match(/\$if$/i) || func === '$if') {
-                const { code, error, index, length } = await (0, index_js_1.IF)(currentCode, this);
+                const { code, error, index } = await (0, index_js_1.IF)(currentCode, this, lastIndex);
                 this.setError(error);
                 if (this.isError)
                     break;
-                const result = await this.processFunction(code);
-                lastIndex = index + result.length;
-                currentCode = currentCode.slice(0, index) + result + currentCode.slice(index + length);
+                i = -1;
+                functions = this.extractFunctions(code);
+                lastIndex = index;
+                currentCode = code;
                 continue;
             }
             try {
@@ -261,14 +261,7 @@ class Interpreter extends Container_js_1.Container {
             return void 0;
         });
     }
-    extractFunctions(input, custom = false) {
-        const startIndex = input.toLowerCase().indexOf('$if[');
-        let code = input;
-        if (startIndex !== -1) {
-            const block = (0, IF_js_1.extractTopLevelBlock)(input.slice(startIndex), '$if[', '$endif');
-            if (block?.full)
-                code = `${code.slice(0, startIndex)}$if[true]${code.slice(startIndex + block.full.length)}`;
-        }
+    extractFunctions(code, custom = false) {
         const functions = [];
         const regex = /\$([^\$\[\];\s]+)/g;
         let depth = 0;

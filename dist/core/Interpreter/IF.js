@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.IF = IF;
 exports.extractTopLevelBlock = extractTopLevelBlock;
 const index_js_1 = require("../../index.js");
-async function IF(code, ctx) {
+async function IF(code, ctx, index) {
     const lower = code.toLowerCase();
     if (!lower.includes('$if['))
         return { code, error: false, index: 0, length: 0 };
@@ -11,7 +11,7 @@ async function IF(code, ctx) {
         await ctx.error(index_js_1.Constants.Errors.missingEndif);
         return { code, error: true, index: 0, length: 0 };
     }
-    const startIndex = lower.indexOf('$if[');
+    const startIndex = lower.indexOf('$if[', index);
     const block = extractTopLevelBlock(code.slice(startIndex), '$if[', '$endif');
     if (!block) {
         await ctx.error(index_js_1.Constants.Errors.missingEndif);
@@ -38,7 +38,8 @@ async function IF(code, ctx) {
             break;
         }
     }
-    return { code: output, error: false, index: startIndex, length: full.length };
+    const result = code.slice(0, startIndex) + output + code.slice(startIndex + full.length);
+    return { code: result, error: false, index: startIndex, length: output.length };
 }
 function parseBranches(full) {
     const branches = [];
