@@ -122,7 +122,7 @@ export class Interpreter extends Container {
                 if (this.isError) break;
 
                 i = -1;
-                functions = this.extractFunctions(code);
+                functions = this.extractFunctions(code, false, index);
                 lastIndex = index;
                 currentCode = code;
                 continue;
@@ -332,11 +332,11 @@ export class Interpreter extends Container {
      * @return {Array<string>} - The extracted functions
      * @private
      */
-    private extractFunctions(code: string, custom = false): Array<string> {
+    private extractFunctions(code: string, custom = false, fromIndex = 0): Array<string> {
         const functions: string[] = [];
         const regex = /\$([^\$\[\];\s]+)/g;
         let depth = 0;
-        let index = 0;
+        let index = fromIndex ?? 0;
 
         while (index < code.length) {
             const char = code[index];

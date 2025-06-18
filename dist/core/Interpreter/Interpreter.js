@@ -108,7 +108,7 @@ class Interpreter extends Container_js_1.Container {
                 if (this.isError)
                     break;
                 i = -1;
-                functions = this.extractFunctions(code);
+                functions = this.extractFunctions(code, false, index);
                 lastIndex = index;
                 currentCode = code;
                 continue;
@@ -261,11 +261,11 @@ class Interpreter extends Container_js_1.Container {
             return void 0;
         });
     }
-    extractFunctions(code, custom = false) {
+    extractFunctions(code, custom = false, fromIndex = 0) {
         const functions = [];
         const regex = /\$([^\$\[\];\s]+)/g;
         let depth = 0;
-        let index = 0;
+        let index = fromIndex ?? 0;
         while (index < code.length) {
             const char = code[index];
             if (char === '[') {
