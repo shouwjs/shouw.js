@@ -57,7 +57,7 @@ exports.InitCommand = async () => {
     log('Installing dependencies...');
     try {
         execSync(`cd ${name} && npm install`, { stdio: 'inherit' });
-    } catch (err) {
+    } catch {
         log('Dependency installation failed.', 'ERROR');
         return process.exit(1);
     }

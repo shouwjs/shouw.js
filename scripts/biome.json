@@ -1,5 +1,6 @@
 {
-    "$schema": "https://biomejs.dev/schemas/1.5.3/schema.json",
+    "root": false,
+    "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
     "formatter": {
         "enabled": true,
         "formatWithErrors": true,
@@ -7,8 +8,7 @@
         "indentWidth": 4,
         "lineWidth": 120,
         "lineEnding": "lf",
-        "include": ["./", "bin"],
-        "ignore": ["dist"]
+        "includes": ["/**", "**/bin/**", "!**/dist"]
     },
     "javascript": {
         "formatter": {
@@ -30,13 +30,24 @@
             "complexity": {
                 "noStaticOnlyClass": "off",
                 "noUselessCatch": "off"
+            },
+            "style": {
+                "noParameterAssign": "error",
+                "useAsConstAssertion": "error",
+                "useDefaultParameterLast": "error",
+                "useEnumInitializers": "error",
+                "useSelfClosingElements": "error",
+                "useSingleVarDeclarator": "error",
+                "noUnusedTemplateLiteral": "error",
+                "useNumberNamespace": "error",
+                "noInferrableTypes": "error",
+                "noUselessElse": "error"
             }
         }
     },
     "files": {
         "ignoreUnknown": true,
         "maxSize": 1000000,
-        "include": ["./", "bin"],
-        "ignore": ["dist"]
+        "includes": ["/**", "**/bin/**", "!**/dist"]
     }
 }
