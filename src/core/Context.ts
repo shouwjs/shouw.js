@@ -201,7 +201,10 @@ export class Context {
      * @returns {Promise<InteractionResponse<boolean> | undefined>} - The message sent
      */
     public async deferReply(ephemeral = false): Promise<InteractionCallbackResponse | undefined> {
-        return await this.interaction?.deferReply({ flags: ephemeral ? 64 : void 0, withResponse: true });
+        return await this.interaction?.deferReply({
+            flags: ephemeral ? 64 : void 0,
+            withResponse: true
+        });
     }
 
     /**

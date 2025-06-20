@@ -37,6 +37,18 @@ type CustomParserResult =
       }[]
     | undefined;
 
+interface ParserData {
+    embeds: Array<Discord.APIEmbed>;
+    components: Array<ComponentTypes>;
+    content: string | undefined;
+    attachments: Array<unknown | null>;
+    flags: Array<Discord.MessageFlags | null>;
+    poll: Discord.PollData | null;
+    stickers: Array<Discord.StickerResolvable>;
+    reply: Discord.ReplyOptions | undefined;
+    allowedMentions: Discord.MessageMentionOptions | null;
+}
+
 export interface CustomParserData {
     key: string;
     many?: boolean;
@@ -108,9 +120,9 @@ export async function Parser(ctx: Interpreter, input: string): Promise<SendData>
             flags.push(ctx.util.Flags.iscomponentsv2 as Discord.MessageFlags);
             isParsed = true;
         } else if (key === 'allowedmentions') {
-            allowedMentions.parse = splitEscaped(value.toLowerCase()).filter(Boolean) as Array<
-                'users' | 'roles' | 'everyone'
-            >;
+            allowedMentions.parse = splitEscaped(value.toLowerCase()).filter((a) => {
+                return ['users', 'roles', 'everyone'].includes(a as string);
+            }) as Array<'users' | 'roles' | 'everyone'>;
             isParsed = true;
         } else if (key === 'reply') {
             const splited = splitEscaped(value);
@@ -134,19 +146,20 @@ export async function Parser(ctx: Interpreter, input: string): Promise<SendData>
         }
     }
 
-    const isComponentsV2 = flags.filter(Boolean).includes(ctx.util.Flags.iscomponentsv2 as Discord.MessageFlags);
-
-    return {
-        embeds: isComponentsV2 ? null : embeds.filter(Boolean),
-        components: components.filter(Boolean) as any as Discord.TopLevelComponent[],
-        content: isComponentsV2 ? null : content?.unescape().trim() === '' ? null : content?.unescape().trim(),
-        files: attachments.filter(Boolean) as Discord.AttachmentBuilder[],
-        flags: flags.filter(Boolean) as Flags,
-        poll: (isComponentsV2 ? null : poll) ?? null,
-        stickers: isComponentsV2 ? null : (stickers.filter(Boolean) as Discord.StickerResolvable[]),
-        reply,
-        allowedMentions
-    } as any as SendData;
+    return buildResult(
+        {
+            embeds,
+            components,
+            content,
+            attachments,
+            flags,
+            poll,
+            stickers,
+            reply,
+            allowedMentions
+        },
+        ctx
+    );
 }
 
 /**
@@ -223,7 +236,7 @@ export function CustomParser(
  *     {authorURL:url}
  * }
  */
-export function EmbedParser(_ctx: Interpreter, content: string): Discord.APIEmbed {
+function EmbedParser(_ctx: Interpreter, content: string): Discord.APIEmbed {
     const embedData: Discord.APIEmbed = {};
 
     for (const part of matchStructure(content)) {
@@ -315,7 +328,7 @@ export function EmbedParser(_ctx: Interpreter, content: string): Discord.APIEmbe
  *         {mentionableInput}
  *         {channelInput:channelType?}
  */
-export async function ActionRowParser(
+async function ActionRowParser(
     ctx: Interpreter,
     content: string
 ): Promise<Discord.APIActionRowComponent<Discord.APIComponentInActionRow> | null> {
@@ -422,7 +435,9 @@ export async function ActionRowParser(
                                 types = undefined;
                         }
 
-                        SelectMenu = new Discord.ChannelSelectMenuBuilder({ channelTypes: types });
+                        SelectMenu = new Discord.ChannelSelectMenuBuilder({
+                            channelTypes: types
+                        });
                         break;
                     }
                 }
@@ -487,7 +502,7 @@ export async function ActionRowParser(
  * {attachment:name:location}
  * {file:name:content}
  */
-export function AttachmentParser(
+function AttachmentParser(
     _ctx: Interpreter,
     rawContent: string,
     type: 'attachment' | 'file' = 'attachment'
@@ -514,7 +529,7 @@ export function AttachmentParser(
  * @example {flags:flag1:flag2:flag3}
  * {flag:flag}
  */
-export function FlagsParser(
+function FlagsParser(
     ctx: Interpreter,
     rawContent: string,
     type: 'flags' | 'flag' = 'flags'
@@ -545,7 +560,7 @@ export function FlagsParser(
  *     * Answer Options Parser:
  *         {answer:text:emoji?}
  */
-export async function PollParser(ctx: Interpreter, rawContent: string): Promise<Discord.PollData | null> {
+async function PollParser(ctx: Interpreter, rawContent: string): Promise<Discord.PollData | null> {
     const content = rawContent;
     const answerRegex = /{answer:([^}]+)}/gim;
     const [question, durationRaw, multiSelect = 'false'] = splitEscaped(content);
@@ -597,7 +612,7 @@ export async function PollParser(ctx: Interpreter, rawContent: string): Promise<
  *     * Gallery Parser:
  *         {media:url:spoiler?:description?}
  * */
-export async function ComponentsV2Parser(ctx: Interpreter, content: string): Promise<Discord.APIContainerComponent> {
+async function ComponentsV2Parser(ctx: Interpreter, content: string): Promise<Discord.APIContainerComponent> {
     const container: Discord.APIContainerComponent = {
         type: Discord.ComponentType.Container,
         components: [],
@@ -721,7 +736,7 @@ function parseSpoilerV2(_ctx: Interpreter, content: string): boolean {
  * @param {string} content - The content to parse
  * @return {Discord.APISeparatorComponent} - The parsed separator
  */
-export function parseSeparatorV2(_ctx: Interpreter, content: string): Discord.APISeparatorComponent {
+function parseSeparatorV2(_ctx: Interpreter, content: string): Discord.APISeparatorComponent {
     const [divider = 'true', rawSpacing = 'small'] = splitEscaped(content);
     let spacing: Discord.SeparatorSpacingSize = Discord.SeparatorSpacingSize.Large;
 
@@ -750,7 +765,7 @@ export function parseSeparatorV2(_ctx: Interpreter, content: string): Discord.AP
  * @param {string} content - The content to parse
  * @return {Promise<Discord.APISectionComponent>} - The parsed section
  */
-export async function parseSectionV2(ctx: Interpreter, content: string): Promise<Discord.APISectionComponent> {
+async function parseSectionV2(ctx: Interpreter, content: string): Promise<Discord.APISectionComponent> {
     const section: Discord.APISectionComponent = {
         type: Discord.ComponentType.Section,
         components: [],
@@ -798,7 +813,7 @@ export async function parseSectionV2(ctx: Interpreter, content: string): Promise
  * @param {string} rawContent - The content to parse
  * @return {Discord.APIMediaGalleryComponent} - The parsed gallery
  */
-export function parseGalleryV2(_ctx: Interpreter, rawContent: string): Discord.APIMediaGalleryComponent {
+function parseGalleryV2(_ctx: Interpreter, rawContent: string): Discord.APIMediaGalleryComponent {
     const content = rawContent;
     const mediaRegex = /{media:([^}]+)}/gim;
     const matches = [...content.matchAll(mediaRegex)];
@@ -828,7 +843,7 @@ export function parseGalleryV2(_ctx: Interpreter, rawContent: string): Discord.A
  * @param {string} content - The content to parse
  * @return {Promise<Discord.ButtonBuilder | undefined>} - The parsed button
  */
-export async function parseButton(ctx: Interpreter, content: string): Promise<Discord.ButtonBuilder | undefined> {
+async function parseButton(ctx: Interpreter, content: string): Promise<Discord.ButtonBuilder | undefined> {
     const [label, styleStr, custom_id, disabled = 'false', emojiInput] = splitEscapedEmoji(content);
     if (!label || !styleStr || !custom_id) return void 0;
     const emoji = emojiInput ? ((await ctx.util.getEmoji(ctx, emojiInput, true)) ?? emojiInput) : undefined;
@@ -969,4 +984,35 @@ function splitEscapedEmoji(value: string): Array<string | undefined> {
         if (text === '') return void 0;
         return text;
     });
+}
+
+/**
+ * A function to build the result data from the input and return the built result
+ *
+ * @param {ParserData} data - The data to build
+ * @param {Interpreter} ctx - The context of the interpreter
+ * @return {SendData} - The built result
+ */
+function buildResult(
+    { embeds, components, content, attachments, flags, poll, stickers, reply, allowedMentions }: ParserData,
+    ctx: Interpreter
+): SendData {
+    const isComponentsV2 = flags.filter(Boolean).includes(ctx.util.Flags.iscomponentsv2 as Discord.MessageFlags);
+    const parsed = JSON.parse(
+        JSON.stringify({
+            embeds: isComponentsV2 ? null : embeds.filter(Boolean),
+            components: components.filter(Boolean) as any as Discord.TopLevelComponent[],
+            content: isComponentsV2 ? null : content?.unescape().trim() === '' ? null : content?.unescape().trim(),
+            poll: (isComponentsV2 ? null : poll) ?? null
+        }).replace(/\$executionTime/gi, () => (performance.now() - ctx.start).toFixed(2).toString())
+    );
+
+    return {
+        ...parsed,
+        files: attachments.filter(Boolean) as Discord.AttachmentBuilder[],
+        flags: flags.filter(Boolean) as Flags,
+        stickers: isComponentsV2 ? null : (stickers.filter(Boolean) as Discord.StickerResolvable[]),
+        reply,
+        allowedMentions
+    };
 }

@@ -17,7 +17,9 @@ export default async function Events(shardId: number, replayedEvents: number, cl
                         { code: command.channel },
                         {
                             client,
-                            Temporarily: { shardEvent: { replayedEvents, id: shardId, type: 'resume' } } as any
+                            Temporarily: {
+                                shardEvent: { replayedEvents, id: shardId, type: 'resume' }
+                            } as any
                         },
                         { sendMessage: false }
                     )

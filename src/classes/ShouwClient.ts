@@ -120,7 +120,7 @@ export class ShouwClient extends BaseClient {
     /**
      * Set a new command to the client
      *
-     * @param {CommandData} data - The command data to set
+     * @param {CommandData[]} datas - The command data to set
      * @return {ShouwClient} - The main client instance
      * @example <ShouwClient>.command({
      *     name: 'ping',
@@ -163,7 +163,12 @@ export class ShouwClient extends BaseClient {
      */
     public loadCommands(dir: string, logging = true): ShouwClient {
         const files = fs.readdirSync(dir);
-        const loadedCommands: Array<{ name: string; command?: string; loaded: boolean; error?: Error }> = [];
+        const loadedCommands: Array<{
+            name: string;
+            command?: string;
+            loaded: boolean;
+            error?: Error;
+        }> = [];
 
         for (const file of files) {
             const filePath = path.join(dir, file);
@@ -197,7 +202,7 @@ export class ShouwClient extends BaseClient {
                         for (const command of commands) {
                             if (typeof command !== 'object' || !command || !command.code) continue;
                             command.type = command.type ?? 'messageCreate';
-                            if (!this.commands.isValidType(command.type)) {
+                            if (!this.commands.isValidEventType(command.type)) {
                                 loadedCommands.push({
                                     name: `${gray(filePath.split(path.sep).slice(-2).join(path.sep))} (${cyan(command.type ?? 'unknown')})`,
                                     command: `${command.name ?? command.channel}`,
@@ -237,7 +242,7 @@ export class ShouwClient extends BaseClient {
                         for (const command of commands) {
                             if (typeof command !== 'object' || !command || !command.code) continue;
                             command.type = command.type ?? 'messageCreate';
-                            if (!this.commands.isValidType(command.type)) {
+                            if (!this.commands.isValidEventType(command.type)) {
                                 loadedCommands.push({
                                     name: `${gray(filePath.split(path.sep).slice(-2).join(path.sep))} (${cyan(command.type ?? 'unknown')})`,
                                     command: `${command.name ?? command.channel}`,

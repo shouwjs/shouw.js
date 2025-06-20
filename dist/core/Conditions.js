@@ -6,7 +6,14 @@ function CheckCondition(input) {
         let message = input.trim().unescape();
         while (message.includes('(') && message.includes(')')) {
             const innerExpr = message.match(/\(([^()]+)\)/);
-            if (innerExpr) {
+            if (innerExpr && innerExpr.index !== undefined) {
+                const innerResult = CheckCondition(innerExpr[1].trim());
+                message =
+                    message.slice(0, innerExpr.index) +
+                        innerResult +
+                        message.slice(innerExpr.index + innerExpr[0].length);
+            }
+            else if (innerExpr && innerExpr.index === undefined) {
                 const innerResult = CheckCondition(innerExpr[1].trim());
                 message = message.replace(innerExpr[0], () => innerResult.toString());
             }

@@ -35,16 +35,6 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Parser = Parser;
 exports.CustomParser = CustomParser;
-exports.EmbedParser = EmbedParser;
-exports.ActionRowParser = ActionRowParser;
-exports.AttachmentParser = AttachmentParser;
-exports.FlagsParser = FlagsParser;
-exports.PollParser = PollParser;
-exports.ComponentsV2Parser = ComponentsV2Parser;
-exports.parseSeparatorV2 = parseSeparatorV2;
-exports.parseSectionV2 = parseSectionV2;
-exports.parseGalleryV2 = parseGalleryV2;
-exports.parseButton = parseButton;
 const Discord = __importStar(require("discord.js"));
 async function Parser(ctx, input) {
     const embeds = [];
@@ -111,7 +101,9 @@ async function Parser(ctx, input) {
             isParsed = true;
         }
         else if (key === 'allowedmentions') {
-            allowedMentions.parse = splitEscaped(value.toLowerCase()).filter(Boolean);
+            allowedMentions.parse = splitEscaped(value.toLowerCase()).filter((a) => {
+                return ['users', 'roles', 'everyone'].includes(a);
+            });
             isParsed = true;
         }
         else if (key === 'reply') {
@@ -133,18 +125,17 @@ async function Parser(ctx, input) {
             isParsed = false;
         }
     }
-    const isComponentsV2 = flags.filter(Boolean).includes(ctx.util.Flags.iscomponentsv2);
-    return {
-        embeds: isComponentsV2 ? null : embeds.filter(Boolean),
-        components: components.filter(Boolean),
-        content: isComponentsV2 ? null : content?.unescape().trim() === '' ? null : content?.unescape().trim(),
-        files: attachments.filter(Boolean),
-        flags: flags.filter(Boolean),
-        poll: (isComponentsV2 ? null : poll) ?? null,
-        stickers: isComponentsV2 ? null : stickers.filter(Boolean),
+    return buildResult({
+        embeds,
+        components,
+        content,
+        attachments,
+        flags,
+        poll,
+        stickers,
         reply,
         allowedMentions
-    };
+    }, ctx);
 }
 function CustomParser(key, value, split = 'none', many = false) {
     const input = value.mustEscape();
@@ -318,7 +309,9 @@ async function ActionRowParser(ctx, content) {
                             default:
                                 types = undefined;
                         }
-                        SelectMenu = new Discord.ChannelSelectMenuBuilder({ channelTypes: types });
+                        SelectMenu = new Discord.ChannelSelectMenuBuilder({
+                            channelTypes: types
+                        });
                         break;
                     }
                 }
@@ -681,4 +674,21 @@ function splitEscapedEmoji(value) {
             return void 0;
         return text;
     });
+}
+function buildResult({ embeds, components, content, attachments, flags, poll, stickers, reply, allowedMentions }, ctx) {
+    const isComponentsV2 = flags.filter(Boolean).includes(ctx.util.Flags.iscomponentsv2);
+    const parsed = JSON.parse(JSON.stringify({
+        embeds: isComponentsV2 ? null : embeds.filter(Boolean),
+        components: components.filter(Boolean),
+        content: isComponentsV2 ? null : content?.unescape().trim() === '' ? null : content?.unescape().trim(),
+        poll: (isComponentsV2 ? null : poll) ?? null
+    }).replace(/\$executionTime/gi, () => (performance.now() - ctx.start).toFixed(2).toString()));
+    return {
+        ...parsed,
+        files: attachments.filter(Boolean),
+        flags: flags.filter(Boolean),
+        stickers: isComponentsV2 ? null : stickers.filter(Boolean),
+        reply,
+        allowedMentions
+    };
 }

@@ -17,7 +17,9 @@ export default async function Events(shardId: number, client: ShouwClient): Prom
                         { code: command.channel },
                         {
                             client,
-                            Temporarily: { shardEvent: { id: shardId, type: 'reconnecting' } } as any
+                            Temporarily: {
+                                shardEvent: { id: shardId, type: 'reconnecting' }
+                            } as any
                         },
                         { sendMessage: false }
                     )

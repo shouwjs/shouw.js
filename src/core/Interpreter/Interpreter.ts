@@ -117,7 +117,7 @@ export class Interpreter extends Container {
             }
 
             if (func.match(/\$if$/i) || func === '$if') {
-                const { code, error, index } = await IF(currentCode, this, lastIndex);
+                const { code, error, index } = await IF.run(currentCode, this, lastIndex);
                 this.setError(error);
                 if (this.isError) break;
 
@@ -334,7 +334,7 @@ export class Interpreter extends Container {
      */
     private extractFunctions(code: string, custom = false, fromIndex = 0): Array<string> {
         const functions: string[] = [];
-        const regex = /\$([^\$\[\];\s]+)/g;
+        const regex = /\$([^$[\];\s]+)/g;
         let depth = 0;
         let index = fromIndex ?? 0;
 

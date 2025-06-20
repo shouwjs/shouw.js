@@ -18,7 +18,8 @@ export {
     type CommandsEventMap,
     type FunctionData,
     type CustomFunctionData,
-    type ShouwClientOptions
+    type ShouwClientOptions,
+    type CustomEventData
 } from './classes/index.js';
 
 export {
@@ -47,7 +48,8 @@ export {
     type FunctionResultData,
     type ComponentTypes,
     type Flags,
-    type SelectMenuTypes
+    type SelectMenuTypes,
+    type IFBlockResult
 } from './core/index.js';
 
 export {

@@ -6,7 +6,8 @@ import {
     type Context,
     type TemporarilyData,
     type ShouwClient,
-    Collective
+    Collective,
+    Util
 } from '../index.js';
 
 export interface CommandData extends Objects {
@@ -79,7 +80,7 @@ export class CommandsManager implements CommandsEventMap {
      * @param {string} event - The event to check
      * @return {boolean} - Whether the event is a valid type
      */
-    public isValidType(event: string) {
+    public isValidEventType(event: string): boolean {
         return CommandsManager.types.includes(event);
     }
 
@@ -97,7 +98,7 @@ export class CommandsManager implements CommandsEventMap {
         );
 
         for (const event of this.events) {
-            const eventPath = `${this.getEventPath(event)}.js`;
+            const eventPath = `${Util.getEventPath(event)}.js`;
             if (!eventPath.endsWith('.js')) continue;
 
             try {
@@ -133,31 +134,5 @@ export class CommandsManager implements CommandsEventMap {
                 this.client.debug(`Error in event ${event}:\n${err.stack}`, 'ERROR');
             }
         }
-    }
-
-    /**
-     * Get the event path based on the event category
-     *
-     * @param {string} type - The event type to get the path for
-     * @return {string} - The event path based on the event category
-     * @private
-     */
-    private getEventPath(type: string): string {
-        if (type.startsWith('message')) return `../events/message/${type}`;
-        if (type.startsWith('guild')) return `../events/guild/${type}`;
-        if (type.startsWith('role')) return `../events/role/${type}`;
-        if (type.startsWith('channel')) return `../events/channel/${type}`;
-        if (type.startsWith('stageInstance')) return `../events/stage/${type}`;
-        if (type.startsWith('sticker')) return `../events/sticker/${type}`;
-        if (type.startsWith('thread')) return `../events/thread/${type}`;
-        if (type.startsWith('invite')) return `../events/invite/${type}`;
-        if (type.startsWith('member')) return `../events/member/${type}`;
-        if (type.startsWith('emoji')) return `../events/emoji/${type}`;
-        if (type.startsWith('ban')) return `../events/ban/${type}`;
-        if (type.startsWith('reaction')) return `../events/reaction/${type}`;
-        if (type.startsWith('shard')) return `../events/shard/${type}`;
-        if (type.startsWith('autoMod')) return `../events/automod/${type}`;
-        if (type.startsWith('entitlement')) return `../events/entitlement/${type}`;
-        return `../events/misc/${type}`;
     }
 }

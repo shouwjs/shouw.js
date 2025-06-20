@@ -103,7 +103,7 @@ class Interpreter extends Container_js_1.Container {
                 continue;
             }
             if (func.match(/\$if$/i) || func === '$if') {
-                const { code, error, index } = await (0, index_js_1.IF)(currentCode, this, lastIndex);
+                const { code, error, index } = await index_js_1.IF.run(currentCode, this, lastIndex);
                 this.setError(error);
                 if (this.isError)
                     break;
@@ -263,7 +263,7 @@ class Interpreter extends Container_js_1.Container {
     }
     extractFunctions(code, custom = false, fromIndex = 0) {
         const functions = [];
-        const regex = /\$([^\$\[\];\s]+)/g;
+        const regex = /\$([^$[\];\s]+)/g;
         let depth = 0;
         let index = fromIndex ?? 0;
         while (index < code.length) {

@@ -108,9 +108,8 @@ declare class CommandsManager implements CommandsEventMap {
         modal: Collective<number, CommandData>;
     };
     constructor(client: ShouwClient, events?: string[]);
-    isValidType(event: string): boolean;
+    isValidEventType(event: string): boolean;
     private loadEvents;
-    private getEventPath;
 }
 
 interface FunctionData extends Objects {
@@ -422,12 +421,23 @@ declare class Interpreter extends Container {
     private replaceExecutionTime;
 }
 
-declare function IF(code: string, ctx: Interpreter, index: number): Promise<{
+interface IFBlockResult {
     code: string;
     error: boolean;
     index: number;
     length: number;
-}>;
+}
+declare class IF {
+    private readonly code;
+    private readonly ctx;
+    private readonly index;
+    constructor(code: string, ctx: Interpreter, index: number);
+    static run(code: string, ctx: Interpreter, index: number): Promise<IFBlockResult>;
+    private initialize;
+    private parseBranches;
+    private extractTopLevelBlock;
+    private extractCondition;
+}
 
 type Interaction = ChatInputCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction | ContextMenuCommandInteraction;
 type InteractionEdit = string | MessagePayload | InteractionEditReplyOptions;
@@ -660,6 +670,7 @@ declare class Util extends Constants {
     static getMessage(ctx: Interpreter, channelInput: string, messageInput: string): Promise<Message | undefined>;
     static isUnicodeEmoji(str: string): boolean;
     static getEmoji(ctx: Interpreter, _emojiInput: string, onlyId?: boolean): Promise<any>;
+    static getEventPath(type: string): string;
 }
 
 interface ConsoleDisplayLine {
@@ -691,4 +702,4 @@ declare class ConsoleDisplay {
     private printCommandStatus;
 }
 
-export { BaseClient, CacheManager, CheckCondition, type ClientStatus, Collective, type CommandData, type CommandsEventMap, CommandsManager, type ComponentTypes, ConsoleDisplay, Constants, Context, CustomEvent, CustomFunction, type CustomFunctionData, CustomParser, type ExtraOptionsData, type Flags, type FunctionData, type FunctionResultData, Functions, FunctionsManager, type HelpersData, IF, type Interaction, type InteractionReplyData, type InteractionWithMessage, Interpreter, type InterpreterOptions, type InterpreterResult, type MessageReplyData, type Objects, ParamType, Parser, Reader, type SelectMenuTypes, type SendData, type SendableChannel, ShardingManager, type ShardingOptions, ShouwClient, type ShouwClientOptions, type TemporarilyData, Time, Util, Variables, filterArray, filterObject, sleep, wait };
+export { BaseClient, CacheManager, CheckCondition, type ClientStatus, Collective, type CommandData, type CommandsEventMap, CommandsManager, type ComponentTypes, ConsoleDisplay, Constants, Context, CustomEvent, type CustomEventData, CustomFunction, type CustomFunctionData, CustomParser, type ExtraOptionsData, type Flags, type FunctionData, type FunctionResultData, Functions, FunctionsManager, type HelpersData, IF, type IFBlockResult, type Interaction, type InteractionReplyData, type InteractionWithMessage, Interpreter, type InterpreterOptions, type InterpreterResult, type MessageReplyData, type Objects, ParamType, Parser, Reader, type SelectMenuTypes, type SendData, type SendableChannel, ShardingManager, type ShardingOptions, ShouwClient, type ShouwClientOptions, type TemporarilyData, Time, Util, Variables, filterArray, filterObject, sleep, wait };

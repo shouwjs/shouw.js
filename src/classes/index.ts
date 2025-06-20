@@ -28,6 +28,6 @@ export { Variables } from './Variable.js';
 
 export { CacheManager } from './CacheManager.js';
 
-export { CustomEvent } from './CustomEvent.js';
+export { CustomEvent, type CustomEventData } from './CustomEvent.js';
 
 export { ShardingManager, type ShardingOptions } from './Sharding.js';

@@ -14,7 +14,9 @@ async function Events(shardId, client) {
         if (command.channel?.includes('$') && command.channel !== '$') {
             channel = client.channels.cache.get((await index_js_1.Interpreter.run({ code: command.channel }, {
                 client,
-                Temporarily: { shardEvent: { id: shardId, type: 'reconnecting' } }
+                Temporarily: {
+                    shardEvent: { id: shardId, type: 'reconnecting' }
+                }
             }, { sendMessage: false }))?.result ?? '');
             guild = channel?.guild;
         }

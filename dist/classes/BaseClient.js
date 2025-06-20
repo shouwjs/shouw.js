@@ -14,7 +14,10 @@ class BaseClient extends discord_js_1.Client {
         if (!token || typeof token !== 'string')
             throw new Error('Invalid bot token! Please provide a valid discord bot token!');
         if (!options.allowedMentions)
-            options.allowedMentions = { parse: ['users', 'roles', 'everyone'], repliedUser: true };
+            options.allowedMentions = {
+                parse: ['users', 'roles', 'everyone'],
+                repliedUser: true
+            };
         super({ intents: intents ?? [], partials: partials ?? [], ...options });
         super.login(token);
         this.#statuses = new Collective_js_1.Collective();

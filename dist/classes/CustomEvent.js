@@ -55,7 +55,13 @@ async function Executer(name, client, ...eventData) {
                 guild = channel ? channel?.guild : null;
             }
         }
-        await INIT({ client, command, channel: channel ?? void 0, guild: guild ?? void 0, eventData });
+        await INIT({
+            client,
+            command,
+            channel: channel ?? void 0,
+            guild: guild ?? void 0,
+            eventData
+        });
     }
 }
 async function INIT({ client, command, channel, guild, eventData }) {

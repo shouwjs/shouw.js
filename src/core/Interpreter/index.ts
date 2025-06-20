@@ -17,4 +17,4 @@ export {
 
 export { Interpreter } from './Interpreter.js';
 
-export { IF } from './IF.js';
+export { IF, type IFBlockResult } from './IF.js';

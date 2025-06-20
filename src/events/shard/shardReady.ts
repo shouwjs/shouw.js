@@ -21,7 +21,9 @@ export default async function Events(
                         { code: command.channel },
                         {
                             client,
-                            Temporarily: { shardEvent: { unavailableGuilds, id: shardId, type: 'ready' } } as any
+                            Temporarily: {
+                                shardEvent: { unavailableGuilds, id: shardId, type: 'ready' }
+                            } as any
                         },
                         { sendMessage: false }
                     )

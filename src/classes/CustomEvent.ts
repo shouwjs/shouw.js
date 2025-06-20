@@ -109,7 +109,13 @@ async function Executer(name: string, client: ShouwClient, ...eventData: any[]):
             }
         }
 
-        await INIT({ client, command, channel: channel ?? void 0, guild: guild ?? void 0, eventData });
+        await INIT({
+            client,
+            command,
+            channel: channel ?? void 0,
+            guild: guild ?? void 0,
+            eventData
+        });
     }
 }
 

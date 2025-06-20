@@ -1,4 +1,4 @@
-const { Parser, Util, Time, CustomParser } = require('..');
+const { Parser, Util, Time, CustomParser } = require("..");
 
 /**
  * Parser code to test the parser.
@@ -17,36 +17,41 @@ const ParserCode = `
  * This function is used to test the parser.
  */
 async function main() {
-    const ctx = {
-        util: Util,
-        helpers: {
-            time: Time
-        }
-    };
+	const ctx = {
+		util: Util,
+		helpers: {
+			time: Time,
+		},
+	};
 
-    const start = performance.now();
-    console.log('='.repeat(process.stdout.columns));
-    console.log('\n');
+	const start = performance.now();
+	console.log("=".repeat(process.stdout.columns));
+	console.log("\n");
 
-    /**
-     * Parse the parser code.
-     */
-    const data = await Parser(ctx, ParserCode);
-    console.log(data);
+	/**
+	 * Parse the parser code.
+	 */
+	const data = await Parser(ctx, ParserCode);
+	console.log(data);
 
-    console.log('\n');
-    console.log('='.repeat(process.stdout.columns));
-    console.log('\n');
+	console.log("\n");
+	console.log("=".repeat(process.stdout.columns));
+	console.log("\n");
 
-    /**
-     * Parse the parser code with custom parser.
-     */
-    const data2 = CustomParser('test', '{test:Hello World!}{test:Hello World 2!}', 'normal', true);
-    console.log(data2);
+	/**
+	 * Parse the parser code with custom parser.
+	 */
+	const data2 = CustomParser(
+		"test",
+		"{test:Hello World!}{test:Hello World 2!}",
+		"normal",
+		true,
+	);
+	console.log(data2);
 
-    console.log('\n');
-    console.log('='.repeat(process.stdout.columns));
-    console.log(`Time taken: ${(performance.now() - start).toFixed(2)}ms`);
+	console.log("\n");
+	console.log("=".repeat(process.stdout.columns));
+	console.log(`Time taken: ${(performance.now() - start).toFixed(2)}ms`);
 }
 
 main();

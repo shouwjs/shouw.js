@@ -14,7 +14,8 @@ export {
     type TemporarilyData,
     type HelpersData,
     type ExtraOptionsData,
-    type InterpreterResult
+    type InterpreterResult,
+    type IFBlockResult
 } from './Interpreter/index.js';
 
 export {

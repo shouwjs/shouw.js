@@ -117,7 +117,7 @@ class ShouwClient extends BaseClient_js_1.BaseClient {
                             if (typeof command !== 'object' || !command || !command.code)
                                 continue;
                             command.type = command.type ?? 'messageCreate';
-                            if (!this.commands.isValidType(command.type)) {
+                            if (!this.commands.isValidEventType(command.type)) {
                                 loadedCommands.push({
                                     name: `${(0, chalk_1.gray)(filePath.split(path.sep).slice(-2).join(path.sep))} (${(0, chalk_1.cyan)(command.type ?? 'unknown')})`,
                                     command: `${command.name ?? command.channel}`,
@@ -154,7 +154,7 @@ class ShouwClient extends BaseClient_js_1.BaseClient {
                             if (typeof command !== 'object' || !command || !command.code)
                                 continue;
                             command.type = command.type ?? 'messageCreate';
-                            if (!this.commands.isValidType(command.type)) {
+                            if (!this.commands.isValidEventType(command.type)) {
                                 loadedCommands.push({
                                     name: `${(0, chalk_1.gray)(filePath.split(path.sep).slice(-2).join(path.sep))} (${(0, chalk_1.cyan)(command.type ?? 'unknown')})`,
                                     command: `${command.name ?? command.channel}`,

@@ -59,7 +59,10 @@ class Context {
         return await this.interaction?.fetchReply();
     }
     async deferReply(ephemeral = false) {
-        return await this.interaction?.deferReply({ flags: ephemeral ? 64 : void 0, withResponse: true });
+        return await this.interaction?.deferReply({
+            flags: ephemeral ? 64 : void 0,
+            withResponse: true
+        });
     }
     async followUp(data) {
         return await this.interaction?.followUp(data);

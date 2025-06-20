@@ -17,7 +17,7 @@ class CommandsManager {
         this.client = client;
         this.loadEvents(events);
     }
-    isValidType(event) {
+    isValidEventType(event) {
         return CommandsManager.types.includes(event);
     }
     loadEvents(events) {
@@ -25,7 +25,7 @@ class CommandsManager {
             return;
         (this.events = events.filter((e) => Object.values(discord_js_1.Events).includes(e))).push('ready');
         for (const event of this.events) {
-            const eventPath = `${this.getEventPath(event)}.js`;
+            const eventPath = `${index_js_1.Util.getEventPath(event)}.js`;
             if (!eventPath.endsWith('.js'))
                 continue;
             try {
@@ -60,39 +60,6 @@ class CommandsManager {
                 this.client.debug(`Error in event ${event}:\n${err.stack}`, 'ERROR');
             }
         }
-    }
-    getEventPath(type) {
-        if (type.startsWith('message'))
-            return `../events/message/${type}`;
-        if (type.startsWith('guild'))
-            return `../events/guild/${type}`;
-        if (type.startsWith('role'))
-            return `../events/role/${type}`;
-        if (type.startsWith('channel'))
-            return `../events/channel/${type}`;
-        if (type.startsWith('stageInstance'))
-            return `../events/stage/${type}`;
-        if (type.startsWith('sticker'))
-            return `../events/sticker/${type}`;
-        if (type.startsWith('thread'))
-            return `../events/thread/${type}`;
-        if (type.startsWith('invite'))
-            return `../events/invite/${type}`;
-        if (type.startsWith('member'))
-            return `../events/member/${type}`;
-        if (type.startsWith('emoji'))
-            return `../events/emoji/${type}`;
-        if (type.startsWith('ban'))
-            return `../events/ban/${type}`;
-        if (type.startsWith('reaction'))
-            return `../events/reaction/${type}`;
-        if (type.startsWith('shard'))
-            return `../events/shard/${type}`;
-        if (type.startsWith('autoMod'))
-            return `../events/automod/${type}`;
-        if (type.startsWith('entitlement'))
-            return `../events/entitlement/${type}`;
-        return `../events/misc/${type}`;
     }
 }
 exports.CommandsManager = CommandsManager;

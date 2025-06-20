@@ -15,7 +15,12 @@ export default async function Events(error: Error, shardId: number, client: Shou
                 (
                     await Interpreter.run(
                         { code: command.channel },
-                        { client, Temporarily: { shardEvent: { error, id: shardId, type: 'error' } } as any },
+                        {
+                            client,
+                            Temporarily: {
+                                shardEvent: { error, id: shardId, type: 'error' }
+                            } as any
+                        },
                         { sendMessage: false }
                     )
                 )?.result ?? ''
