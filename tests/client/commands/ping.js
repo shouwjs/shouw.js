@@ -3,6 +3,6 @@
  * @type {import('..').CommandData}
  */
 exports.default = {
-	name: "ping",
-	code: "Pong! $pingms",
+    name: 'ping',
+    code: 'Pong! $pingms'
 };

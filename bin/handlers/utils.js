@@ -1,4 +1,4 @@
-const chalk = require("chalk");
+const chalk = require('chalk');
 
 /**
  * This function is used to log messages to the console.
@@ -7,13 +7,10 @@ const chalk = require("chalk");
  * @param {string} _type - The type of the message.
  * @returns {void} - Nothing.
  */
-exports.log = (message, _type = "INFO") => {
-	const type =
-		_type.toUpperCase() === "INFO"
-			? chalk.blue("INFO")
-			: chalk.red(_type.toUpperCase());
+exports.log = (message, _type = 'INFO') => {
+    const type = _type.toUpperCase() === 'INFO' ? chalk.blue('INFO') : chalk.red(_type.toUpperCase());
 
-	console.log(`${chalk.bold(`[${type}]`)} :: ${message}`);
+    console.log(`${chalk.bold(`[${type}]`)} :: ${message}`);
 };
 
 /**
@@ -21,9 +18,9 @@ exports.log = (message, _type = "INFO") => {
  * @type {{ node: string, discord: string, shouw: string, requiredNode: number, currentNode: number }}
  */
 exports.versions = {
-	node: process.version,
-	discord: require("discord.js").version,
-	shouw: require("../../package.json").version.replace("^", ""),
-	requiredNode: 20,
-	currentNode: process.version.split(".")[0].replace("v", ""),
+    node: process.version,
+    discord: require('discord.js').version,
+    shouw: require('../../package.json').version.replace('^', ''),
+    requiredNode: 20,
+    currentNode: process.version.split('.')[0].replace('v', '')
 };

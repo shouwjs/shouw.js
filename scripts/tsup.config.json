@@ -1,8 +1,8 @@
 {
-	"dts": true,
-	"entry": ["src/index.ts"],
-	"splitting": true,
-	"sourcemap": true,
-	"clean": true,
-	"format": ["cjs"]
+    "dts": true,
+    "entry": ["src/index.ts"],
+    "splitting": true,
+    "sourcemap": true,
+    "clean": true,
+    "format": ["cjs"]
 }

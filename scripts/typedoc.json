@@ -1,7 +1,7 @@
 {
-	"$schema": "https://typedoc.org/schema.json",
-	"entryPoints": ["./src/index.ts"],
-	"plugin": ["typedoc-material-theme"],
-	"themeColor": "#0067f7",
-	"out": "docs"
+    "$schema": "https://typedoc.org/schema.json",
+    "entryPoints": ["./src/index.ts"],
+    "plugin": ["typedoc-material-theme"],
+    "themeColor": "#0067f7",
+    "out": "docs"
 }
