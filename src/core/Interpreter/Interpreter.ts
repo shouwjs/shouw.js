@@ -131,8 +131,9 @@ export class Interpreter extends Container {
             try {
                 if (this.isError || typeof functionData.code !== 'function') break;
 
-                const DATA = ((await functionData.code(this, processedArgs, this.Temporarily)) ??
-                    {}) as FunctionResultData;
+                const DATA = ((functionData.isAsync
+                    ? await functionData.code(this, processedArgs, this.Temporarily)
+                    : functionData.code(this, processedArgs, this.Temporarily)) ?? {}) as FunctionResultData;
 
                 currentCode =
                     currentCode.slice(0, unpacked.index) +

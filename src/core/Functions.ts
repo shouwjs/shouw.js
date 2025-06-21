@@ -204,6 +204,15 @@ export class Functions {
     }
 
     /**
+     * Whether the function is async
+     *
+     * @return {boolean} - Whether the function is async
+     */
+    public get isAsync(): boolean {
+        return this.code.constructor.name === 'AsyncFunction';
+    }
+
+    /**
      * The success result of the function
      *
      * @param {any} [result] - The result of the function
@@ -290,6 +299,16 @@ export class CustomFunction extends Functions {
     public get stringCode(): string {
         if (typeof this.#code !== 'string') return '';
         return this.#code as string;
+    }
+
+    /**
+     * Whether the function is async
+     *
+     * @return {boolean} - Whether the function is async
+     */
+    public get isAsync(): boolean {
+        if (typeof this.#code === 'string') return false;
+        return this.#code.constructor.name === 'AsyncFunction';
     }
 
     /**

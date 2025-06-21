@@ -87,6 +87,10 @@ export class Constants {
             message: `Cache with name "${name}" does not exist`,
             solution: 'Ensure the cache name is correct and the cache exists.'
         }),
+        invalidButtonStyle: (style: string) => ({
+            message: `Invalid button style provided: ${style}`,
+            solution: 'Ensure the button style one of the following: Primary, Secondary, Success, Danger, Link, Premium'
+        }),
         outsideIfStatement: {
             message: 'This function is not meant to be used outside of an $if statement',
             solution: 'Ensure that this function is used inside an $if statement'

@@ -11,14 +11,14 @@ export type Flags =
     | undefined;
 
 export type SelectMenuTypes =
-    | Discord.StringSelectMenuBuilder
-    | Discord.RoleSelectMenuBuilder
-    | Discord.ChannelSelectMenuBuilder
-    | Discord.MentionableSelectMenuBuilder
-    | Discord.UserSelectMenuBuilder;
+    | Discord.APIStringSelectComponent
+    | Discord.APIRoleSelectComponent
+    | Discord.APIChannelSelectComponent
+    | Discord.APIMentionableSelectComponent
+    | Discord.APIUserSelectComponent;
 
 export type ComponentTypes =
-    | Discord.ActionRowBuilder
+    | Discord.APIActionRowComponent<Discord.APIComponentInActionRow>
     | Discord.APIContainerComponent
     | Discord.APITextDisplayComponent
     | Discord.APISectionComponent
@@ -174,8 +174,9 @@ export async function Parser(ctx: Interpreter, input: string): Promise<SendData>
 export function CustomParser(
     key: string,
     value: string,
-    split: 'normal' | 'emoji' | 'none' = 'none',
-    many = false
+    length: number,
+    many: boolean,
+    split: 'normal' | 'emoji' | 'none' = 'none'
 ): CustomParserResult {
     const input = value.mustEscape();
     if (many) {
@@ -205,9 +206,8 @@ export function CustomParser(
             case 'none':
                 return value;
             case 'normal':
-                return splitEscaped(value);
             case 'emoji':
-                return splitEscapedEmoji(value);
+                return splitLengthParams(value, length, type);
             default:
                 return value;
         }
@@ -305,7 +305,7 @@ function EmbedParser(_ctx: Interpreter, content: string): Discord.APIEmbed {
         }
     }
 
-    return new Discord.EmbedBuilder(embedData).toJSON();
+    return embedData;
 }
 
 /**
@@ -332,7 +332,7 @@ async function ActionRowParser(
     ctx: Interpreter,
     content: string
 ): Promise<Discord.APIActionRowComponent<Discord.APIComponentInActionRow> | null> {
-    const components: Array<SelectMenuTypes | Discord.ButtonBuilder | Discord.TextInputBuilder> = [];
+    const components: Array<SelectMenuTypes | Discord.APIButtonComponent | Discord.APITextInputComponent> = [];
     for (const match of matchStructure(content)) {
         const [key, rawValue] = keyValue(match);
         const value = rawValue.unescape();
@@ -349,9 +349,9 @@ async function ActionRowParser(
              * SELECT MENU PARSER
              * {selectMenu:customId:placeholder:minValues?:maxValues?:disabled?:(read select menu options above)}
              */
-            const [customId, placeholder, minValues = '1', maxValues = '1', disabled = 'false'] =
+            const [customId, placeholder, minValues = '0', maxValues = '1', disabled = 'false'] =
                 splitEscaped(rawValue);
-            if (!customId || !placeholder || !minValues || !maxValues) continue;
+            if (!customId || !minValues || !maxValues) continue;
             const stringInputMatches: RegExpExecArray[] = [...rawValue.matchAll(/\{stringInput:([^}]+)\}/gim)];
             let SelectMenu: SelectMenuTypes | null = null;
 
@@ -360,28 +360,33 @@ async function ActionRowParser(
              * {stringInput:label:value:description?:default?:emoji?}
              */
             if (stringInputMatches.length) {
-                SelectMenu = new Discord.StringSelectMenuBuilder();
-
-                const options = await Promise.all(
+                const options: (Discord.APISelectMenuOption | null)[] = await Promise.all(
                     stringInputMatches.map(async (match) => {
-                        const [label, value, description, isDefault = 'false', emojiInput] = splitEscapedEmoji(
-                            match[1]
+                        const [label, value, description, isDefault = 'false', emojiInput] = splitLengthParams(
+                            match[1],
+                            4,
+                            'emoji'
                         );
                         if (!label || !value) return null;
                         const emoji = emojiInput
-                            ? ((await ctx.util.getEmoji(ctx, emojiInput, true)) ?? emojiInput)
+                            ? ((await ctx.util.getEmoji(ctx, emojiInput)) ?? emojiInput)
                             : undefined;
 
-                        const option = new Discord.StringSelectMenuOptionBuilder().setLabel(label).setValue(value);
-
-                        if (description) option.setDescription(description);
-                        if (isDefault) option.setDefault(true);
-                        if (emoji) option.setEmoji(emoji);
-                        return option;
+                        return {
+                            label,
+                            value,
+                            default: isDefault.toLowerCase() === 'true',
+                            emoji: emoji ?? void 0,
+                            description: description ?? void 0
+                        } as Discord.APISelectMenuOption;
                     })
                 );
 
-                SelectMenu.addOptions(options.filter(Boolean) as Discord.StringSelectMenuOptionBuilder[]);
+                SelectMenu = {
+                    type: Discord.ComponentType.StringSelect,
+                    custom_id: customId,
+                    options: options.filter(Boolean) as Discord.APISelectMenuOption[]
+                };
             } else {
                 const selectTypeMatch = value.match(
                     /\{(userInput|roleInput|mentionableInput|channelInput(?::[^}]+)?)\}/im
@@ -394,25 +399,37 @@ async function ActionRowParser(
                      * User Input Parser
                      * {userInput}
                      */
-                    case typeStr === 'userinput':
-                        SelectMenu = new Discord.UserSelectMenuBuilder();
+                    case typeStr === 'userinput': {
+                        SelectMenu = {
+                            type: Discord.ComponentType.UserSelect,
+                            custom_id: customId
+                        };
                         break;
+                    }
 
                     /**
                      * Role Input Parser
                      * {roleInput}
                      */
-                    case typeStr === 'roleinput':
-                        SelectMenu = new Discord.RoleSelectMenuBuilder();
+                    case typeStr === 'roleinput': {
+                        SelectMenu = {
+                            type: Discord.ComponentType.RoleSelect,
+                            custom_id: customId
+                        };
                         break;
+                    }
 
                     /**
                      * Mentionable Input Parser
                      * {mentionableInput}
                      */
-                    case typeStr === 'mentionableinput':
-                        SelectMenu = new Discord.MentionableSelectMenuBuilder();
+                    case typeStr === 'mentionableinput': {
+                        SelectMenu = {
+                            type: Discord.ComponentType.MentionableSelect,
+                            custom_id: customId
+                        };
                         break;
+                    }
 
                     /**
                      * Channel Input Parser
@@ -435,22 +452,24 @@ async function ActionRowParser(
                                 types = undefined;
                         }
 
-                        SelectMenu = new Discord.ChannelSelectMenuBuilder({
-                            channelTypes: types
-                        });
+                        SelectMenu = {
+                            type: Discord.ComponentType.ChannelSelect,
+                            custom_id: customId,
+                            channel_types: types
+                        };
                         break;
                     }
                 }
             }
 
             if (SelectMenu) {
-                SelectMenu.setCustomId(customId)
-                    .setPlaceholder(placeholder)
-                    .setMinValues(Number.parseInt(minValues))
-                    .setMaxValues(Number.parseInt(maxValues))
-                    .setDisabled(disabled.toLowerCase() === 'true');
-
-                components.push(SelectMenu);
+                components.push({
+                    ...SelectMenu,
+                    min_values: Number.parseInt(minValues),
+                    max_values: Number.parseInt(maxValues),
+                    disabled: disabled.toLowerCase() === 'true',
+                    placeholder: placeholder ?? void 0
+                });
             }
         } else if (key === 'textinput' || key === 'modal') {
             /**
@@ -458,10 +477,11 @@ async function ActionRowParser(
              * {textInput:label:style:customId:required?:placeholder?:minLength?:maxLength?:value?}
              * {modal:label:style:customId:required?:placeholder?:minLength?:maxLength?:value?}
              */
-            const [label, styleStr = '1', customId, required = 'false', placeholder, minLength, maxLength, value] =
-                splitEscaped(rawValue);
-            let style: Discord.TextInputStyle = Discord.TextInputStyle.Short;
-            switch (styleStr.toLowerCase()) {
+            const [label, styleStr, customId, required = 'false', placeholder, minLength, maxLength, value] =
+                splitEscapedEmoji(rawValue);
+            if (!label || !styleStr || !customId) continue;
+            let style: Discord.TextInputStyle | null = null;
+            switch ((styleStr ?? '').toLowerCase()) {
                 case 'short':
                 case '1':
                     style = Discord.TextInputStyle.Short;
@@ -470,25 +490,29 @@ async function ActionRowParser(
                 case '2':
                     style = Discord.TextInputStyle.Paragraph;
                     break;
+                default:
+                    continue;
             }
 
-            components.push(
-                new Discord.TextInputBuilder({
-                    label,
-                    style,
-                    customId,
-                    required: required.toLowerCase() === 'true',
-                    placeholder,
-                    minLength: minLength ? Number.parseInt(minLength) : void 0,
-                    maxLength: maxLength ? Number.parseInt(maxLength) : void 0,
-                    value
-                })
-            );
+            components.push({
+                type: Discord.ComponentType.TextInput,
+                label,
+                style,
+                value,
+                custom_id: customId,
+                required: required.toLowerCase() === 'true',
+                placeholder: placeholder ?? void 0,
+                min_length: minLength ? Number.parseInt(minLength) : void 0,
+                max_length: maxLength ? Number.parseInt(maxLength) : void 0
+            });
         }
     }
 
     if (components.length === 0) return null;
-    return new Discord.ActionRowBuilder().addComponents(components).toJSON();
+    return {
+        type: Discord.ComponentType.ActionRow,
+        components
+    };
 }
 
 /**
@@ -513,7 +537,7 @@ function AttachmentParser(
         return new Discord.AttachmentBuilder(url, { name }).toJSON();
     }
 
-    const [name = 'file.txt', content] = splitEscaped(rawContent);
+    const [name = 'file.txt', content] = splitLengthParams(rawContent, 1, 'normal');
     if (!content) return null;
     const buffer = Buffer.from(content);
     return new Discord.AttachmentBuilder(buffer, { name }).toJSON();
@@ -570,9 +594,9 @@ async function PollParser(ctx: Interpreter, rawContent: string): Promise<Discord
     const answers: Array<{ text: string; emoji?: string }> = [];
     const matches: RegExpExecArray[] = [...content.matchAll(answerRegex)];
     for (const match of matches) {
-        const [text, emoji] = splitEscapedEmoji(match[1]);
+        const [text, emoji] = splitLengthParams(match[1], 1, 'emoji');
         if (!text) continue;
-        const emojiResolved = emoji ? ((await ctx.util.getEmoji(ctx, emoji, true)) ?? emoji) : void 0;
+        const emojiResolved = emoji ? ((await ctx.util.getEmoji(ctx, emoji))?.name ?? emoji) : void 0;
         answers.push({ text, emoji: emojiResolved });
     }
 
@@ -738,7 +762,7 @@ function parseSpoilerV2(_ctx: Interpreter, content: string): boolean {
  */
 function parseSeparatorV2(_ctx: Interpreter, content: string): Discord.APISeparatorComponent {
     const [divider = 'true', rawSpacing = 'small'] = splitEscaped(content);
-    let spacing: Discord.SeparatorSpacingSize = Discord.SeparatorSpacingSize.Large;
+    let spacing: Discord.SeparatorSpacingSize | undefined = void 0;
 
     switch (rawSpacing.toLowerCase()) {
         case 'small':
@@ -778,7 +802,7 @@ async function parseSectionV2(ctx: Interpreter, content: string): Promise<Discor
 
         switch (key) {
             case 'text': {
-                if (value === '') continue;
+                if (!value || value === '') continue;
                 section.components.push({
                     type: Discord.ComponentType.TextDisplay,
                     content: value
@@ -798,7 +822,7 @@ async function parseSectionV2(ctx: Interpreter, content: string): Promise<Discor
             }
             case 'button': {
                 const button = await parseButton(ctx, rawValue);
-                if (button) section.accessory = button.toJSON() as Discord.APIButtonComponent;
+                if (button) section.accessory = button;
             }
         }
     }
@@ -823,7 +847,7 @@ function parseGalleryV2(_ctx: Interpreter, rawContent: string): Discord.APIMedia
     };
 
     for (const match of matches) {
-        const [url, spoiler = 'false', description] = splitEscaped(match[1]);
+        const [url, spoiler = 'false', description] = splitLengthParams(match[1], 2, 'normal');
         if (!url) continue;
 
         media.items.push({
@@ -843,11 +867,11 @@ function parseGalleryV2(_ctx: Interpreter, rawContent: string): Discord.APIMedia
  * @param {string} content - The content to parse
  * @return {Promise<Discord.ButtonBuilder | undefined>} - The parsed button
  */
-async function parseButton(ctx: Interpreter, content: string): Promise<Discord.ButtonBuilder | undefined> {
-    const [label, styleStr, custom_id, disabled = 'false', emojiInput] = splitEscapedEmoji(content);
-    if (!label || !styleStr || !custom_id) return void 0;
-    const emoji = emojiInput ? ((await ctx.util.getEmoji(ctx, emojiInput, true)) ?? emojiInput) : undefined;
-    let style: Discord.ButtonStyle = Discord.ButtonStyle.Primary;
+async function parseButton(ctx: Interpreter, content: string): Promise<Discord.APIButtonComponent | undefined> {
+    const [label, styleStr, custom_id, disabled = 'false', emojiInput] = splitLengthParams(content, 4, 'emoji');
+    if (!styleStr || !custom_id) return void 0;
+    const emoji = emojiInput ? ((await ctx.util.getEmoji(ctx, emojiInput)) ?? emojiInput) : undefined;
+    let style: Discord.ButtonStyle | null = null;
 
     switch (styleStr.toLowerCase()) {
         case 'primary':
@@ -874,26 +898,36 @@ async function parseButton(ctx: Interpreter, content: string): Promise<Discord.B
         case '6':
             style = Discord.ButtonStyle.Premium;
             break;
+        default:
+            return void 0;
     }
 
-    const button = new Discord.ButtonBuilder();
-    if (Discord.ButtonStyle.Premium === style) {
-        button
-            .setStyle(style)
-            .setDisabled(disabled.toLowerCase() === 'true')
-            .setSKUId(custom_id);
-    } else {
-        button
-            .setLabel(label)
-            .setStyle(style)
-            .setDisabled(disabled.toLowerCase() === 'true');
-
-        if (emoji) button.setEmoji(emoji);
-        if (Discord.ButtonStyle.Link === style) button.setURL(custom_id);
-        else button.setCustomId(custom_id);
+    if (style === Discord.ButtonStyle.Link) {
+        return {
+            type: Discord.ComponentType.Button,
+            label,
+            style,
+            url: custom_id,
+            disabled: disabled.toLowerCase() === 'true',
+            emoji
+        } as Discord.APIButtonComponentWithURL;
     }
-
-    return button;
+    if (style === Discord.ButtonStyle.Premium) {
+        return {
+            type: Discord.ComponentType.Button,
+            style,
+            sku_id: custom_id,
+            disabled: disabled.toLowerCase() === 'true'
+        } as Discord.APIButtonComponentWithSKUId;
+    }
+    return {
+        type: Discord.ComponentType.Button,
+        label,
+        style,
+        custom_id,
+        disabled: disabled.toLowerCase() === 'true',
+        emoji
+    } as Discord.APIButtonComponentWithCustomId;
 }
 
 /**
@@ -977,13 +1011,30 @@ function splitEscaped(value: string): Array<string | undefined> {
  * @return {Array<string | undefined>} - The splitted value
  */
 function splitEscapedEmoji(value: string): Array<string | undefined> {
-    const match = value.match(/(?:<a?:.*?:\d+>|[^:|^}])+/gim);
-    if (!match) return [];
-    return match.map((v) => {
+    return value.split(/:(?![^<]*?>)/gim).map((v) => {
         const text = v.unescape().trim();
         if (text === '') return void 0;
         return text;
     });
+}
+
+/**
+ * A function to split the length params from the input and return the splitted value
+ *
+ * @param {string} value - The value to split
+ * @param {number} [length] - The length to split
+ * @param {'emoji' | 'normal'} [type] - The type to split
+ * @return {Array<string | undefined>} - The splitted value
+ */
+function splitLengthParams(value: string, length = 1, type: 'emoji' | 'normal' = 'normal'): Array<string | undefined> {
+    const splited = type === 'emoji' ? splitEscapedEmoji(value) : splitEscaped(value);
+    const result: Array<string | undefined> = [];
+    for (let i = 0; i < length; i++) {
+        result.push(splited[i]);
+    }
+
+    result.push(splited.slice(length).join(':'));
+    return result;
 }
 
 /**

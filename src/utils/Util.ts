@@ -1,6 +1,6 @@
 import type { Interpreter } from '../index.js';
 import { Constants } from './Constants.js';
-import type { Channel, Guild, Role, User, GuildMember, Message } from 'discord.js';
+import type { Emoji, Channel, Guild, Role, User, GuildMember, Message } from 'discord.js';
 
 /**
  * Util class that contains all the utility functions used in the bot
@@ -244,20 +244,29 @@ export class Util extends Constants {
      *
      * @param {Interpreter} ctx - The interpreter context
      * @param {string} _emojiInput - The emoji id or name
-     * @param {boolean} [onlyId=false] - Whether to return only the emoji id or the full emoji data
-     * @return {Promise<any>} - The emoji data or undefined if not found
+     * @return {Promise<APIMessageComponentEmoji | undefined>} - The emoji data or undefined if not found
      */
-    public static async getEmoji(ctx: Interpreter, _emojiInput: string, onlyId = false): Promise<any> {
+    public static async getEmoji(
+        ctx: Interpreter,
+        _emojiInput: string
+    ): Promise<
+        | Emoji
+        | {
+              id: string | undefined;
+              name: string | null;
+              animated: boolean;
+          }
+        | undefined
+    > {
         let emojiInput = _emojiInput?.unescape().trim();
         if (!emojiInput) return;
-        if (Util.isUnicodeEmoji(emojiInput)) {
-            return onlyId
-                ? emojiInput.trim()
-                : {
-                      id: null,
-                      name: emojiInput.trim(),
-                      animated: false
-                  };
+
+        if (Util.isUnicodeEmoji(emojiInput) || (emojiInput.startsWith(':') && emojiInput.endsWith(':'))) {
+            return {
+                id: void 0,
+                name: emojiInput.trim(),
+                animated: false
+            };
         }
 
         if (emojiInput.includes(':')) emojiInput = emojiInput.split(':')[2]?.split('>')[0];
@@ -271,7 +280,7 @@ export class Util extends Constants {
                             e.id === emojiInput ||
                             e.toString() === emojiInput
                     );
-                    return (onlyId ? emoji?.id : emoji) ?? null;
+                    return emoji ?? void 0;
                 },
                 { context: { emojiInput } }
             );
@@ -283,7 +292,7 @@ export class Util extends Constants {
                     e.id === emojiInput ||
                     e.toString() === emojiInput
             );
-            foundEmoji = (onlyId ? emoji?.id : emoji) ?? void 0;
+            foundEmoji = emoji ?? void 0;
         }
 
         if (foundEmoji) return Array.isArray(foundEmoji) ? foundEmoji[0] : foundEmoji;
@@ -299,14 +308,7 @@ export class Util extends Constants {
                     e.toString() === emojiInput
             );
 
-            if (appEmoji)
-                return onlyId
-                    ? Array.isArray(appEmoji)
-                        ? appEmoji[0]?.id
-                        : appEmoji.id
-                    : Array.isArray(appEmoji)
-                      ? appEmoji[0]
-                      : appEmoji;
+            if (appEmoji) return appEmoji;
         }
 
         return;

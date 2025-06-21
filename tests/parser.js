@@ -41,8 +41,10 @@ async function main() {
     /**
      * Parse the parser code with custom parser.
      */
-    const data2 = CustomParser('test', '{test:Hello World!}{test:Hello World 2!}', 'normal', true);
+    const data2 = CustomParser('test', '{test:Hello World!}{test:Hello World 2!}', 0, true, 'normal');
+    const data3 = CustomParser('button', '{button:label:customId:secondary:false::heart:}', 4, true, 'emoji');
     console.log(data2);
+    console.log(data3);
 
     console.log('\n');
     console.log('='.repeat(process.stdout.columns));

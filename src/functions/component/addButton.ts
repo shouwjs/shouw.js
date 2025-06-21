@@ -1,4 +1,5 @@
 import { ParamType, Functions, type Interpreter } from '../../index.js';
+import { ButtonStyle, ComponentType, type APIButtonComponent, type APIMessageComponentEmoji } from 'discord.js';
 
 export default class AddButton extends Functions {
     constructor() {
@@ -18,7 +19,7 @@ export default class AddButton extends Functions {
                 {
                     name: 'label',
                     description: 'The label of the button',
-                    required: true,
+                    required: false,
                     type: ParamType.String
                 },
                 {
@@ -63,10 +64,17 @@ export default class AddButton extends Functions {
     ) {
         row = (Number.isNaN(row) ? 1 : row) - 1;
         if (!ctx.getComponents()) ctx.setComponents([]);
-        if (!ctx.getComponent(row)) ctx.pushComponent(new ctx.discord.ActionRowBuilder(), row);
-        if (emoji) emoji = (await ctx.util.getEmoji(ctx, emoji, true)) ?? emoji;
+        if (!ctx.getComponent(row))
+            ctx.pushComponent(
+                {
+                    type: ComponentType.ActionRow,
+                    components: []
+                },
+                row
+            );
+        if (emoji) emoji = ((await ctx.util.getEmoji(ctx, emoji)) ?? emoji) as string;
 
-        let style = ctx.discord.ButtonStyle.Primary;
+        let style: ButtonStyle | null = null;
         switch (styleStr.toLowerCase()) {
             case 'primary':
             case '1':
@@ -92,20 +100,39 @@ export default class AddButton extends Functions {
             case '6':
                 style = ctx.discord.ButtonStyle.Premium;
                 break;
+            default:
+                return await ctx.error(ctx.constants.Errors.invalidButtonStyle(styleStr), this.name);
         }
 
-        const button = new ctx.discord.ButtonBuilder();
-        if (ctx.discord.ButtonStyle.Premium === style) {
-            button.setStyle(style).setDisabled(disabled).setSKUId(customId);
+        let button: APIButtonComponent | null = null;
+        if (style === ButtonStyle.Link) {
+            button = {
+                type: ComponentType.Button,
+                label,
+                style,
+                url: customId,
+                disabled,
+                emoji: emoji as APIMessageComponentEmoji
+            };
+        } else if (style === ButtonStyle.Premium) {
+            button = {
+                type: ComponentType.Button,
+                style,
+                sku_id: customId,
+                disabled
+            };
         } else {
-            button.setLabel(label).setStyle(style).setDisabled(disabled);
-
-            if (emoji) button.setEmoji(emoji);
-            if (ctx.discord.ButtonStyle.Link === style) button.setURL(customId);
-            else button.setCustomId(customId);
+            button = {
+                type: ComponentType.Button,
+                label,
+                style,
+                custom_id: customId,
+                disabled,
+                emoji: emoji as APIMessageComponentEmoji
+            };
         }
 
-        ctx.getComponent(row).addComponents(button);
+        ctx.getComponent(row).components.push(button);
         return this.success();
     }
 }
