@@ -1,6 +1,8 @@
+// @ts-check
+
 /**
  * Export the command.
- * @type {import('..').CommandData}
+ * @type {import('../../../').CommandData}
  */
 exports.default = {
     name: 'ping',

@@ -1,5 +1,5 @@
 import { Client, GatewayIntentBits as Intents, Partials, ActivityType, type PresenceStatusData } from 'discord.js';
-import { Constants, type ShouwClientOptions } from '../index.js';
+import { Constants, CacheManager, type ShouwClientOptions } from '../index.js';
 import { Collective } from '../utils/Collective.js';
 
 export interface Objects {
@@ -54,6 +54,9 @@ export class BaseClient extends Client<true> {
                 parse: ['users', 'roles', 'everyone'],
                 repliedUser: true
             };
+        if (typeof options.cache === 'object' && !Array.isArray(options.cache)) {
+            options.makeCache = CacheManager.__discordJSCacheOptions(options.cache);
+        }
 
         super({ intents: intents ?? [], partials: partials ?? [], ...options });
         super.login(token);

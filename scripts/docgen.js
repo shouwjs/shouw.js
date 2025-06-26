@@ -1,3 +1,4 @@
+// @ts-check
 const fs = require('node:fs');
 const path = require('node:path');
 const functionArray = [];
@@ -20,6 +21,7 @@ function main(functionDir) {
             let FunctionClass = void 0;
             try {
                 FunctionClass = require(filePath).default;
+                // @ts-ignore
                 const func = new FunctionClass();
                 functionArray.push({
                     name: func.name,

@@ -1,3 +1,5 @@
+// @ts-check
+
 const { log, versions } = require('./utils.js');
 
 /**

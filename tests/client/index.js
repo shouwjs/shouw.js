@@ -1,3 +1,5 @@
+// @ts-check
+
 /**
  * Import the ShouwClient class from the shouw.js package.
  */
@@ -35,13 +37,13 @@ client.command({
 client.status(
     {
         name: 'Status 1',
-        type: 'Playing',
+        type: 'playing',
         status: 'idle',
         time: 12
     },
     {
         name: 'Status 2',
-        type: 'Watching',
+        type: 'watching',
         status: 'dnd',
         time: 12
     }

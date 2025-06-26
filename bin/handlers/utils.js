@@ -1,3 +1,5 @@
+// @ts-check
+
 const chalk = require('chalk');
 
 /**
@@ -22,5 +24,5 @@ exports.versions = {
     discord: require('discord.js').version,
     shouw: require('../../package.json').version.replace('^', ''),
     requiredNode: 20,
-    currentNode: process.version.split('.')[0].replace('v', '')
+    currentNode: Number.parseInt(process.version.split('.')[0].replace('v', ''))
 };

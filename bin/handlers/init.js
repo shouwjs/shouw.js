@@ -1,3 +1,5 @@
+// @ts-check
+
 const { log } = require('./utils.js');
 const { existsSync, mkdirSync, writeFileSync } = require('node:fs');
 const { join } = require('node:path');
@@ -8,9 +10,10 @@ const { execSync } = require('node:child_process');
 /**
  * This function is used to initialize a new Shouw.js project.
  *
+ * @param {string[]} _args - The arguments passed to the command.
  * @returns {Promise<void>} - Nothing.
  */
-exports.InitCommand = async () => {
+exports.InitCommand = async (_args) => {
     const line = '='.repeat(process.stdout.columns);
     console.log(line);
     console.log('\n');
@@ -25,11 +28,10 @@ exports.InitCommand = async () => {
 
     const musicOpt = await withMusic();
     if (musicOpt === '--exit') return log('Exiting...', 'EXIT');
+    const music = musicOpt === 'y';
 
     const token = await getToken();
     if (token === '--exit') return log('Exiting...', 'EXIT');
-
-    const music = musicOpt === true;
 
     console.log('\n');
 
@@ -122,12 +124,12 @@ async function getToken() {
 /**
  * This function is used to ask if the user wants to use the music extension.
  *
- * @returns {Promise<boolean>} - True if the user wants to use the music extension, false otherwise.
+ * @returns {Promise<string>} - True if the user wants to use the music extension, false otherwise.
  */
 async function withMusic() {
     const input = await question('Do you want to use music extension? (y/n)');
-    if (input === '--exit') return '--exit';
-    return input.toLowerCase() === 'y';
+    if (!input) return 'n';
+    return input.toLowerCase();
 }
 
 /**

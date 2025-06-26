@@ -22,10 +22,20 @@ export interface ShouwClientOptions extends ClientOptions {
     extensions?: any[];
     suppressAllErrors?: boolean;
     shouwLogs?: boolean;
+    cache?: CacheOptions;
     disableFunctions?: string[];
     respondToBots?: boolean;
     guildOnly?: boolean;
     [key: string | number | symbol | `${any}`]: any;
+}
+
+interface CacheOptions {
+    [key: string]:
+        | number
+        | {
+              keepOverLimit?: (value: any, key: any, collection: any) => boolean | Promise<boolean>;
+              maxSize?: number;
+          };
 }
 
 /**

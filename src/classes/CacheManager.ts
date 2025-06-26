@@ -1,5 +1,7 @@
-import type { ShouwClient } from '../index.js';
+import { type ShouwClient, Constants } from '../index.js';
 import { Collective } from '../utils/Collective.js';
+import { Options, type CacheWithLimitsOptions, type CacheFactory } from 'discord.js';
+
 /**
  * @class CacheManager
  *
@@ -175,5 +177,46 @@ export class CacheManager {
      */
     public values(name: string): any[] {
         return this.cache[name]?.V ?? [];
+    }
+
+    /**
+     * create a cache factory from discord.js cache options
+     *
+     * @param {Record<string, number | {
+     *     maxSize?: number;
+     *     keepOverLimit?: (value: any, key: any, collection: Collective<any, any>) => boolean | Promise<boolean>;
+     * }>} caches - The caches to create.
+     * @returns {CacheFactory} The cache factory.
+     */
+    public static __discordJSCacheOptions(caches: {
+        [K: string]:
+            | number
+            | {
+                  maxSize?: number;
+                  keepOverLimit?: (
+                      value: any,
+                      key: any,
+                      collection: Collective<any, any>
+                  ) => boolean | Promise<boolean>;
+              };
+    }): CacheFactory {
+        const entries = Object.entries(caches);
+        if (entries.length === 0) return Options.cacheWithLimits({});
+        const managers: CacheWithLimitsOptions = {};
+        for (let [key, value] of entries) {
+            key = Constants.Caches[key];
+            if (!key) continue;
+            if (typeof value === 'object' && !Array.isArray(value)) {
+                const { keepOverLimit, maxSize } = value;
+                managers[key] = {
+                    keepOverLimit: typeof keepOverLimit === 'function' ? keepOverLimit : void 0,
+                    maxSize: typeof maxSize === 'number' ? maxSize : void 0
+                };
+            } else if (typeof value === 'number') {
+                managers[key] = Number.parseInt(value.toString());
+            }
+        }
+
+        return Options.cacheWithLimits(managers);
     }
 }

@@ -1,3 +1,5 @@
+// @ts-check
+
 const { Parser, Util, Time, CustomParser } = require('..');
 
 /**
@@ -31,6 +33,7 @@ async function main() {
     /**
      * Parse the parser code.
      */
+    // @ts-ignore
     const data = await Parser(ctx, ParserCode);
     console.log(data);
 

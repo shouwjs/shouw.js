@@ -6,7 +6,8 @@ import {
     InteractionContextType,
     InteractionType,
     ComponentType,
-    ActivityType
+    ActivityType,
+    type Caches as CachesManagers
 } from 'discord.js';
 import type { Functions, CustomFunction } from '../index.js';
 
@@ -244,5 +245,36 @@ export class Constants {
         [MessageFlags.SuppressEmbeds]: 'suppressembeds',
         [MessageFlags.SuppressNotifications]: 'suppressnotifications',
         [MessageFlags.Urgent]: 'urgent'
+    };
+
+    /**
+     * Caches (https://discord.js.org/docs/packages/discord.js/14.21.0/Caches:Interface)
+     * @type {Record<string, keyof CachesManagers>}
+     */
+    static Caches: Record<string, keyof CachesManagers> = {
+        messages: 'MessageManager',
+        users: 'UserManager',
+        applicationCommands: 'ApplicationCommandManager',
+        presences: 'PresenceManager',
+        reactions: 'ReactionManager',
+        reactionUsers: 'ReactionUserManager',
+        stageInstances: 'StageInstanceManager',
+        threads: 'ThreadManager',
+        threadMembers: 'ThreadMemberManager',
+        voiceStates: 'VoiceStateManager',
+        guildBans: 'GuildBanManager',
+        guildEmojis: 'GuildEmojiManager',
+        guildInvites: 'GuildInviteManager',
+        guildMembers: 'GuildMemberManager',
+        guildStickers: 'GuildStickerManager',
+        guildScheduledEvents: 'GuildScheduledEventManager',
+        applicationEmojis: 'ApplicationEmojiManager',
+        autoModerationRules: 'AutoModerationRuleManager',
+        entitlements: 'EntitlementManager',
+        dmMessages: 'DMMessageManager',
+        baseGuildEmojis: 'BaseGuildEmojiManager',
+        guildForumThreads: 'GuildForumThreadManager',
+        guildTextThreads: 'GuildTextThreadManager',
+        guildMessages: 'GuildMessageManager'
     };
 }

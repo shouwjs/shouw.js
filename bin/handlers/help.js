@@ -1,3 +1,5 @@
+// @ts-check
+
 const { log } = require('./utils.js');
 const chalk = require('chalk');
 
