@@ -93,6 +93,7 @@ export class Interpreter extends Container {
             const unpacked = this.unpack(func, currentCode, lastIndex);
             if (!unpacked.all) continue;
 
+            this.currentFunction = unpacked.all.length > 200 ? 'Hmm... Code is too long to display.' : unpacked.all;
             if (functionData.brackets && !unpacked.brackets)
                 await this.error(Constants.Errors.missingBrackets(func, functionData));
             if (this.isError) break;
@@ -396,11 +397,17 @@ export class Interpreter extends Container {
      */
     public async error(
         options: string | { message: string; solution?: string },
-        functionName?: string
+        functionName = 'InterpreterError'
     ): Promise<FunctionResultData> {
         this.setError(true);
 
-        this.client.emit('functionError', typeof options === 'string' ? options : options.message, functionName, this);
+        this.client.emit(
+            'functionError',
+            typeof options === 'string' ? options : options.message,
+            functionName,
+            this.currentFunction,
+            this
+        );
         if (this.client.shouwOptions.suppressAllErrors === true) return this.success(void 0, true);
 
         try {
@@ -413,11 +420,14 @@ export class Interpreter extends Container {
                 return this.success(void 0, true);
             }
 
-            this.message = await this.context?.send(Constants.Errors.build(options, functionName));
+            this.message = await this.context?.send(
+                Constants.Errors.build(options, functionName, this.currentFunction)
+            );
         } catch {
-            this.client.debug(Constants.Errors.buildLog(options), 'ERROR', true);
+            this.client.debug(Constants.Errors.buildLog(options, this.currentFunction), 'ERROR', true);
         }
 
+        this.currentFunction = null;
         return this.success(void 0, true);
     }
 
@@ -530,6 +540,7 @@ export class Interpreter extends Container {
         const result = input.unescape();
         const end = (performance.now() - this.start).toFixed(2).toString();
         this.embeds = JSON.parse(JSON.stringify(this.embeds).replace(/\$executionTime/gi, () => end));
+        this.currentFunction = null;
         this.components = JSON.parse(JSON.stringify(this.components).replace(/\$executionTime/gi, () => end));
         return result.replace(/\$executionTime/gi, () => end);
     }

@@ -11,7 +11,6 @@ export default function Status(client: ShouwClient): void {
 
     const updateStatus = async (): Promise<any> => {
         if (index >= client.statuses.size || !client.statuses.get(index)) index = 0;
-
         const status = client.statuses.get(index);
         if (!status) {
             index++;
@@ -26,7 +25,6 @@ export default function Status(client: ShouwClient): void {
 
         if (name.includes('$') && name !== '$') {
             const result = await Interpreter.run({ code: name }, { client }, { sendMessage: false });
-
             if (typeof result?.result === 'string') {
                 name = result.result;
                 client.statuses.set(index, {

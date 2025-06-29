@@ -1,4 +1,9 @@
-import { ShardingManager as DiscordShardingManager, type MultipleShardSpawnOptions, type Shard } from 'discord.js';
+import {
+    ShardingManager as DiscordShardingManager,
+    type MultipleShardSpawnOptions,
+    type Collection,
+    type Shard
+} from 'discord.js';
 import chalk from 'chalk';
 
 export interface ShardingOptions {
@@ -37,7 +42,7 @@ export interface ShardingOptions {
  * @example new ShardingManager({ file: './dist/index.js', token: 'your-token-here' });
  */
 export class ShardingManager extends DiscordShardingManager {
-    constructor(options: ShardingOptions) {
+    constructor(public readonly options: ShardingOptions) {
         if (!options.token || typeof options.token !== 'string')
             throw new Error('Invalid bot token! Please provide a valid discord bot token!');
         if (!options.file || typeof options.file !== 'string')
@@ -56,7 +61,17 @@ export class ShardingManager extends DiscordShardingManager {
         options.spawnOptions.timeout = options.spawnOptions.timeout ?? 30_000;
 
         super(options.file, options);
-        super.spawn(options.spawnOptions ?? void 0);
+        this.options = options;
+    }
+
+    /**
+     * Spawns the shards.
+     *
+     * @param {MultipleShardSpawnOptions} [options] - The options for spawning the shards
+     * @returns {Promise<Collection<number, Shard>>} - The promise that resolves with the shards
+     */
+    public async spawn(options?: MultipleShardSpawnOptions): Promise<Collection<number, Shard>> {
+        return super.spawn(options ?? this.options.spawnOptions);
     }
 
     /**
@@ -69,6 +84,7 @@ export class ShardingManager extends DiscordShardingManager {
      * });
      */
     public onShardCreate(eventFunction: (shard: Shard, chalk: chalk.Chalk) => any | Promise<any>): ShardingManager {
-        return super.on('shardCreate', async (shard: Shard) => await eventFunction(shard, chalk));
+        super.on('shardCreate', async (shard: Shard) => await eventFunction(shard, chalk));
+        return this;
     }
 }

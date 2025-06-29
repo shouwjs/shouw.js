@@ -35,7 +35,7 @@ async function main() {
      */
     // @ts-ignore
     const data = await Parser(ctx, ParserCode);
-    console.log(data);
+    console.log(JSON.stringify(data, null, 2));
 
     console.log('\n');
     console.log('='.repeat(process.stdout.columns));
@@ -45,9 +45,7 @@ async function main() {
      * Parse the parser code with custom parser.
      */
     const data2 = CustomParser('test', '{test:Hello World!}{test:Hello World 2!}', 0, true, 'normal');
-    const data3 = CustomParser('button', '{button:label:customId:secondary:false::heart:}', 4, true, 'emoji');
-    console.log(data2);
-    console.log(data3);
+    console.log(JSON.stringify(data2, null, 2));
 
     console.log('\n');
     console.log('='.repeat(process.stdout.columns));

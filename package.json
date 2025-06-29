@@ -71,6 +71,6 @@
         
         "3": "========================[TESTING]=========================",
         "dev": "node tests/client",
-        "docgen": "node scripts/docgen.js"
+        "apigen": "node scripts/apigen.js"
     }
 }

@@ -1,6 +1,6 @@
 import { type ShouwClient, Interpreter, ConsoleDisplay, Constants } from '../../index.js';
 import type { Channel, Guild } from 'discord.js';
-import Status from './clientStatus.js';
+import Status from '../helper/clientStatus.js';
 
 /**
  * Ready Event

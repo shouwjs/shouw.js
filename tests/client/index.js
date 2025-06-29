@@ -26,11 +26,6 @@ client.command({
     }
 });
 
-client.command({
-    name: 'uwu',
-    code: '$sendMessage[{actionRow:{button::secondary:uwi:false::heart:️}}]'
-});
-
 /**
  * Set the status of the client.
  */

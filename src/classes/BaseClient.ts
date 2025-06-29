@@ -10,10 +10,10 @@ export interface ClientStatus {
     text?: string;
     name?: string;
     status?: 'online' | 'dnd' | 'idle' | 'invisible';
-    type: 'playing' | 'streaming' | 'listening' | 'watching' | 'competing' | 'custom';
+    type: 'playing' | 'streaming' | 'listening' | 'watching' | 'competing' | 'custom' | keyof ActivityType;
     url?: string;
     afk?: boolean;
-    shardId?: number;
+    shardId?: number | number[];
     time?: number;
 }
 
@@ -21,7 +21,7 @@ interface PresenceData {
     time?: number;
     afk: boolean;
     status: PresenceStatusData;
-    shardId: number;
+    shardId?: number | number[];
     activities: {
         name: string;
         type: ActivityType;
@@ -94,7 +94,7 @@ export class BaseClient extends Client<true> {
             this.#statuses.set(this.#statuses.size, {
                 afk: data.afk ?? data.status === 'idle' ?? false,
                 status: data.status ?? 'online',
-                shardId: data.shardId ?? 0,
+                shardId: data.shardId ?? this.shard?.ids ?? void 0,
                 time: timeMs,
                 activities: [
                     {

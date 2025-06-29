@@ -24,7 +24,7 @@ interface InterpreterEventData {
  *
  * @param {ShouwClient} client - The client instance.
  */
-export class CustomEvent extends EventEmitter {
+export class CustomEvent {
     /**
      * The client instance.
      */
@@ -35,10 +35,15 @@ export class CustomEvent extends EventEmitter {
      */
     readonly #listenedEvents: Collective<string, CustomEventData>;
 
+    /**
+     * The events.
+     */
+    readonly #events: EventEmitter;
+
     constructor(client: ShouwClient) {
-        super();
         this.client = client;
         this.#listenedEvents = new Collective();
+        this.#events = new EventEmitter();
     }
 
     /**
@@ -51,33 +56,68 @@ export class CustomEvent extends EventEmitter {
     }
 
     /**
+     * The events.
+     *
+     * @returns {EventEmitter} The events.
+     */
+    public get events(): EventEmitter {
+        return this.#events;
+    }
+
+    /**
      * Add a command to the listened events.
      *
      * @param {CustomEventData[]} datas - The command data.
      * @returns {CustomEvent} The current instance.
      */
-    public command(...datas: CustomEventData[]): CustomEvent {
+    public on(...datas: CustomEventData[]): CustomEvent {
         for (const data of datas) {
             if (typeof data !== 'object' || !data || !data.code || !data.listen) continue;
-            this.#listenedEvents.set(data.listen, data);
+            this.listenedEvents.set(data.listen, data);
+            this.#listen(data.listen, 'on');
         }
 
         return this;
     }
 
     /**
-     * Listen to an event.
+     * Add a command to the listened events.
      *
-     * @param {string[]} names - The event name.
+     * @param {CustomEventData[]} datas - The command data.
      * @returns {CustomEvent} The current instance.
      */
-    public listen(...names: string[]): CustomEvent {
-        for (const name of names) {
-            if (!this.#listenedEvents.has(name)) continue;
-            super.on(name, async (...args: any[]) => {
-                await Executer(name, this.client, ...args);
-            });
+    public once(...datas: CustomEventData[]): CustomEvent {
+        for (const data of datas) {
+            if (typeof data !== 'object' || !data || !data.code || !data.listen) continue;
+            this.listenedEvents.set(data.listen, data);
+            this.#listen(data.listen, 'once');
         }
+
+        return this;
+    }
+
+    /**
+     * Emit an event.
+     *
+     * @param {string} name - The event name.
+     * @param {any[]} args - The event arguments.
+     * @returns {boolean} Whether the event was emitted.
+     */
+    public emit(name: string, ...args: any[]): boolean {
+        return this.events.emit(name, ...args);
+    }
+
+    /**
+     * Listen to an event.
+     *
+     * @param {string[]} name - The event name.
+     * @returns {CustomEvent} The current instance.
+     */
+    #listen(name: string, type: 'on' | 'once' = 'on'): CustomEvent {
+        if (!this.listenedEvents.has(name)) return this;
+        this.events[type](name, async (...args: any[]) => {
+            await Executer(name, this.client, ...args);
+        });
 
         return this;
     }
@@ -107,6 +147,11 @@ async function Executer(name: string, client: ShouwClient, ...eventData: any[]):
                 channel = client.channels.cache.get(parsed) ?? (await client.channels.fetch(parsed));
                 guild = channel ? (channel as any)?.guild : null;
             }
+        } else {
+            channel =
+                client.channels.cache.get(command.channel as string) ??
+                (await client.channels.fetch(command.channel as string));
+            guild = channel ? (channel as any)?.guild : null;
         }
 
         await INIT({

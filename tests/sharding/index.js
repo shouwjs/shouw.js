@@ -14,4 +14,8 @@ new ShardingManager({
     token: process.env.TOKEN ?? '',
     totalShards: 2,
     shardList: [0, 1]
-});
+})
+    .onShardCreate((shard) => {
+        console.log(`Shard ${shard.id} created!`);
+    })
+    .spawn();

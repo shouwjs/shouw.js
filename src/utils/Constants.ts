@@ -24,13 +24,32 @@ export class Constants {
     static Version: string = require('../../package.json').version;
 
     static Errors = {
-        build: (options: string | { message: string; solution?: string }, functionName?: string) => {
+        build: (
+            options: string | { message: string; solution?: string },
+            functionName: string,
+            all: string | null = ''
+        ) => {
             const { message, solution } = typeof options === 'string' ? { message: options } : options;
-            return `\`\`\`\n${functionName ? `${functionName}: ` : ''}🚫 ${message}${solution ? `\n\nSo, what is the solution?\n${solution}` : ''}\`\`\``;
+            const header = functionName ? `${functionName}: ` : '';
+            const codePreview = all && all.length <= 200 ? all : all ? 'Hmm... Code is too long to display.' : '';
+            return [
+                '```',
+                `${header}🚫 ${message}`,
+                solution
+                    ? [codePreview && `\n${codePreview}`, `\nSuggested solution:\n${solution}`]
+                          .filter(Boolean)
+                          .join('\n')
+                    : '',
+                '```'
+            ]
+                .filter(Boolean)
+                .join('\n');
         },
-        buildLog: (options: string | { message: string; solution?: string }) => {
+
+        buildLog: (options: string | { message: string; solution?: string }, all: string | null = '') => {
             const { message, solution } = typeof options === 'string' ? { message: options } : options;
-            return `${message} ${solution ? solution : ''}`;
+            const codePreview = all && all.length <= 200 ? all : all ? 'Hmm... Code is too long to display.' : '';
+            return [message, codePreview, solution && `${solution}`].filter(Boolean).join('\n\n');
         },
         missingBrackets: (func: string, functionData: Functions | CustomFunction) => ({
             message: `Invalid ${func} usage: Missing brackets`,

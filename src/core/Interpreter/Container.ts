@@ -231,6 +231,11 @@ export class Container {
         message: SendData | undefined;
     };
 
+    /**
+     * The current function being executed
+     */
+    public currentFunction: string | null = null;
+
     constructor(cmd: CommandData, options: InterpreterOptions, extras?: ExtraOptionsData) {
         this.client = options.client;
         this.functions = this.client.functions;
